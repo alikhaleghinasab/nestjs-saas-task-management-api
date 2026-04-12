@@ -7,6 +7,10 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import fastifyMultipart from '@fastify/multipart';
+import { SwaggerHelper } from '@common/swagger/swagger.helper';
+import { config as dotenvConfig } from 'dotenv';
+
+dotenvConfig({ path: '.env' });
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
@@ -22,6 +26,9 @@ async function bootstrap() {
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(new ValidationPipe());
+
+  const swaggerHelper = new SwaggerHelper();
+  swaggerHelper.setup(app);
 
   const port = process.env.APP_PORT || 3000;
   await app.listen(port, '0.0.0.0');
