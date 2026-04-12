@@ -20,6 +20,7 @@
     "resolveJsonModule": true,
     "paths": {
       "@project/*": ["modules/project/*"],
+      "@database/*": ["modules/database/*"],
       "@common/*": ["modules/common/*"]
     }
   },
