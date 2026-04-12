@@ -17,7 +17,14 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "ts-node ./node_modules/typeorm/cli",
+    "migration:run": "npm run build && npm run typeorm migration:run -- -d ./src/modules/database/typeorm.config.ts",
+    "migration:generate": "npm run typeorm -- -d ./src/modules/database/typeorm.config.ts migration:generate ./src/$npm_config_module/migrations/$npm_config_name",
+    "migration:create": "npm run typeorm -- migration:create ./src/modules/$npm_config_module/database/migrations/$npm_config_name",
+    "migration:create-win": "npm run typeorm -- migration:create ./src/modules/%npm_config_module%/database/migrations/%npm_config_name%",
+    "migration:revert": "npm run typeorm -- -d ./src/modules/database/typeorm.config.ts migration:revert",
+    "migration:drop": "npm run typeorm schema:drop -- -d ./src/modules/database/typeorm.config.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
@@ -38,7 +45,8 @@
     "pg": "^8.20.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "uuidv7": "^1.2.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
