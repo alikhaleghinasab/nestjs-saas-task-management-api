@@ -1,8 +1,16 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { ProjectModule } from '@project/project.module';
+import { configValidationSchema } from 'env.validation';
 
 @Module({
-  imports: [ProjectModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: configValidationSchema,
+    }),
+    ProjectModule,
+  ],
   controllers: [],
   providers: [],
 })
