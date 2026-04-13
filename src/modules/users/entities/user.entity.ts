@@ -1,14 +1,5 @@
 import { BaseEntity } from '@common/database/entities/base.entity';
-import {
-  Entity,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  Index,
-  PrimaryColumn,
-  BeforeInsert,
-} from 'typeorm';
-import { uuidv7 } from 'uuidv7';
+import { Entity, Column, Index } from 'typeorm';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -18,7 +9,7 @@ export class User extends BaseEntity {
   @Column({ name: 'last_name', type: 'varchar', length: 100, nullable: true })
   lastName: string | null;
 
-  @Index('IDX_USERS_EMAIL', { unique: true })
+  @Index('idx_users_email', { unique: true })
   @Column({
     name: 'email',
     type: 'varchar',
