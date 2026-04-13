@@ -21,7 +21,9 @@
     "paths": {
       "@project/*": ["modules/project/*"],
       "@database/*": ["modules/database/*"],
-      "@common/*": ["modules/common/*"]
+      "@common/*": ["modules/common/*"],
+      "@users/*": ["modules/users/*"],
+      "@auth/*": ["modules/auth/*"],
     }
   },
   "exclude": ["node_modules"]

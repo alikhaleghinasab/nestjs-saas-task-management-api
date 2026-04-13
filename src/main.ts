@@ -9,6 +9,7 @@ import {
 import fastifyMultipart from '@fastify/multipart';
 import { SwaggerHelper } from '@common/swagger/swagger.helper';
 import { config as dotenvConfig } from 'dotenv';
+import fastifyCookie from '@fastify/cookie';
 
 dotenvConfig({ path: '.env' });
 async function bootstrap() {
@@ -22,10 +23,19 @@ async function bootstrap() {
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   });
+  await app.register(fastifyCookie, {
+    secret: process.env.COOKIE_SECRET,
+  });
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
   app.setGlobalPrefix('/api');
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   const swaggerHelper = new SwaggerHelper();
   swaggerHelper.setup(app);
