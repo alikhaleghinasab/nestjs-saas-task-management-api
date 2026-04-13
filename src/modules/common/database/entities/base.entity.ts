@@ -1,15 +1,7 @@
-import { PrimaryColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { uuidv7 } from 'uuidv7';
+import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { BaseIdEntity } from './base-id.entity';
 
-export abstract class BaseEntity {
-  @PrimaryColumn('uuid', {
-    transformer: {
-      to: (value) => value ?? uuidv7(),
-      from: (value) => value,
-    },
-  })
-  id: string;
-
+export abstract class BaseEntity extends BaseIdEntity {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
