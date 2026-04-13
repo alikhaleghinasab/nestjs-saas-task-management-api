@@ -11,6 +11,7 @@ import { configValidationSchema } from 'env.validation';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: configValidationSchema,
+      envFilePath: '.env',
     }),
     DatabaseModule,
     ProjectModule,
