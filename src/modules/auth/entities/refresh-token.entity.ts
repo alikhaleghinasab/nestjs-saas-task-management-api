@@ -3,6 +3,7 @@ import { Entity, Column, Index } from 'typeorm';
 
 @Entity({ name: 'refresh_tokens' })
 export class RefreshToken extends BaseIdEntity {
+  @Index('idx_refresh_tokens_user_id', { unique: true })
   @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
