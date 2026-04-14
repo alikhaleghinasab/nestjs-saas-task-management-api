@@ -27,10 +27,10 @@ export class UserRepository {
 
   async checkUserExists(
     data: CheckUserExistsInterface,
-  ): Promise<Pick<User, 'id' | 'email' | 'password'> | null> {
+  ): Promise<Pick<User, 'id' | 'email' | 'password' | 'isActive'> | null> {
     return await this.repo.findOne({
       where: data,
-      select: ['id', 'email', 'password'],
+      select: ['id', 'email', 'password', 'isActive'],
     });
   }
 }

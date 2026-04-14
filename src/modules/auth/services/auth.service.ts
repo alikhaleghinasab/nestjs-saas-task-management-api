@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { RegisterDto } from '../dto/register.dto';
 import { UserRepository } from '../../users/repositories/user.repository';
 import { ConfigService } from '@nestjs/config';
@@ -38,6 +38,7 @@ export class AuthService {
       email: dto.email,
     });
     if (!user) throw invalid;
+    if (!user.isActive) throw new ForbiddenException('User banned');
 
     const passwordMatch = await this.bcryptHasher.compare(
       dto.password,
