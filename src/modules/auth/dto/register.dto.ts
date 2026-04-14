@@ -9,14 +9,6 @@ import {
 
 export class RegisterDto {
   @ApiProperty({
-    description: 'Name of the tenant being created on registration',
-    example: 'my-awesome-company',
-  })
-  @IsString()
-  @IsNotEmpty()
-  tenantName: string;
-
-  @ApiProperty({
     description: 'Email address of the user',
     example: 'john@example.com',
   })

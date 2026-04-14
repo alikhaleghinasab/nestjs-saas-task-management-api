@@ -3,8 +3,9 @@ import { RegisterDto } from '../dto/register.dto';
 import { UserRepository } from '../../users/repositories/user.repositroy';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfigType } from '../configs/auth.config';
-import { User } from '@users/entities/user.entity';
 import { BcryptHasher } from '@common/security/bcrypt-hasher.service';
+import { RefreshTokenService } from './refresh-token.service';
+import { TokensOutput } from '@auth/interfaces/tokens-output.interface';
 
 @Injectable()
 export class AuthService {
@@ -12,17 +13,19 @@ export class AuthService {
     private readonly userRepository: UserRepository,
     private readonly configService: ConfigService,
     private readonly bcryptHasher: BcryptHasher,
+    private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<User> {
+  async register(dto: RegisterDto): Promise<TokensOutput> {
     const { saltRounds }: AuthConfigType = this.configService.get('auth');
     const hashedPassword = await this.bcryptHasher.hash(
       dto.password,
       saltRounds,
     );
-    return await this.userRepository.createUser({
+    const user = await this.userRepository.createUser({
       email: dto.email,
       password: hashedPassword,
     });
+    return await this.refreshTokenService.generateTokens(user.id);
   }
 }
