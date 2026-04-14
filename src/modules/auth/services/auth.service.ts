@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuthConfigType } from '../configs/auth.config';
 import { BcryptHasher } from '@common/security/bcrypt-hasher.service';
 import { RefreshTokenService } from './refresh-token.service';
-import { TokensOutput } from '@auth/interfaces/tokens-output.interface';
+import { TokensOutputDto } from '@auth/dto/tokens-output.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +16,7 @@ export class AuthService {
     private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<TokensOutput> {
+  async register(dto: RegisterDto): Promise<TokensOutputDto> {
     const { saltRounds }: AuthConfigType = this.configService.get('auth');
     const hashedPassword = await this.bcryptHasher.hash(
       dto.password,

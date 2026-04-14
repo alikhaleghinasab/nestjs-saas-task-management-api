@@ -3,8 +3,10 @@ import { RegisterDto } from '../dto/register.dto';
 import { AuthService } from '../services/auth.service';
 import { ApiSuccessResponse } from '@common/responses/api-success-response.dto';
 import { SetRefreshTokenCookieInterceptor } from '@auth/interceptors/refresh-token.interceptor';
-import { TokensOutput } from '@auth/interfaces/tokens-output.interface';
+import { TokensOutputDto } from '@auth/dto/tokens-output.dto';
 import { Throttle } from '@nestjs/throttler';
+import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
+import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -17,9 +19,14 @@ export class AuthController {
       ttl: 60000,
     },
   })
+  @ApiOperation({ summary: 'Register new user account' })
+  @ApiSuccessResponseDocs(
+    TokensOutputDto,
+    'User created. Access token returned, refresh token set in httpOnly cookie.',
+  )
   async register(
     @Body() dto: RegisterDto,
-  ): Promise<ApiSuccessResponse<Omit<TokensOutput, 'refreshToken'>>> {
+  ): Promise<ApiSuccessResponse<Omit<TokensOutputDto, 'refreshToken'>>> {
     return new ApiSuccessResponse(await this.authService.register(dto));
   }
 }

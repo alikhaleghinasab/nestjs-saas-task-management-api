@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ArgonHasher } from '@common/security/argon-hasher.service';
 import { RefreshTokenRepository } from '@auth/repositories/refresh-token.repository';
-import { TokensOutput } from '@auth/interfaces/tokens-output.interface';
+import { TokensOutputDto } from '@auth/dto/tokens-output.dto';
 import { TokenFactory } from './token.factory';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class RefreshTokenService {
     private readonly argonHasher: ArgonHasher,
   ) {}
 
-  async generateTokens(userId: string): Promise<TokensOutput> {
+  async generateTokens(userId: string): Promise<TokensOutputDto> {
     const jti = this.tokenFactory.newJti();
 
     try {
