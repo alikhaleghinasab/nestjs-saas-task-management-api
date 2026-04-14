@@ -2,7 +2,8 @@ import { ResponseExceptionFilter } from '@common/filters/response-exception.filt
 import { DatabaseModule } from '@database/database.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ProjectModule } from '@project/project.module';
 import { configValidationSchema } from 'env.validation';
 
@@ -15,12 +16,24 @@ import { configValidationSchema } from 'env.validation';
     }),
     DatabaseModule,
     ProjectModule,
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
   ],
   controllers: [],
   providers: [
     {
       provide: APP_FILTER,
       useClass: ResponseExceptionFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })
