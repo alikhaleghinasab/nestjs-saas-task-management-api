@@ -15,4 +15,12 @@ export class RefreshTokenRepository {
     await this.repo.upsert(this.repo.create(data), ['userId']);
     return await this.repo.findOneBy({ userId: data.userId });
   }
+
+  async getRefreshTokenByJti(jti: string): Promise<RefreshToken | null> {
+    return await this.repo.findOneBy({ jti });
+  }
+
+  async deleteRefreshTokenByJti(jti: string): Promise<boolean> {
+    return (await this.repo.delete({ jti })).affected > 0;
+  }
 }

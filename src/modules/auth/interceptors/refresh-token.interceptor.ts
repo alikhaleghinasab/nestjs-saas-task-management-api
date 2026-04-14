@@ -1,4 +1,5 @@
 import { AuthConfigType } from '@auth/configs/auth.config';
+import { REFRESH_TOKEN_HEADER } from '@auth/constants/auth.constant';
 import {
   CallHandler,
   ExecutionContext,
@@ -35,7 +36,7 @@ export class SetRefreshTokenCookieInterceptor implements NestInterceptor {
           path: '/auth/refresh',
         };
 
-        res.setCookie('refresh_token', refreshToken, cookieOptions);
+        res.setCookie(REFRESH_TOKEN_HEADER, refreshToken, cookieOptions);
 
         const { refreshToken: _, ...dataWithoutToken } = data;
         return dataWithoutToken;

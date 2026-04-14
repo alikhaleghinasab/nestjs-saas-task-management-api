@@ -5,3 +5,9 @@ export class InvalidCredentialsException extends BaseException {
     super('INVALID_CREDENTIALS', 401, 'Invalid credentials');
   }
 }
+
+export class InvalidRefreshTokenException extends BaseException {
+  constructor() {
+    super('INVALID_REFRESH_TOKEN', 401, 'Token invalid or expired');
+  }
+}

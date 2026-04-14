@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
-import { v4 as uuidv4 } from 'uuid';
 import { AuthPayload } from '@auth/interfaces/auth-payload.interface';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfigType } from '@auth/configs/auth.config';
+import { uuidv7 } from 'uuidv7';
+import { REFRESH_TOKEN_REGEX } from '@auth/constants/auth.constant';
 
 @Injectable()
 export class TokenFactory {
@@ -18,11 +19,15 @@ export class TokenFactory {
   }
 
   newJti(): string {
-    return uuidv4();
+    return uuidv7();
   }
 
   generateRefreshToken(): string {
     return randomBytes(32).toString('hex');
+  }
+
+  isValidRefreshTokenFormat(refreshToken: string): boolean {
+    return refreshToken && REFRESH_TOKEN_REGEX.test(refreshToken);
   }
 
   async generateAccessToken(userId: string, jti: string): Promise<string> {
