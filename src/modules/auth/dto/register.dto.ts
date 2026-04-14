@@ -1,49 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsEmail,
-  IsNotEmpty,
-  MinLength,
-  Matches,
-  MaxLength,
-} from 'class-validator';
+import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
+import { AuthCredentialsDto } from './base-auth.dto';
 
-export class RegisterDto {
-  @ApiProperty({
-    description: 'First name of the user',
-    example: 'john',
-  })
+export class RegisterDto extends AuthCredentialsDto {
+  @ApiProperty({ description: 'First name of the user', example: 'John' })
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-  firstName: string;
+  readonly firstName: string;
 
-  @ApiProperty({
-    description: 'Last name of the user',
-    example: 'snow',
-  })
+  @ApiProperty({ description: 'Last name of the user', example: 'Doe' })
   @IsString()
   @IsNotEmpty()
   @MaxLength(100)
-  lastName: string;
-
-  @ApiProperty({
-    description: 'Email address of the user',
-    example: 'john@example.com',
-  })
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @ApiProperty({
-    description: 'Password for authentication. Must be at least 8 chars.',
-    example: 'StrongPass123!',
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(8)
-  @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).*$/, {
-    message: 'Password must contain uppercase, lowercase letters, and digits',
-  })
-  password: string;
+  readonly lastName: string;
 }
