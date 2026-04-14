@@ -3,8 +3,6 @@ import * as Joi from 'joi';
 export const authConfigValidationSchema = {
   JWT_ACCESS_SECRET: Joi.string().min(32).required(),
 
-  JWT_REFRESH_SECRET: Joi.string().min(32).required(),
-
   ACCESS_TOKEN_EXPIRES_IN: Joi.number()
     .positive()
     .default(900)
