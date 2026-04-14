@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { randomBytes } from 'crypto';
 import { AuthPayload } from '@auth/interfaces/auth-payload.interface';
@@ -35,6 +35,14 @@ export class TokenFactory {
     return await this.jwtService.signAsync(payload, {
       expiresIn: this.authConfig.accessTokenExpiresIn,
     });
+  }
+
+  verifyAccessToken(token: string): AuthPayload {
+    try {
+      return this.jwtService.verify<AuthPayload>(token);
+    } catch {
+      throw new UnauthorizedException('Invalid access token');
+    }
   }
 
   refreshTokenExpiresAt(): Date {
