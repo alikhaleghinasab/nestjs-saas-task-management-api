@@ -16,7 +16,7 @@ export class UserRepository {
   async createUser(data: CreateUserParams): Promise<User> {
     try {
       const user = this.repo.create(data);
-      return await this.repo.save(user);
+      return this.repo.save(user);
     } catch (err) {
       if (isUniqueConstraintError(err)) {
         throw new UniqueConstraintException('Email already exists');
@@ -28,9 +28,13 @@ export class UserRepository {
   async checkUserExists(
     data: CheckUserExistsInterface,
   ): Promise<Pick<User, 'id' | 'email' | 'password' | 'isActive'> | null> {
-    return await this.repo.findOne({
+    return this.repo.findOne({
       where: data,
       select: ['id', 'email', 'password', 'isActive'],
     });
+  }
+
+  async findUserById(id: string): Promise<User | null> {
+    return this.repo.findOneBy({ id });
   }
 }
