@@ -7,10 +7,10 @@ export class RefreshToken extends BaseIdEntity {
   @Column({ name: 'user_id', type: 'uuid' })
   userId: string;
 
-  @Index('idx_refresh_tokens_token_hash', { unique: true })
-  @Column({ name: 'token_hash', unique: true })
+  @Column({ name: 'token_hash' })
   tokenHash: string;
 
+  @Index('idx_refresh_tokens_jti', { unique: true })
   @Column({ type: 'uuid' })
   jti: string;
 
