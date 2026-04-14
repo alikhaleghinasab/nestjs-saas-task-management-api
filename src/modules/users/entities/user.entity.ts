@@ -1,14 +1,18 @@
 import { BaseEntity } from '@common/database/entities/base.entity';
+import { ApiProperty } from '@nestjs/swagger';
 import { Entity, Column, Index } from 'typeorm';
 
 @Entity('users')
 export class User extends BaseEntity {
+  @ApiProperty()
   @Column({ name: 'first_name', type: 'varchar', length: 100, nullable: true })
   firstName: string | null;
 
+  @ApiProperty()
   @Column({ name: 'last_name', type: 'varchar', length: 100, nullable: true })
   lastName: string | null;
 
+  @ApiProperty()
   @Index('idx_users_email', { unique: true })
   @Column({
     name: 'email',
@@ -31,6 +35,7 @@ export class User extends BaseEntity {
   })
   password: string;
 
+  @ApiProperty()
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
 }

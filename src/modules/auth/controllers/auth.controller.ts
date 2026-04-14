@@ -1,7 +1,7 @@
 import {
   Body,
   Controller,
-  Headers,
+  Get,
   HttpCode,
   Post,
   UseInterceptors,
@@ -21,9 +21,18 @@ import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-
 import { RefreshTokenService } from '@auth/services/refresh-token.service';
 import { REFRESH_TOKEN_HEADER } from '@auth/constants/auth.constant';
 import { Cookies } from '@common/decorators/cookie.decorator';
+import { JwtAuth } from '@auth/decorators/auth.decorator';
+import { User } from '@users/entities/user.entity';
+import { CurrentUser } from '@users/decorators/user.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
+@Throttle({
+  default: {
+    limit: 5,
+    ttl: 60000,
+  },
+})
 @UseInterceptors(ApiSuccessResponseInterceptor)
 export class AuthController {
   constructor(
@@ -32,12 +41,6 @@ export class AuthController {
   ) {}
   @Post('register')
   @UseInterceptors(SetRefreshTokenCookieInterceptor)
-  @Throttle({
-    default: {
-      limit: 5,
-      ttl: 60000,
-    },
-  })
   @ApiOperation({ summary: 'Register new user account' })
   @ApiSuccessResponseDocs(
     TokensOutputDto,
@@ -50,12 +53,6 @@ export class AuthController {
   @Post('/login')
   @HttpCode(200)
   @UseInterceptors(SetRefreshTokenCookieInterceptor)
-  @Throttle({
-    default: {
-      limit: 5,
-      ttl: 60000,
-    },
-  })
   @ApiOperation({ summary: 'Login using credentials' })
   @ApiSuccessResponseDocs(
     TokensOutputDto,
@@ -68,12 +65,6 @@ export class AuthController {
 
   @Post('/refresh')
   @HttpCode(200)
-  @Throttle({
-    default: {
-      limit: 3,
-      ttl: 60000,
-    },
-  })
   @UseInterceptors(SetRefreshTokenCookieInterceptor)
   @ApiOperation({
     summary: `Refresh access and refresh tokens with ${REFRESH_TOKEN_HEADER} header`,
@@ -84,5 +75,20 @@ export class AuthController {
     @Cookies(REFRESH_TOKEN_HEADER) refreshToken: string,
   ): Promise<TokensOutputForApi> {
     return await this.refreshTokenService.refresh(refreshToken);
+  }
+
+  @Get('/me')
+  @HttpCode(200)
+  @Throttle({
+    default: {
+      limit: 10,
+      ttl: 60000,
+    },
+  })
+  @JwtAuth()
+  @ApiOperation({ summary: 'Get current logged in user profile' })
+  @ApiSuccessResponseDocs(User, 'User profile returned successfully', 200)
+  async me(@CurrentUser() user: User) {
+    return user;
   }
 }
