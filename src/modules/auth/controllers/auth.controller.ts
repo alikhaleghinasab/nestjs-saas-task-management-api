@@ -15,11 +15,12 @@ import {
 } from '@auth/dto/tokens-output.dto';
 import { Throttle } from '@nestjs/throttler';
 import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from '@auth/dto/login.dto';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
 import { RefreshTokenService } from '@auth/services/refresh-token.service';
 import { REFRESH_TOKEN_HEADER } from '@auth/constants/auth.constant';
+import { Cookies } from '@common/decorators/cookie.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -74,10 +75,13 @@ export class AuthController {
     },
   })
   @UseInterceptors(SetRefreshTokenCookieInterceptor)
-  @ApiOperation({ summary: 'Refresh access and refresh tokens' })
+  @ApiOperation({
+    summary: `Refresh access and refresh tokens with ${REFRESH_TOKEN_HEADER} header`,
+  })
   @ApiSuccessResponseDocs(TokensOutputDto, 'Tokens refreshed successfully', 200)
+  @ApiCookieAuth(REFRESH_TOKEN_HEADER)
   async refresh(
-    @Headers(REFRESH_TOKEN_HEADER) refreshToken: string,
+    @Cookies(REFRESH_TOKEN_HEADER) refreshToken: string,
   ): Promise<TokensOutputForApi> {
     return await this.refreshTokenService.refresh(refreshToken);
   }

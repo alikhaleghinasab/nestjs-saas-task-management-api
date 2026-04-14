@@ -32,8 +32,8 @@ export class SetRefreshTokenCookieInterceptor implements NestInterceptor {
           httpOnly: true,
           secure: isProd,
           sameSite: isProd ? 'none' : 'lax',
-          maxAge: refreshTokenExpiresIn * 1000,
-          path: '/auth/refresh',
+          maxAge: refreshTokenExpiresIn,
+          path: '/api/auth/refresh',
         };
 
         res.setCookie(REFRESH_TOKEN_HEADER, refreshToken, cookieOptions);
