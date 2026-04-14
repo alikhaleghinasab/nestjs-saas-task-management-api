@@ -19,7 +19,7 @@ export class SetRefreshTokenCookieInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         // If no refresh token exists, do nothing
-        const refreshToken = data?.data?.refreshToken;
+        const refreshToken = data?.refreshToken;
         if (!refreshToken) return data;
 
         const { refreshTokenExpiresIn }: AuthConfigType =
@@ -37,8 +37,8 @@ export class SetRefreshTokenCookieInterceptor implements NestInterceptor {
 
         res.setCookie('refresh_token', refreshToken, cookieOptions);
 
-        const { refreshToken: _, ...dataWithoutToken } = data.data;
-        return { ...data, data: dataWithoutToken };
+        const { refreshToken: _, ...dataWithoutToken } = data;
+        return dataWithoutToken;
       }),
     );
   }

@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { RegisterDto } from '../dto/register.dto';
-import { UserRepository } from '../../users/repositories/user.repositroy';
+import { UserRepository } from '../../users/repositories/user.repository';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfigType } from '../configs/auth.config';
 import { BcryptHasher } from '@common/security/bcrypt-hasher.service';
 import { RefreshTokenService } from './refresh-token.service';
 import { TokensOutputDto } from '@auth/dto/tokens-output.dto';
+import { LoginDto } from '@auth/dto/login.dto';
+import { InvalidCredentialsException } from '@auth/exceptions/auth.exception';
 
 @Injectable()
 export class AuthService {
@@ -27,5 +29,22 @@ export class AuthService {
       password: hashedPassword,
     });
     return await this.refreshTokenService.generateTokens(user.id);
+  }
+
+  async login(dto: LoginDto) {
+    const invalid = new InvalidCredentialsException();
+
+    const user = await this.userRepository.checkUserExists({
+      email: dto.email,
+    });
+    if (!user) throw invalid;
+
+    const passwordMatch = await this.bcryptHasher.compare(
+      dto.password,
+      user.password,
+    );
+    if (!passwordMatch) throw invalid;
+
+    return this.refreshTokenService.generateTokens(user.id);
   }
 }

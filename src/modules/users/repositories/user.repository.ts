@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserParams } from '@users/interfaces/create-user.interface';
 import { isUniqueConstraintError } from '@common/utils/database/is-unique-constraint-error.util';
 import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
+import { CheckUserExistsInterface } from '@users/interfaces/check-user-exists.interface';
 
 @Injectable()
 export class UserRepository {
@@ -22,5 +23,14 @@ export class UserRepository {
       }
       throw err;
     }
+  }
+
+  async checkUserExists(
+    data: CheckUserExistsInterface,
+  ): Promise<Pick<User, 'id' | 'email' | 'password'> | null> {
+    return await this.repo.findOne({
+      where: data,
+      select: ['id', 'email', 'password'],
+    });
   }
 }
