@@ -5,9 +5,28 @@ import {
   IsNotEmpty,
   MinLength,
   Matches,
+  MaxLength,
 } from 'class-validator';
 
 export class RegisterDto {
+  @ApiProperty({
+    description: 'First name of the user',
+    example: 'john',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  firstName: string;
+
+  @ApiProperty({
+    description: 'Last name of the user',
+    example: 'snow',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(100)
+  lastName: string;
+
   @ApiProperty({
     description: 'Email address of the user',
     example: 'john@example.com',

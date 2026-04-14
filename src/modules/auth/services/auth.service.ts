@@ -23,7 +23,7 @@ export class AuthService {
       saltRounds,
     );
     const user = await this.userRepository.createUser({
-      email: dto.email,
+      ...dto,
       password: hashedPassword,
     });
     return await this.refreshTokenService.generateTokens(user.id);
