@@ -5,13 +5,6 @@ export class ApiSuccessResponse<T> extends ApiBaseResponse {
   @ApiProperty()
   readonly data: T;
 
-  @ApiProperty({
-    required: false,
-    nullable: true,
-    type: String,
-    description: 'Optional human-readable message',
-    example: null,
-  })
   readonly message?: string;
 
   constructor(data: T, message?: string) {
