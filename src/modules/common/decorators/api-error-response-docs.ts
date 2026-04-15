@@ -6,8 +6,20 @@ import { ApiResponse } from '@nestjs/swagger';
 
 type ExceptionType = Type<Error>;
 
-export function ApiErrorResponsesDocs(...exceptions: ExceptionType[]) {
-  const decorators = exceptions.map((ExceptionClass) => {
+interface ApiErrorOption {
+  exception: ExceptionType;
+  message?: string;
+}
+
+export function ApiErrorResponsesDocs(
+  ...errors: (ExceptionType | ApiErrorOption)[]
+) {
+  const decorators = errors.map((error) => {
+    const ExceptionClass =
+      typeof error === 'function' ? error : error.exception;
+    const customMessage =
+      typeof error === 'function' ? undefined : error.message;
+
     const instance: any = new ExceptionClass();
 
     const status =
@@ -20,9 +32,10 @@ export function ApiErrorResponsesDocs(...exceptions: ExceptionType[]) {
 
     const errorExample: ApiErrorResponse = {
       success: false,
-      errorCode: errorCode,
-      message: 'string',
+      errorCode,
+      message: customMessage ?? 'string',
     };
+
     return ApiResponse({
       status,
       schema: {
