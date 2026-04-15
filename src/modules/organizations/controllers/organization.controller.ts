@@ -1,6 +1,6 @@
 import { JwtAuth } from '@auth/decorators/auth.decorator';
-import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs';
-import { ApiPaginatedResponseDocs } from '@common/decorators/api-paginated-response.decorator';
+import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs.decorator';
+import { ApiPaginatedResponseDocs } from '@common/decorators/api-paginated-response-docs.decorator';
 import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { EntityNotFoundException } from '@common/exceptions/entity-not-found.exception';

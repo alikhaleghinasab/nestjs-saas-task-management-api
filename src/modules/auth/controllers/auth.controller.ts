@@ -25,7 +25,7 @@ import { Cookies } from '@common/decorators/cookie.decorator';
 import { JwtAuth } from '@auth/decorators/auth.decorator';
 import { User } from '@users/entities/user.entity';
 import { CurrentUser } from '@users/decorators/user.decorator';
-import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs';
+import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs.decorator';
 import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
 import {
   InvalidCredentialsException,
