@@ -16,13 +16,11 @@ export class OrganizationRepository {
     private readonly repo: Repository<Organization>,
   ) {}
 
-  async findOrganizationById(id: string): Promise<Organization> {
+  async findById(id: string): Promise<Organization> {
     return this.repo.findOneBy({ id });
   }
 
-  async createOrganization(
-    data: CreateOrganizationParams,
-  ): Promise<Organization> {
+  async create(data: CreateOrganizationParams): Promise<Organization> {
     const organization = this.repo.create(data);
     try {
       return await this.repo.save(organization);
@@ -33,10 +31,7 @@ export class OrganizationRepository {
     }
   }
 
-  async updateOrganization(
-    id: string,
-    data: UpdateOrganizationParams,
-  ): Promise<boolean> {
+  async update(id: string, data: UpdateOrganizationParams): Promise<boolean> {
     const organization = this.repo.create(data);
     try {
       return (await this.repo.update({ id }, organization)).affected > 0;
@@ -48,7 +43,7 @@ export class OrganizationRepository {
     }
   }
 
-  async deleteOrganization(id: string): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     return (await this.repo.delete({ id })).affected > 0;
   }
 }

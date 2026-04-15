@@ -12,26 +12,22 @@ export class OrganizationService {
   ) {}
 
   async findOne(id: string): Promise<Organization> {
-    const organization =
-      await this.organizationRepository.findOrganizationById(id);
+    const organization = await this.organizationRepository.findById(id);
     if (!organization) throw new EntityNotFoundException();
     return organization;
   }
 
   async create(dto: CreateOrganizationDto): Promise<Organization> {
-    return this.organizationRepository.createOrganization(dto);
+    return this.organizationRepository.create(dto);
   }
 
   async update(id: string, dto: UpdateOrganizationDto): Promise<void> {
-    const success = await this.organizationRepository.updateOrganization(
-      id,
-      dto,
-    );
+    const success = await this.organizationRepository.update(id, dto);
     if (!success) throw new EntityNotFoundException();
   }
 
   async delete(id: string): Promise<void> {
-    const success = await this.organizationRepository.deleteOrganization(id);
+    const success = await this.organizationRepository.delete(id);
     if (!success) throw new EntityNotFoundException();
   }
 }
