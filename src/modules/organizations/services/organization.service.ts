@@ -11,6 +11,13 @@ export class OrganizationService {
     private readonly organizationRepository: OrganizationRepository,
   ) {}
 
+  async findOne(id: string): Promise<Organization> {
+    const organization =
+      await this.organizationRepository.findOrganizationById(id);
+    if (!organization) throw new EntityNotFoundException();
+    return organization;
+  }
+
   async create(dto: CreateOrganizationDto): Promise<Organization> {
     return this.organizationRepository.createOrganization(dto);
   }

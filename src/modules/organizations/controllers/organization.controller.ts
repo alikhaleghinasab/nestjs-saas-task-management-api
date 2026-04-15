@@ -8,6 +8,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   Param,
   ParseUUIDPipe,
@@ -27,13 +28,24 @@ import { OrganizationService } from '@organizations/services/organization.servic
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 
+  @Get(':id')
+  @JwtAuth()
+  @ApiOperation({ summary: 'Get organization' })
+  @ApiSuccessResponseDocs({
+    model: Organization,
+    description: 'Organization details retrieved',
+  })
+  @ApiErrorResponsesDocs(EntityNotFoundException)
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Organization> {
+    return this.organizationService.findOne(id);
+  }
   @Post()
   @JwtAuth()
   @ApiOperation({ summary: 'Create organization' })
   @ApiSuccessResponseDocs({
     status: 201,
     model: Organization,
-    description: 'Create a new organization',
+    description: 'Organization created',
   })
   @ApiErrorResponsesDocs({
     exception: UniqueConstraintException,

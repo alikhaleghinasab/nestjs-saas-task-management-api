@@ -16,6 +16,10 @@ export class OrganizationRepository {
     private readonly repo: Repository<Organization>,
   ) {}
 
+  async findOrganizationById(id: string): Promise<Organization> {
+    return this.repo.findOneBy({ id });
+  }
+
   async createOrganization(
     data: CreateOrganizationParams,
   ): Promise<Organization> {
