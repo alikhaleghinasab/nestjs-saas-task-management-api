@@ -24,7 +24,11 @@ export class OrganizationController {
 
   @Post()
   @JwtAuth()
-  @ApiSuccessResponseDocs(Organization, 'Create a new organization')
+  @ApiSuccessResponseDocs({
+    status: 201,
+    model: Organization,
+    description: 'Create a new organization',
+  })
   @ApiErrorResponsesDocs(UniqueConstraintException)
   create(@Body() dto: CreateOrganizationDto): Promise<Organization> {
     return this.organizationService.create(dto);

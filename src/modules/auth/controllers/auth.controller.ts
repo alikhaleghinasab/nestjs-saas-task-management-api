@@ -42,10 +42,12 @@ export class AuthController {
   @Post('register')
   @UseInterceptors(SetRefreshTokenCookieInterceptor)
   @ApiOperation({ summary: 'Register new user account' })
-  @ApiSuccessResponseDocs(
-    TokensOutputDto,
-    'User created. Access token returned, refresh token set in httpOnly cookie.',
-  )
+  @ApiSuccessResponseDocs({
+    status: 201,
+    model: TokensOutputDto,
+    description:
+      'User created. Access token returned, refresh token set in httpOnly cookie.',
+  })
   async register(@Body() dto: RegisterDto): Promise<TokensOutputForApi> {
     return this.authService.register(dto);
   }
@@ -54,11 +56,10 @@ export class AuthController {
   @HttpCode(200)
   @UseInterceptors(SetRefreshTokenCookieInterceptor)
   @ApiOperation({ summary: 'Login using credentials' })
-  @ApiSuccessResponseDocs(
-    TokensOutputDto,
-    'Access token returned, refresh token set in httpOnly cookie.',
-    200,
-  )
+  @ApiSuccessResponseDocs({
+    model: TokensOutputDto,
+    description: 'Access token returned, refresh token set in httpOnly cookie.',
+  })
   async login(@Body() dto: LoginDto): Promise<TokensOutputForApi> {
     return this.authService.login(dto);
   }
@@ -69,7 +70,10 @@ export class AuthController {
   @ApiOperation({
     summary: `Refresh access and refresh tokens with ${REFRESH_TOKEN_HEADER} header`,
   })
-  @ApiSuccessResponseDocs(TokensOutputDto, 'Tokens refreshed successfully', 200)
+  @ApiSuccessResponseDocs({
+    model: TokensOutputDto,
+    description: 'Tokens refreshed successfully',
+  })
   @ApiCookieAuth(REFRESH_TOKEN_HEADER)
   async refresh(
     @Cookies(REFRESH_TOKEN_HEADER) refreshToken: string,
@@ -87,7 +91,10 @@ export class AuthController {
   })
   @JwtAuth()
   @ApiOperation({ summary: 'Get current logged in user profile' })
-  @ApiSuccessResponseDocs(User, 'User profile returned successfully', 200)
+  @ApiSuccessResponseDocs({
+    model: User,
+    description: 'User profile returned successfully',
+  })
   async me(@CurrentUser() user: User) {
     return user;
   }
