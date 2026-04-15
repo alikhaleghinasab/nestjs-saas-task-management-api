@@ -8,6 +8,7 @@ import { RefreshTokenService } from './refresh-token.service';
 import { TokensOutputDto } from '@auth/dto/tokens-output.dto';
 import { LoginDto } from '@auth/dto/login.dto';
 import { InvalidCredentialsException } from '@auth/exceptions/auth.exception';
+import { USER_ERRORS } from '@users/constants/errors.constant';
 
 @Injectable()
 export class AuthService {
@@ -38,7 +39,7 @@ export class AuthService {
       email: dto.email,
     });
     if (!user) throw invalid;
-    if (!user.isActive) throw new ForbiddenException('User banned');
+    if (!user.isActive) throw new ForbiddenException(USER_ERRORS.USER_BANNED);
 
     const passwordMatch = await this.bcryptHasher.compare(
       dto.password,

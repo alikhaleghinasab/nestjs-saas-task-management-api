@@ -6,6 +6,8 @@ import { CreateUserParams } from '@users/interfaces/create-user.interface';
 import { isUniqueConstraintError } from '@common/utils/database/is-unique-constraint-error.util';
 import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
 import { CheckUserExistsInterface } from '@users/interfaces/check-user-exists.interface';
+import { AUTH_ERRORS } from '@auth/constants/errors.constant';
+import { USER_ERRORS } from '@users/constants/errors.constant';
 
 @Injectable()
 export class UserRepository {
@@ -19,7 +21,7 @@ export class UserRepository {
       return this.repo.save(user);
     } catch (err) {
       if (isUniqueConstraintError(err)) {
-        throw new UniqueConstraintException('Email already exists');
+        throw new UniqueConstraintException(USER_ERRORS.EMAIL_EXISTS);
       }
       throw err;
     }

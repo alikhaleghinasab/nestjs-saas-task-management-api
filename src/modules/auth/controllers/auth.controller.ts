@@ -31,6 +31,7 @@ import {
   InvalidCredentialsException,
   InvalidRefreshTokenException,
 } from '@auth/exceptions/auth.exception';
+import { USER_ERRORS } from '@users/constants/errors.constant';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -57,7 +58,7 @@ export class AuthController {
   })
   @ApiErrorResponsesDocs({
     exception: UniqueConstraintException,
-    message: 'Email already exists',
+    message: USER_ERRORS.EMAIL_EXISTS,
   })
   async register(@Body() dto: RegisterDto): Promise<TokensOutputForApi> {
     return this.authService.register(dto);
@@ -72,7 +73,7 @@ export class AuthController {
     description: 'Access token returned, refresh token set in httpOnly cookie.',
   })
   @ApiErrorResponsesDocs(
-    { exception: ForbiddenException, message: 'User banned' },
+    { exception: ForbiddenException, message: USER_ERRORS.USER_BANNED },
     InvalidCredentialsException,
   )
   async login(@Body() dto: LoginDto): Promise<TokensOutputForApi> {
