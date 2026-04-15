@@ -7,26 +7,36 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, map } from 'rxjs';
+
+type WithRefreshToken<T> = T & { refreshToken?: string };
 
 @Injectable()
-export class SetRefreshTokenCookieInterceptor implements NestInterceptor {
+export class SetRefreshTokenCookieInterceptor<
+  T extends object,
+> implements NestInterceptor<WithRefreshToken<T>, T> {
   constructor(private readonly configService: ConfigService) {}
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const ctx = context.switchToHttp();
-    const res = ctx.getResponse();
+
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler<WithRefreshToken<T>>,
+  ): Observable<T> {
+    const http = context.switchToHttp();
+    const res = http.getResponse();
 
     return next.handle().pipe(
-      map((data) => {
-        // If no refresh token exists, do nothing
+      map((data: WithRefreshToken<T>) => {
         const refreshToken = data?.refreshToken;
-        if (!refreshToken) return data;
 
-        const { refreshTokenExpiresIn }: AuthConfigType =
-          this.configService.get('auth');
+        if (!refreshToken) {
+          return data as T;
+        }
 
-        const isProd = this.configService.get('NODE_ENV') === 'production';
+        const { refreshTokenExpiresIn } =
+          this.configService.get<AuthConfigType>('auth');
+
+        const isProd =
+          this.configService.get<string>('NODE_ENV') === 'production';
 
         const cookieOptions = {
           httpOnly: true,
@@ -39,7 +49,7 @@ export class SetRefreshTokenCookieInterceptor implements NestInterceptor {
         res.setCookie(REFRESH_TOKEN_HEADER, refreshToken, cookieOptions);
 
         const { refreshToken: _, ...dataWithoutToken } = data;
-        return dataWithoutToken;
+        return dataWithoutToken as T;
       }),
     );
   }

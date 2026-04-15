@@ -9,15 +9,21 @@ import { ApiSuccessResponse } from '@common/responses/api-success-response.dto';
 import { ApiBaseResponse } from '@common/responses/api-base-response.dto';
 
 @Injectable()
-export class ApiSuccessResponseInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+export class ApiSuccessResponseInterceptor implements NestInterceptor<
+  unknown,
+  ApiBaseResponse
+> {
+  intercept(
+    context: ExecutionContext,
+    next: CallHandler<unknown>,
+  ): Observable<ApiBaseResponse> {
     return next.handle().pipe(
-      map((data) => {
-        if (data instanceof ApiBaseResponse) {
-          return data;
+      map((result: unknown) => {
+        if (result instanceof ApiBaseResponse) {
+          return result;
         }
 
-        return new ApiSuccessResponse(data);
+        return new ApiSuccessResponse(result);
       }),
     );
   }
