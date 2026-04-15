@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   Post,
@@ -24,6 +25,12 @@ import { Cookies } from '@common/decorators/cookie.decorator';
 import { JwtAuth } from '@auth/decorators/auth.decorator';
 import { User } from '@users/entities/user.entity';
 import { CurrentUser } from '@users/decorators/user.decorator';
+import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs';
+import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
+import {
+  InvalidCredentialsException,
+  InvalidRefreshTokenException,
+} from '@auth/exceptions/auth.exception';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -48,6 +55,10 @@ export class AuthController {
     description:
       'User created. Access token returned, refresh token set in httpOnly cookie.',
   })
+  @ApiErrorResponsesDocs({
+    exception: UniqueConstraintException,
+    message: 'Email already exists',
+  })
   async register(@Body() dto: RegisterDto): Promise<TokensOutputForApi> {
     return this.authService.register(dto);
   }
@@ -60,6 +71,10 @@ export class AuthController {
     model: TokensOutputDto,
     description: 'Access token returned, refresh token set in httpOnly cookie.',
   })
+  @ApiErrorResponsesDocs(
+    { exception: ForbiddenException, message: 'User banned' },
+    InvalidCredentialsException,
+  )
   async login(@Body() dto: LoginDto): Promise<TokensOutputForApi> {
     return this.authService.login(dto);
   }
@@ -74,6 +89,7 @@ export class AuthController {
     model: TokensOutputDto,
     description: 'Tokens refreshed successfully',
   })
+  @ApiErrorResponsesDocs(InvalidRefreshTokenException)
   @ApiCookieAuth(REFRESH_TOKEN_HEADER)
   async refresh(
     @Cookies(REFRESH_TOKEN_HEADER) refreshToken: string,

@@ -29,7 +29,10 @@ export class OrganizationController {
     model: Organization,
     description: 'Create a new organization',
   })
-  @ApiErrorResponsesDocs(UniqueConstraintException)
+  @ApiErrorResponsesDocs({
+    exception: UniqueConstraintException,
+    message: 'Slug already in use',
+  })
   create(@Body() dto: CreateOrganizationDto): Promise<Organization> {
     return this.organizationService.create(dto);
   }
