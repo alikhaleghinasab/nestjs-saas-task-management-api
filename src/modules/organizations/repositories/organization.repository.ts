@@ -5,6 +5,7 @@ import { isUniqueConstraintError } from '@common/utils/database/is-unique-constr
 import { paginate } from '@common/utils/database/paginate.util';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 import { Organization } from '@organizations/entities/organization.entity';
 import {
   CreateOrganizationParams,
@@ -33,7 +34,7 @@ export class OrganizationRepository {
       return await this.repo.save(organization);
     } catch (e: any) {
       if (isUniqueConstraintError(e)) {
-        throw new UniqueConstraintException('Slug already in use');
+        throw new UniqueConstraintException(ORGANIZATION_ERRORS.SLUG_EXISTS);
       }
     }
   }
@@ -44,7 +45,7 @@ export class OrganizationRepository {
       return (await this.repo.update({ id }, organization)).affected > 0;
     } catch (err) {
       if (isUniqueConstraintError(err)) {
-        throw new UniqueConstraintException('Slug already in use');
+        throw new UniqueConstraintException(ORGANIZATION_ERRORS.SLUG_EXISTS);
       }
       throw err;
     }

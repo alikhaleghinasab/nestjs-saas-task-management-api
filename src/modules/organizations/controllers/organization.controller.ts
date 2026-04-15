@@ -22,6 +22,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 import { CreateOrganizationDto } from '@organizations/dto/create-organization.dto';
 import { UpdateOrganizationDto } from '@organizations/dto/update-organization.dto';
 import { Organization } from '@organizations/entities/organization.entity';
@@ -68,7 +69,7 @@ export class OrganizationController {
   })
   @ApiErrorResponsesDocs({
     exception: UniqueConstraintException,
-    message: 'Slug already in use',
+    message: ORGANIZATION_ERRORS.SLUG_EXISTS,
   })
   create(@Body() dto: CreateOrganizationDto): Promise<Organization> {
     return this.organizationService.create(dto);
@@ -81,7 +82,7 @@ export class OrganizationController {
   @ApiSuccessResponseDocs({ description: 'Organization updated' })
   @ApiErrorResponsesDocs({
     exception: UniqueConstraintException,
-    message: 'Slug already in use',
+    message: ORGANIZATION_ERRORS.SLUG_EXISTS,
   })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
