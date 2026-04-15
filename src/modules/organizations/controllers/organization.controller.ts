@@ -1,9 +1,13 @@
 import { JwtAuth } from '@auth/decorators/auth.decorator';
 import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs';
+import { ApiPaginatedResponseDocs } from '@common/decorators/api-paginated-response.decorator';
 import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
+import { PaginationDto } from '@common/dto/pagination.dto';
 import { EntityNotFoundException } from '@common/exceptions/entity-not-found.exception';
 import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
+import { ApiPaginatedResponseInterceptor } from '@common/interceptors/api-paginated-response.interceptor';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
+import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import {
   Body,
   Controller,
@@ -14,6 +18,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -27,6 +32,20 @@ import { OrganizationService } from '@organizations/services/organization.servic
 @ApiTags('Organization')
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
+
+  @Get()
+  @JwtAuth()
+  @ApiOperation({ summary: 'Get organizations' })
+  @ApiPaginatedResponseDocs({
+    model: Organization,
+    description: 'Paginated list of organizations',
+  })
+  @UseInterceptors(ApiPaginatedResponseInterceptor)
+  async findMany(
+    @Query() dto: PaginationDto,
+  ): Promise<PaginatedResponse<Organization>> {
+    return this.organizationService.findMany(dto);
+  }
 
   @Get(':id')
   @JwtAuth()

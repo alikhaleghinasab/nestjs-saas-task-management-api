@@ -1,5 +1,8 @@
+import { PaginationDto } from '@common/dto/pagination.dto';
 import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
+import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { isUniqueConstraintError } from '@common/utils/database/is-unique-constraint-error.util';
+import { paginate } from '@common/utils/database/paginate.util';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Organization } from '@organizations/entities/organization.entity';
@@ -15,6 +18,10 @@ export class OrganizationRepository {
     @InjectRepository(Organization)
     private readonly repo: Repository<Organization>,
   ) {}
+
+  async findMany(dto: PaginationDto): Promise<PaginatedResponse<Organization>> {
+    return paginate(this.repo, dto);
+  }
 
   async findById(id: string): Promise<Organization> {
     return this.repo.findOneBy({ id });
