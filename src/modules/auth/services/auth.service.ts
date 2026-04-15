@@ -24,7 +24,7 @@ export class AuthService {
       dto.password,
       saltRounds,
     );
-    const user = await this.userRepository.createUser({
+    const user = await this.userRepository.create({
       ...dto,
       password: hashedPassword,
     });
@@ -34,7 +34,7 @@ export class AuthService {
   async login(dto: LoginDto) {
     const invalid = new InvalidCredentialsException();
 
-    const user = await this.userRepository.checkUserExists({
+    const user = await this.userRepository.findOneForAuth({
       email: dto.email,
     });
     if (!user) throw invalid;

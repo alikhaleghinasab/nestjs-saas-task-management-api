@@ -13,7 +13,7 @@ export class UserRepository {
     @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
 
-  async createUser(data: CreateUserParams): Promise<User> {
+  async create(data: CreateUserParams): Promise<User> {
     try {
       const user = this.repo.create(data);
       return this.repo.save(user);
@@ -25,7 +25,7 @@ export class UserRepository {
     }
   }
 
-  async checkUserExists(
+  async findOneForAuth(
     data: CheckUserExistsInterface,
   ): Promise<Pick<User, 'id' | 'email' | 'password' | 'isActive'> | null> {
     return this.repo.findOne({
@@ -34,7 +34,7 @@ export class UserRepository {
     });
   }
 
-  async findUserById(id: string): Promise<User | null> {
+  async findById(id: string): Promise<User | null> {
     return this.repo.findOneBy({ id });
   }
 }
