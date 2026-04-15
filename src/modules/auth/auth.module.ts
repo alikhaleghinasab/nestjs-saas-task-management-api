@@ -12,6 +12,7 @@ import authConfig from './configs/auth.config';
 import { BcryptHasher } from '@common/security/bcrypt-hasher.service';
 import { TokenFactory } from './services/token.factory';
 import { ArgonHasher } from '@common/security/argon-hasher.service';
+import { UserService } from '@users/services/user.service';
 
 @Module({
   imports: [
@@ -35,6 +36,8 @@ import { ArgonHasher } from '@common/security/argon-hasher.service';
     BcryptHasher,
     ArgonHasher,
     TokenFactory,
+    UserService,
   ],
+  exports: [TokenFactory, JwtModule, UserService],
 })
 export class AuthModule {}
