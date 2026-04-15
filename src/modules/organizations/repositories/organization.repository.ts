@@ -43,4 +43,8 @@ export class OrganizationRepository {
       throw err;
     }
   }
+
+  async deleteOrganization(id: string): Promise<boolean> {
+    return (await this.repo.delete({ id })).affected > 0;
+  }
 }

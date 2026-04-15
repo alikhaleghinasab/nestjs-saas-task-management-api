@@ -16,10 +16,15 @@ export class OrganizationService {
   }
 
   async update(id: string, dto: UpdateOrganizationDto): Promise<void> {
-    const updateResult = await this.organizationRepository.updateOrganization(
+    const success = await this.organizationRepository.updateOrganization(
       id,
       dto,
     );
-    if (!updateResult) throw new EntityNotFoundException();
+    if (!success) throw new EntityNotFoundException();
+  }
+
+  async delete(id: string): Promise<void> {
+    const success = await this.organizationRepository.deleteOrganization(id);
+    if (!success) throw new EntityNotFoundException();
   }
 }

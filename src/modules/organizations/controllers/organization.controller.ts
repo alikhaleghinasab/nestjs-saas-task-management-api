@@ -1,11 +1,13 @@
 import { JwtAuth } from '@auth/decorators/auth.decorator';
 import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs';
 import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
+import { EntityNotFoundException } from '@common/exceptions/entity-not-found.exception';
 import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   Param,
   ParseUUIDPipe,
@@ -55,5 +57,15 @@ export class OrganizationController {
     @Body() dto: UpdateOrganizationDto,
   ): Promise<void> {
     await this.organizationService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @HttpCode(200)
+  @JwtAuth()
+  @ApiOperation({ summary: 'Delete organization' })
+  @ApiSuccessResponseDocs({ description: 'Organization deleted' })
+  @ApiErrorResponsesDocs(EntityNotFoundException)
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
+    await this.organizationService.delete(id);
   }
 }
