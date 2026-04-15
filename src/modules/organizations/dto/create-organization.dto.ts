@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateOrganizationParams } from '../interfaces/organization-params.interface.ts';
 import { IsNotEmpty, IsString, MaxLength, Matches } from 'class-validator';
 
-export class CreateOrganizationDto {
+export class CreateOrganizationDto implements CreateOrganizationParams {
   @ApiProperty({ example: 'Acme Corp' })
   @IsString()
   @IsNotEmpty()

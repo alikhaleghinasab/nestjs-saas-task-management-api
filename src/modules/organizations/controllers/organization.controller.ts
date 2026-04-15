@@ -3,16 +3,19 @@ import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-doc
 import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
 import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
-import { ApiErrorResponse } from '@common/responses/api-error-response.dto';
 import {
   Body,
   Controller,
-  NotFoundException,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
   Post,
+  Put,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateOrganizationDto } from '@organizations/dto/create-organization.dto';
+import { UpdateOrganizationDto } from '@organizations/dto/update-organization.dto';
 import { Organization } from '@organizations/entities/organization.entity';
 import { OrganizationService } from '@organizations/services/organization.service';
 
@@ -24,6 +27,7 @@ export class OrganizationController {
 
   @Post()
   @JwtAuth()
+  @ApiOperation({ summary: 'Create organization' })
   @ApiSuccessResponseDocs({
     status: 201,
     model: Organization,
@@ -35,5 +39,21 @@ export class OrganizationController {
   })
   create(@Body() dto: CreateOrganizationDto): Promise<Organization> {
     return this.organizationService.create(dto);
+  }
+
+  @Put(':id')
+  @HttpCode(200)
+  @JwtAuth()
+  @ApiOperation({ summary: 'Update organization' })
+  @ApiSuccessResponseDocs({ description: 'Organization updated' })
+  @ApiErrorResponsesDocs({
+    exception: UniqueConstraintException,
+    message: 'Slug already in use',
+  })
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateOrganizationDto,
+  ): Promise<void> {
+    await this.organizationService.update(id, dto);
   }
 }
