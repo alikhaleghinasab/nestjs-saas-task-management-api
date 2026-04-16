@@ -25,6 +25,7 @@
       "@users/*": ["modules/users/*"],
       "@auth/*": ["modules/auth/*"],
       "@organizations/*": ["modules/organizations/*"],
+      "@memberships/*": ["modules/memberships/*"],
     }
   },
   "exclude": ["node_modules"]
