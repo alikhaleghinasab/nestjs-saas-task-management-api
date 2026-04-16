@@ -7,11 +7,15 @@ import { CreateOrganizationDto } from '@organizations/dto/create-organization.dt
 import { UpdateOrganizationDto } from '@organizations/dto/update-organization.dto';
 import { Organization } from '@organizations/entities/organization.entity';
 import { OrganizationRepository } from '@organizations/repositories/organization.repository';
+import { CommandBus } from '@nestjs/cqrs';
+import { CreateOwnerMembershipCommand } from '@memberships/commands/create-owner-membership.command';
+import { DeleteMembershipCommand } from '@memberships/commands/delete-membership.command';
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly organizationRepository: OrganizationRepository,
+    private readonly commandBus: CommandBus,
   ) {}
 
   async findMany(dto: PaginationDto): Promise<PaginatedResponse<Organization>> {
@@ -23,8 +27,15 @@ export class OrganizationService {
     return this.organizationRepository.findById(id);
   }
 
-  async create(dto: CreateOrganizationDto): Promise<Organization> {
-    return this.organizationRepository.create(dto);
+  async create(
+    dto: CreateOrganizationDto,
+    userId: string,
+  ): Promise<Organization> {
+    const organization = await this.organizationRepository.create(dto);
+    await this.commandBus.execute(
+      new CreateOwnerMembershipCommand(organization.id, userId),
+    );
+    return organization;
   }
 
   @EnsureAffected()
@@ -33,7 +44,8 @@ export class OrganizationService {
   }
 
   @EnsureAffected()
-  async delete(id: string): Promise<boolean> {
+  async delete(id: string, userId: string): Promise<boolean> {
+    await this.commandBus.execute(new DeleteMembershipCommand(id, userId));
     return await this.organizationRepository.delete(id);
   }
 }

@@ -5,10 +5,11 @@ import { OrganizationController } from './controllers/organization.controller';
 import { OrganizationService } from './services/organization.service';
 import { OrganizationRepository } from './repositories/organization.repository';
 import { AuthModule } from '@auth/auth.module';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   controllers: [OrganizationController],
-  imports: [TypeOrmModule.forFeature([Organization]), AuthModule],
+  imports: [CqrsModule, TypeOrmModule.forFeature([Organization]), AuthModule],
   providers: [OrganizationService, OrganizationRepository],
   exports: [],
 })

@@ -16,6 +16,7 @@ import { CreateOrganizationDto } from '@organizations/dto/create-organization.dt
 import { UpdateOrganizationDto } from '@organizations/dto/update-organization.dto';
 import { Organization } from '@organizations/entities/organization.entity';
 import { OrganizationService } from '@organizations/services/organization.service';
+import { CurrentUser } from '@users/decorators/user.decorator';
 
 const resourceName = 'Organization';
 
@@ -48,8 +49,11 @@ export class OrganizationController {
     resourceName,
     duplicateErrorMsg: ORGANIZATION_ERRORS.SLUG_EXISTS,
   })
-  create(@Body() dto: CreateOrganizationDto): Promise<Organization> {
-    return this.organizationService.create(dto);
+  create(
+    @Body() dto: CreateOrganizationDto,
+    @CurrentUser('id') userId: string,
+  ): Promise<Organization> {
+    return this.organizationService.create(dto, userId);
   }
 
   @ApiUpdate({
@@ -66,7 +70,10 @@ export class OrganizationController {
   @ApiDelete({
     resourceName,
   })
-  async delete(@UuidParam() id: string): Promise<void> {
-    await this.organizationService.delete(id);
+  async delete(
+    @UuidParam() id: string,
+    @CurrentUser('id') userId: string,
+  ): Promise<void> {
+    await this.organizationService.delete(id, userId);
   }
 }
