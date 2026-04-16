@@ -27,7 +27,7 @@ export function ApiGetMany(options: ApiGetManyOptions) {
   const {
     entity,
     resourceName,
-    description = `Paginated list of ${resourceName}s`,
+    description = `Paginated list of ${resourceName}`,
     extraErrors = [],
   } = options;
 
@@ -35,7 +35,7 @@ export function ApiGetMany(options: ApiGetManyOptions) {
     Get(),
     JwtAuth(),
     UseInterceptors(ApiPaginatedResponseInterceptor),
-    ApiOperation({ summary: `Get ${resourceName}s` }),
+    ApiOperation({ summary: `Get list of ${resourceName}` }),
     ApiPaginatedResponseDocs({ model: entity, description }),
     ApiErrorResponsesDocs(...extraErrors),
   );
