@@ -1,7 +1,7 @@
+import { CatchUniqueConstraint } from '@common/decorators/catch-unique-constraint.decorator';
 import { PaginationDto } from '@common/dto/pagination.dto';
-import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
-import { isUniqueConstraintError } from '@common/utils/database/is-unique-constraint-error.util';
+import { wasAffected } from '@common/utils/database/ensure-affected.util';
 import { paginate } from '@common/utils/database/paginate.util';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -28,30 +28,19 @@ export class OrganizationRepository {
     return this.repo.findOneBy({ id });
   }
 
+  @CatchUniqueConstraint(ORGANIZATION_ERRORS.SLUG_EXISTS)
   async create(data: CreateOrganizationParams): Promise<Organization> {
     const organization = this.repo.create(data);
-    try {
-      return await this.repo.save(organization);
-    } catch (e: any) {
-      if (isUniqueConstraintError(e)) {
-        throw new UniqueConstraintException(ORGANIZATION_ERRORS.SLUG_EXISTS);
-      }
-    }
+    return await this.repo.save(organization);
   }
 
+  @CatchUniqueConstraint(ORGANIZATION_ERRORS.SLUG_EXISTS)
   async update(id: string, data: UpdateOrganizationParams): Promise<boolean> {
     const organization = this.repo.create(data);
-    try {
-      return (await this.repo.update({ id }, organization)).affected > 0;
-    } catch (err) {
-      if (isUniqueConstraintError(err)) {
-        throw new UniqueConstraintException(ORGANIZATION_ERRORS.SLUG_EXISTS);
-      }
-      throw err;
-    }
+    return await wasAffected(this.repo.update({ id }, organization));
   }
 
   async delete(id: string): Promise<boolean> {
-    return (await this.repo.delete({ id })).affected > 0;
+    return await wasAffected(this.repo.delete({ id }));
   }
 }

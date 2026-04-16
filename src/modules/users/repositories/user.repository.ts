@@ -3,11 +3,9 @@ import { User } from '@users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { CreateUserParams } from '@users/interfaces/create-user.interface';
-import { isUniqueConstraintError } from '@common/utils/database/is-unique-constraint-error.util';
-import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
 import { CheckUserExistsInterface } from '@users/interfaces/check-user-exists.interface';
-import { AUTH_ERRORS } from '@auth/constants/errors.constant';
 import { USER_ERRORS } from '@users/constants/errors.constant';
+import { CatchUniqueConstraint } from '@common/decorators/catch-unique-constraint.decorator';
 
 @Injectable()
 export class UserRepository {
@@ -15,16 +13,10 @@ export class UserRepository {
     @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
 
+  @CatchUniqueConstraint(USER_ERRORS.EMAIL_EXISTS)
   async create(data: CreateUserParams): Promise<User> {
-    try {
-      const user = this.repo.create(data);
-      return this.repo.save(user);
-    } catch (err) {
-      if (isUniqueConstraintError(err)) {
-        throw new UniqueConstraintException(USER_ERRORS.EMAIL_EXISTS);
-      }
-      throw err;
-    }
+    const user = this.repo.create(data);
+    return this.repo.save(user);
   }
 
   async findOneForAuth(
