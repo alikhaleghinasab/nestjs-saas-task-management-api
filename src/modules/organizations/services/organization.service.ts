@@ -10,6 +10,7 @@ import { OrganizationRepository } from '@organizations/repositories/organization
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateOwnerMembershipCommand } from '@memberships/commands/create-owner-membership.command';
 import { DeleteMembershipCommand } from '@memberships/commands/delete-membership.command';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class OrganizationService {
@@ -27,6 +28,7 @@ export class OrganizationService {
     return this.organizationRepository.findById(id);
   }
 
+  @Transactional()
   async create(
     dto: CreateOrganizationDto,
     userId: string,
@@ -43,6 +45,7 @@ export class OrganizationService {
     return await this.organizationRepository.update(id, dto);
   }
 
+  @Transactional()
   @EnsureAffected()
   async delete(id: string, userId: string): Promise<boolean> {
     await this.commandBus.execute(new DeleteMembershipCommand(id, userId));
