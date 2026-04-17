@@ -13,7 +13,7 @@ import { ApiSuccessResponseDocs } from './api-success-response-docs.decorator';
 import { ApiPaginatedResponseDocs } from './api-paginated-response-docs.decorator';
 import { ApiErrorResponsesDocs } from './api-error-response-docs.decorator';
 import { ApiPaginatedResponseInterceptor } from '../interceptors/api-paginated-response.interceptor';
-import { EntityNotFoundException } from '../exceptions/entity-not-found.exception';
+import { RecordNotFoundException } from '../exceptions/record-not-found.exception';
 import { UniqueConstraintException } from '../exceptions/unique-constraint.exception';
 import {
   ApiGetManyOptions,
@@ -46,7 +46,7 @@ export function ApiGetOne(options: ApiGetOneOptions) {
     entity,
     resourceName,
     description = `${resourceName} details retrieved`,
-    notFoundException = EntityNotFoundException,
+    notFoundException = RecordNotFoundException,
     extraErrors = [],
   } = options;
 
@@ -122,7 +122,7 @@ export function ApiDelete(options: ApiDeleteOptions) {
   const {
     resourceName,
     description = `${resourceName} deleted`,
-    notFoundException = EntityNotFoundException,
+    notFoundException = RecordNotFoundException,
     extraErrors = [],
   } = options;
 

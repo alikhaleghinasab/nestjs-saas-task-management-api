@@ -3,13 +3,13 @@ import { DomainErrorMap } from './domain-error-map.type';
 import { RecordNotFoundError } from '../domain/record-not-found.error';
 import { UniqueConstraintError } from '../domain/unique-constraint.error';
 
-import { EntityNotFoundException } from '../../exceptions/entity-not-found.exception';
+import { RecordNotFoundException } from '../../exceptions/record-not-found.exception';
 import { UniqueConstraintException } from '../../exceptions/unique-constraint.exception';
 
 export const GLOBAL_DOMAIN_ERROR_MAP: DomainErrorMap = [
   {
     domain: RecordNotFoundError,
-    toHttp: (e) => new EntityNotFoundException(e.message),
+    toHttp: (e) => new RecordNotFoundException(e.message),
   },
   {
     domain: UniqueConstraintError,
