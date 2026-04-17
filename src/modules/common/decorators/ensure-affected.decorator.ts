@@ -1,4 +1,4 @@
-import { EntityNotFoundException } from '@common/exceptions/entity-not-found.exception';
+import { RecordNotFoundError } from '@common/errors/domain/record-not-found.error';
 
 export function EnsureAffected(error?: string) {
   return function (
@@ -11,7 +11,7 @@ export function EnsureAffected(error?: string) {
     descriptor.value = async function (...args: any[]) {
       const result = await original.apply(this, args);
       if (!result) {
-        throw new EntityNotFoundException(error);
+        throw new RecordNotFoundError(error);
       }
       return result;
     };

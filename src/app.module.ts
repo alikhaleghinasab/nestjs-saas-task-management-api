@@ -1,3 +1,4 @@
+import { DomainExceptionFilter } from '@common/filters/domain-exception.filter';
 import { ResponseExceptionFilter } from '@common/filters/response-exception.filter';
 import { DatabaseModule } from '@database/database.module';
 import { Module } from '@nestjs/common';
@@ -30,6 +31,10 @@ import { configValidationSchema } from 'env.validation';
     {
       provide: APP_FILTER,
       useClass: ResponseExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: DomainExceptionFilter,
     },
     {
       provide: APP_GUARD,

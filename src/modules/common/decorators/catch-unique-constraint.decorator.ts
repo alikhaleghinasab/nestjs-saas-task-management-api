@@ -1,4 +1,4 @@
-import { UniqueConstraintError } from '@common/errors/unique-constraint.error';
+import { UniqueConstraintError } from '@common/errors/domain/unique-constraint.error';
 import { isUniqueConstraintError } from '@common/utils/database/is-unique-constraint-error.util';
 
 type UniqueConstraintConfig = string | Record<string, string>;

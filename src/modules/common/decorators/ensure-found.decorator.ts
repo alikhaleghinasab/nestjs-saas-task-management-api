@@ -1,4 +1,4 @@
-import { EntityNotFoundException } from '@common/exceptions/entity-not-found.exception';
+import { RecordNotFoundError } from '@common/errors/domain/record-not-found.error';
 
 export function EnsureFound(error?: string) {
   return function (
@@ -12,7 +12,7 @@ export function EnsureFound(error?: string) {
       const result = await original.apply(this, args);
 
       if (result === null) {
-        throw new EntityNotFoundException(error);
+        throw new RecordNotFoundError(error);
       }
 
       return result;
