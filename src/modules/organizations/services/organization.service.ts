@@ -45,7 +45,8 @@ export class OrganizationService {
 
   @Transactional()
   async delete(id: string, userId: string): Promise<boolean> {
+    const organization = await this.organizationRepository.delete(id);
     await this.commandBus.execute(new DeleteMembershipCommand(id, userId));
-    return await this.organizationRepository.delete(id);
+    return organization;
   }
 }
