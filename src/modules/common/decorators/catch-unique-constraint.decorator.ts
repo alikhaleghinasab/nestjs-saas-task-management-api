@@ -1,4 +1,4 @@
-import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
+import { UniqueConstraintError } from '@common/errors/unique-constraint.error';
 import { isUniqueConstraintError } from '@common/utils/database/is-unique-constraint-error.util';
 
 type UniqueConstraintConfig = string | Record<string, string>;
@@ -17,7 +17,7 @@ export function CatchUniqueConstraint(config: UniqueConstraintConfig) {
       } catch (error: any) {
         if (isUniqueConstraintError(error)) {
           if (typeof config === 'string') {
-            throw new UniqueConstraintException(config);
+            throw new UniqueConstraintError(config);
           }
 
           const constraint = error?.constraint;
@@ -25,7 +25,7 @@ export function CatchUniqueConstraint(config: UniqueConstraintConfig) {
           const message =
             (constraint && config[constraint]) || 'Unique constraint violated';
 
-          throw new UniqueConstraintException(message);
+          throw new UniqueConstraintError(message);
         }
 
         throw error;

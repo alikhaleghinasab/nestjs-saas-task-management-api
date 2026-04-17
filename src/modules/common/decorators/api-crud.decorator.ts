@@ -22,6 +22,7 @@ import {
   ApiDeleteOptions,
   ApiUpdateOptions,
 } from './api-crud.types';
+import { MapUniqueErrorInterceptor } from '@common/interceptors/map-unique-constraint.interceptor';
 
 export function ApiGetMany(options: ApiGetManyOptions) {
   const {
@@ -83,6 +84,7 @@ export function ApiCreate(options: ApiCreateOptions) {
         exception: UniqueConstraintException,
         message: duplicateErrorMsg,
       }),
+      UseInterceptors(MapUniqueErrorInterceptor),
     );
   }
 
@@ -112,6 +114,7 @@ export function ApiUpdate(options: ApiUpdateOptions) {
         exception: UniqueConstraintException,
         message: duplicateErrorMsg,
       }),
+      UseInterceptors(MapUniqueErrorInterceptor),
     );
   }
 
