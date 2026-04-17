@@ -10,9 +10,12 @@ import fastifyMultipart from '@fastify/multipart';
 import { SwaggerHelper } from '@common/swagger/swagger.helper';
 import { config as dotenvConfig } from 'dotenv';
 import fastifyCookie from '@fastify/cookie';
+import { initializeTransactionalContext } from 'typeorm-transactional';
 
 dotenvConfig({ path: '.env' });
 async function bootstrap() {
+  initializeTransactionalContext();
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
