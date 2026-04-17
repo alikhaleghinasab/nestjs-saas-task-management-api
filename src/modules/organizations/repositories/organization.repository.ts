@@ -1,4 +1,6 @@
 import { CatchUniqueConstraint } from '@common/decorators/catch-unique-constraint.decorator';
+import { EnsureAffected } from '@common/decorators/ensure-affected.decorator';
+import { EnsureFound } from '@common/decorators/ensure-found.decorator';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { wasAffected } from '@common/utils/database/ensure-affected.util';
@@ -24,6 +26,7 @@ export class OrganizationRepository {
     return paginate(this.repo, dto);
   }
 
+  @EnsureFound()
   async findById(id: string): Promise<Organization> {
     return this.repo.findOneBy({ id });
   }
@@ -35,11 +38,13 @@ export class OrganizationRepository {
   }
 
   @CatchUniqueConstraint(ORGANIZATION_ERRORS.SLUG_EXISTS)
+  @EnsureAffected()
   async update(id: string, data: UpdateOrganizationParams): Promise<boolean> {
     const organization = this.repo.create(data);
     return await wasAffected(this.repo.update({ id }, organization));
   }
 
+  @EnsureAffected()
   async delete(id: string): Promise<boolean> {
     return await wasAffected(this.repo.delete({ id }));
   }

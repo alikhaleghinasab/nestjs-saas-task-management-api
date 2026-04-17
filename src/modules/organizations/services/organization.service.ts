@@ -23,7 +23,6 @@ export class OrganizationService {
     return this.organizationRepository.findMany(dto);
   }
 
-  @EnsureFound()
   async findOne(id: string): Promise<Organization> {
     return this.organizationRepository.findById(id);
   }
@@ -40,13 +39,11 @@ export class OrganizationService {
     return organization;
   }
 
-  @EnsureAffected()
   async update(id: string, dto: UpdateOrganizationDto): Promise<boolean> {
     return await this.organizationRepository.update(id, dto);
   }
 
   @Transactional()
-  @EnsureAffected()
   async delete(id: string, userId: string): Promise<boolean> {
     await this.commandBus.execute(new DeleteMembershipCommand(id, userId));
     return await this.organizationRepository.delete(id);
