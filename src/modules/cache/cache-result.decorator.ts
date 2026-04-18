@@ -1,6 +1,14 @@
 import { CacheHelper } from './cache.helper';
 
-export function CacheResult(options?: { key?: string; ttl?: number }) {
+type CacheKeyFn<Args extends unknown[]> = (...args: Args) => string;
+
+interface CacheOptions<Args extends unknown[]> {
+  key?: string | CacheKeyFn<Args>;
+  ttl?: number;
+}
+export function CacheResult<Args extends unknown[] = unknown[]>(
+  options?: CacheOptions<Args>,
+) {
   return function (
     target: any,
     propertyKey: string,
@@ -8,25 +16,27 @@ export function CacheResult(options?: { key?: string; ttl?: number }) {
   ) {
     const originalMethod = descriptor.value;
 
-    descriptor.value = async function (...args: unknown[]) {
+    descriptor.value = async function (...args: Args) {
       const cacheHelper: CacheHelper = (this as any).cacheHelper;
 
       if (!cacheHelper) {
         throw new Error(
-          `CacheHelper is missing. Ensure it is injected as 'private readonly cacheHelper' in ${this.constructor.name}.`,
+          `CacheHelper not found on ${this.constructor.name}. Inject it via constructor.`,
         );
       }
 
       const key =
-        options?.key ??
-        `${this.constructor.name}:${propertyKey}:${JSON.stringify(args)}`;
+        typeof options?.key === 'function'
+          ? options.key(...args)
+          : options?.key;
+      if (!key) {
+        throw new Error('Cache key not defined');
+      }
 
-      const ttl = options?.ttl;
-
-      return await cacheHelper.getOrSetString(
+      return cacheHelper.getOrSetString(
         key,
         () => originalMethod.apply(this, args),
-        ttl,
+        options?.ttl,
       );
     };
 
