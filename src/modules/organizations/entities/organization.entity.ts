@@ -1,6 +1,7 @@
 import { BaseEntity } from '@common/database/entities/base.entity';
+import { Membership } from '@memberships/entities/membership.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, Index } from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 
 @Entity('organizations')
 export class Organization extends BaseEntity {
@@ -12,4 +13,7 @@ export class Organization extends BaseEntity {
   @Index('idx_organizations_slug', { unique: true })
   @Column({ type: 'varchar', length: 80 })
   slug: string;
+
+  @OneToMany(() => Membership, (membership) => membership.organization)
+  memberships: Membership[];
 }

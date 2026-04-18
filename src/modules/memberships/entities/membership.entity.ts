@@ -18,7 +18,7 @@ export class Membership extends BaseIdEntity {
   @Column({ type: 'uuid', name: 'organization_id', nullable: false })
   organizationId: string;
 
-  @ManyToOne(() => Organization, { nullable: false })
+  @ManyToOne(() => Organization, (org) => org.memberships, { nullable: false })
   @JoinColumn({ name: 'organization_id' })
   organization: Organization;
 
