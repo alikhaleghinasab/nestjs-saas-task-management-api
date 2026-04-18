@@ -5,10 +5,10 @@ import { Entity, Column, ManyToOne, Unique, Index, JoinColumn } from 'typeorm';
 import { RolesEnum } from '../enums/roles.enum';
 
 @Entity('memberships')
+@Index('idx_memberships_user_org_composite', ['userId', 'organizationId'])
 @Unique(['userId', 'organizationId'])
 export class Membership extends BaseIdEntity {
   @Column({ type: 'uuid', name: 'user_id', nullable: false })
-  @Index('idx_memberships_user')
   userId: string;
 
   @ManyToOne(() => User, { nullable: false })
@@ -16,7 +16,6 @@ export class Membership extends BaseIdEntity {
   user: User;
 
   @Column({ type: 'uuid', name: 'organization_id', nullable: false })
-  @Index('idx_memberships_org')
   organizationId: string;
 
   @ManyToOne(() => Organization, { nullable: false })
