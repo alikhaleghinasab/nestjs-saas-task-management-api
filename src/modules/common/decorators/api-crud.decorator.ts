@@ -8,7 +8,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import { JwtAuth } from '@auth/decorators/auth.decorator';
 import { ApiSuccessResponseDocs } from './api-success-response-docs.decorator';
 import { ApiPaginatedResponseDocs } from './api-paginated-response-docs.decorator';
 import { ApiErrorResponsesDocs } from './api-error-response-docs.decorator';
@@ -33,7 +32,6 @@ export function ApiGetMany(options: ApiGetManyOptions) {
 
   return applyDecorators(
     Get(),
-    JwtAuth(),
     UseInterceptors(ApiPaginatedResponseInterceptor),
     ApiOperation({ summary: `Get list of ${resourceName}` }),
     ApiPaginatedResponseDocs({ model: entity, description }),
@@ -52,7 +50,6 @@ export function ApiGetOne(options: ApiGetOneOptions) {
 
   return applyDecorators(
     Get(':id'),
-    JwtAuth(),
     ApiOperation({ summary: `Get ${resourceName}` }),
     ApiSuccessResponseDocs({ model: entity, description }),
     ApiErrorResponsesDocs(notFoundException),
@@ -71,7 +68,6 @@ export function ApiCreate(options: ApiCreateOptions) {
 
   const decorators: MethodDecorator[] = [
     Post(),
-    JwtAuth(),
     ApiOperation({ summary: `Create ${resourceName}` }),
     ApiSuccessResponseDocs({ status: 201, model: entity, description }),
     ApiErrorResponsesDocs(...extraErrors),
@@ -100,7 +96,6 @@ export function ApiUpdate(options: ApiUpdateOptions) {
   const decorators: MethodDecorator[] = [
     Put(':id'),
     HttpCode(200),
-    JwtAuth(),
     ApiOperation({ summary: `Update ${resourceName}` }),
     ApiSuccessResponseDocs({ description }),
     ApiErrorResponsesDocs(...extraErrors),
@@ -129,7 +124,6 @@ export function ApiDelete(options: ApiDeleteOptions) {
   return applyDecorators(
     Delete(':id'),
     HttpCode(200),
-    JwtAuth(),
     ApiOperation({ summary: `Delete ${resourceName}` }),
     ApiSuccessResponseDocs({ description }),
     ApiErrorResponsesDocs(notFoundException),
