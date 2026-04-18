@@ -26,6 +26,8 @@
       "@auth/*": ["modules/auth/*"],
       "@organizations/*": ["modules/organizations/*"],
       "@memberships/*": ["modules/memberships/*"],
+      "@cache/*": ["modules/cache/*"],
+      "@redis/*": ["modules/redis/*"],
     }
   },
   "exclude": ["node_modules"]

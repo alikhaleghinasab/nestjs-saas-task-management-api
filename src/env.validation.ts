@@ -1,6 +1,7 @@
 import * as Joi from 'joi';
 import { typeormConfigValidationSchema } from '@database/typeorm-config.validation';
 import { authConfigValidationSchema } from '@auth/configs/auth-config.validation';
+import { redisConfigValidationSchema } from '@redis/redis-config.validation';
 
 export const configValidationSchema = Joi.object({
   APP_PORT: Joi.number(),
@@ -10,4 +11,5 @@ export const configValidationSchema = Joi.object({
   COOKIE_SECRET: Joi.string().required(),
   ...typeormConfigValidationSchema,
   ...authConfigValidationSchema,
+  ...redisConfigValidationSchema,
 });
