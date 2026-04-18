@@ -19,8 +19,11 @@ export class OrganizationService {
     private readonly commandBus: CommandBus,
   ) {}
 
-  async findMany(dto: PaginationDto): Promise<PaginatedResponse<Organization>> {
-    return this.organizationRepository.findMany(dto);
+  async findMany(
+    dto: PaginationDto,
+    userId: string,
+  ): Promise<PaginatedResponse<Organization>> {
+    return this.organizationRepository.findManyForUser(dto, userId);
   }
 
   async findOne(id: string): Promise<Organization> {

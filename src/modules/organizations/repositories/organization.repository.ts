@@ -22,8 +22,15 @@ export class OrganizationRepository {
     private readonly repo: Repository<Organization>,
   ) {}
 
-  async findMany(dto: PaginationDto): Promise<PaginatedResponse<Organization>> {
-    return paginate(this.repo, dto);
+  async findManyForUser(
+    dto: PaginationDto,
+    userId: string,
+  ): Promise<PaginatedResponse<Organization>> {
+    return paginate(this.repo, dto, {
+      memberships: {
+        userId: userId,
+      },
+    });
   }
 
   @EnsureFound()

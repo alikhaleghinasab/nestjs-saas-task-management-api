@@ -6,11 +6,22 @@ import { OrganizationService } from './services/organization.service';
 import { OrganizationRepository } from './repositories/organization.repository';
 import { AuthModule } from '@auth/auth.module';
 import { CqrsModule } from '@nestjs/cqrs';
+import { MembershipModule } from '@memberships/membership.module';
+import { OrganizationRolesGuard } from './guards/organization-roles.guard';
 
 @Module({
   controllers: [OrganizationController],
-  imports: [CqrsModule, TypeOrmModule.forFeature([Organization]), AuthModule],
-  providers: [OrganizationService, OrganizationRepository],
-  exports: [],
+  imports: [
+    CqrsModule,
+    TypeOrmModule.forFeature([Organization]),
+    AuthModule,
+    MembershipModule,
+  ],
+  providers: [
+    OrganizationService,
+    OrganizationRepository,
+    OrganizationRolesGuard,
+  ],
+  exports: [OrganizationRolesGuard],
 })
 export class OrganizationModule {}
