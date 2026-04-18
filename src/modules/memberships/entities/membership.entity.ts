@@ -2,7 +2,7 @@ import { BaseIdEntity } from '@common/database/entities/base-id.entity';
 import { Organization } from '@organizations/entities/organization.entity';
 import { User } from '@users/entities/user.entity';
 import { Entity, Column, ManyToOne, Unique, Index, JoinColumn } from 'typeorm';
-import { RolesEnum } from '../enums/roles.enum';
+import { Roles } from '../enums/roles.enum';
 
 @Entity('memberships')
 @Index('idx_memberships_user_org_composite', ['userId', 'organizationId'])
@@ -22,6 +22,6 @@ export class Membership extends BaseIdEntity {
   @JoinColumn({ name: 'organization_id' })
   organization: Organization;
 
-  @Column({ type: 'enum', enum: RolesEnum })
-  role: RolesEnum;
+  @Column({ type: 'enum', enum: Roles })
+  role: Roles;
 }

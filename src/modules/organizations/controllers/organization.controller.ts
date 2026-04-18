@@ -10,7 +10,7 @@ import { UuidParam } from '@common/decorators/uuid-param.decorator';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
-import { RolesEnum } from '@memberships/enums/roles.enum';
+import { Roles } from '@memberships/enums/roles.enum';
 import { Body, Controller, Query, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
@@ -45,7 +45,7 @@ export class OrganizationController {
     entity: Organization,
     resourceName,
   })
-  @OrganizationProtected(RolesEnum.Owner, RolesEnum.Admin, RolesEnum.Member)
+  @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   async findOne(@UuidParam() id: string): Promise<Organization> {
     return this.organizationService.findOne(id);
   }
@@ -66,7 +66,7 @@ export class OrganizationController {
     resourceName,
     duplicateErrorMsg: ORGANIZATION_ERRORS.SLUG_EXISTS,
   })
-  @OrganizationProtected(RolesEnum.Owner, RolesEnum.Admin)
+  @OrganizationProtected(Roles.Owner, Roles.Admin)
   async update(
     @UuidParam() id: string,
     @Body() dto: UpdateOrganizationDto,
@@ -74,7 +74,7 @@ export class OrganizationController {
     await this.organizationService.update(id, dto);
   }
 
-  @OrganizationProtected(RolesEnum.Owner)
+  @OrganizationProtected(Roles.Owner)
   @ApiDelete({
     resourceName,
   })

@@ -1,4 +1,4 @@
-import { RolesEnum } from '@memberships/enums/roles.enum';
+import { Roles } from '@memberships/enums/roles.enum';
 import { MembershipService } from '@memberships/services/membership.service';
 import {
   Injectable,
@@ -23,7 +23,7 @@ export class OrganizationRolesGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<RolesEnum[]>(
+    const requiredRoles = this.reflector.getAllAndOverride<Roles[]>(
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
     );

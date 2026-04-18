@@ -4,7 +4,7 @@ import { CreateMembershipParams } from '../interfaces/create-membership.interfac
 import { Membership } from '../entities/membership.entity';
 import { EnsureAffected } from '@common/decorators/ensure-affected.decorator';
 import { MEMBERSHIP_ERRORS } from '@memberships/constants/errors.constant';
-import { RolesEnum } from '@memberships/enums/roles.enum';
+import { Roles } from '@memberships/enums/roles.enum';
 import { CacheResult } from '@cache/cache-result.decorator';
 import { CacheHelper } from '@cache/cache.helper';
 
@@ -33,7 +33,7 @@ export class MembershipService {
   async getUserRoleInOrganization(
     userId: string,
     organizationId: string,
-  ): Promise<RolesEnum | null> {
+  ): Promise<Roles | null> {
     return this.membershipRepository.getUserRoleInOrganization(
       userId,
       organizationId,

@@ -1,5 +1,5 @@
 import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs.decorator';
-import { RolesEnum } from '@memberships/enums/roles.enum';
+import { Roles } from '@memberships/enums/roles.enum';
 import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
 import { ApiHeader } from '@nestjs/swagger';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
@@ -9,7 +9,7 @@ import { OrganizationRolesGuard } from '@organizations/guards/organization-roles
 
 export const ROLES_KEY = 'organizationRoles';
 
-export const OrganizationProtected = (...roles: RolesEnum[]) =>
+export const OrganizationProtected = (...roles: Roles[]) =>
   applyDecorators(
     SetMetadata(ROLES_KEY, roles),
     ApiHeader({

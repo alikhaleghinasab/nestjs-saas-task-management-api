@@ -6,7 +6,7 @@ import { CreateMembershipParams } from '../interfaces/create-membership.interfac
 import { MEMBERSHIP_ERRORS } from '../constants/errors.constant';
 import { CatchUniqueConstraint } from '@common/decorators/catch-unique-constraint.decorator';
 import { wasAffected } from '@common/utils/database/ensure-affected.util';
-import { RolesEnum } from '@memberships/enums/roles.enum';
+import { Roles } from '@memberships/enums/roles.enum';
 
 @Injectable()
 export class MembershipRepository {
@@ -27,7 +27,7 @@ export class MembershipRepository {
   async getUserRoleInOrganization(
     userId: string,
     organizationId: string,
-  ): Promise<RolesEnum | null> {
+  ): Promise<Roles | null> {
     const membership = await this.repo.findOne({
       where: { userId, organizationId },
       select: ['role'],

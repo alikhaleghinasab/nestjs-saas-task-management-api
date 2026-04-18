@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Logger } from '@nestjs/common';
 import { CreateOwnerMembershipCommand } from '../commands/create-owner-membership.command';
 import { MembershipService } from '@memberships/services/membership.service';
-import { RolesEnum } from '@memberships/enums/roles.enum';
+import { Roles } from '@memberships/enums/roles.enum';
 
 @CommandHandler(CreateOwnerMembershipCommand)
 export class CreateOwnerMembershipHandler implements ICommandHandler<CreateOwnerMembershipCommand> {
@@ -18,7 +18,7 @@ export class CreateOwnerMembershipHandler implements ICommandHandler<CreateOwner
     await this.membershipService.create({
       organizationId: command.organizationId,
       userId: command.userId,
-      role: RolesEnum.Owner,
+      role: Roles.Owner,
     });
   }
 }
