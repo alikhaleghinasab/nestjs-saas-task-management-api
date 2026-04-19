@@ -1,13 +1,18 @@
 import { BaseEntity } from '@common/database/entities/base.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { InvitationStatus } from '@organizations/enums/invitation-status.enum';
-import { Entity, Column, Index } from 'typeorm';
+import { Entity, Column, Index, ManyToOne, JoinColumn } from 'typeorm';
+import { Organization } from './organization.entity';
 
 @Entity('invitations')
 export class Invitation extends BaseEntity {
   @ApiProperty()
   @Column()
   email: string;
+
+  @ManyToOne(() => Organization, { nullable: false })
+  @JoinColumn({ name: 'organization_id' })
+  organization: Organization;
 
   @ApiProperty()
   @Column({ type: 'uuid', name: 'organization_id' })

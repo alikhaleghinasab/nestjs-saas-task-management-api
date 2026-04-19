@@ -5,6 +5,7 @@ import { randomUUID } from 'crypto';
 import { Invitation } from '@organizations/entities/invitation.entity';
 import { EmailService } from '@email/services/email.service';
 import { ConfigService } from '@nestjs/config';
+import { InvitationPreviewDto } from '@organizations/dto/invitation-perview.dto';
 
 @Injectable()
 export class InvitationService {
@@ -33,5 +34,18 @@ export class InvitationService {
     });
 
     return invitation;
+  }
+
+  async findOne(invitationToken: string): Promise<InvitationPreviewDto> {
+    const invitation =
+      await this.invitationRepository.findByInvitationToken(invitationToken);
+    console.log(invitation);
+
+    return {
+      email: invitation.email,
+      role: invitation.role,
+      organizationName: invitation.organization.name,
+      createdAt: invitation.createdAt,
+    };
   }
 }
