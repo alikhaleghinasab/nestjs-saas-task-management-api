@@ -24,7 +24,7 @@ export class MembershipController {
 
   @Patch(':userId')
   @HttpCode(200)
-  @ApiOperation({ summary: 'test' })
+  @ApiOperation({ summary: 'Update a user role within the organization' })
   @ApiSuccessResponseDocs({ description: 'Role updated successfully' })
   @OrganizationProtected(Roles.Owner)
   async updateUserRole(
