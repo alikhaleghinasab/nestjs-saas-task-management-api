@@ -26,7 +26,9 @@ interface ApiWithDuplicateMessage {
 export interface ApiGetManyOptions extends ApiBaseOptions, ApiWithEntity {}
 
 export interface ApiGetOneOptions
-  extends ApiBaseOptions, ApiWithEntity, ApiWithNotFound {}
+  extends ApiBaseOptions, ApiWithEntity, ApiWithNotFound {
+  paramName?: string;
+}
 
 export interface ApiCreateOptions
   extends ApiBaseOptions, ApiWithEntity, ApiWithDuplicateMessage {}

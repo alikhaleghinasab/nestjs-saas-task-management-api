@@ -43,13 +43,14 @@ export function ApiGetOne(options: ApiGetOneOptions) {
   const {
     entity,
     resourceName,
+    paramName = 'id',
     description = `${resourceName} details retrieved`,
     notFoundException = RecordNotFoundException,
     extraErrors = [],
   } = options;
 
   return applyDecorators(
-    Get(':id'),
+    Get(`:${paramName}`),
     ApiOperation({ summary: `Get ${resourceName}` }),
     ApiSuccessResponseDocs({ model: entity, description }),
     ApiErrorResponsesDocs(notFoundException),
