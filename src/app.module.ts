@@ -7,10 +7,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { ProjectModule } from '@project/project.module';
 import appConfig from 'configs/app.config';
 import { configValidationSchema } from 'env.validation';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
+import { CoreModule } from '@core/core.module';
 
 @Module({
   imports: [
@@ -21,9 +21,9 @@ import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
     }),
     ConfigModule.forFeature(appConfig),
     DatabaseModule,
-    ProjectModule,
     UsersModule,
     AuthModule,
+    CoreModule,
     ThrottlerModule.forRoot({
       throttlers: [
         {

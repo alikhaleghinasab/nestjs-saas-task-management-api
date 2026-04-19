@@ -19,7 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "resolveJsonModule": true,
     "paths": {
-      "@project/*": ["modules/project/*"],
+      "@core/*": ["modules/core/*"],
       "@database/*": ["modules/database/*"],
       "@common/*": ["modules/common/*"],
       "@users/*": ["modules/users/*"],
