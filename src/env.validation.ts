@@ -5,6 +5,8 @@ import { redisConfigValidationSchema } from '@redis/redis-config.validation';
 
 export const configValidationSchema = Joi.object({
   APP_PORT: Joi.number(),
+  APP_URL: Joi.string().uri().required(),
+  API_URL: Joi.string().uri().required(),
   NODE_ENV: Joi.string()
     .valid('development', 'production', 'test')
     .default('development'),

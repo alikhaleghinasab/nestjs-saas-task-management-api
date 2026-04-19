@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ProjectModule } from '@project/project.module';
+import appConfig from 'configs/app.config';
 import { configValidationSchema } from 'env.validation';
 
 @Module({
@@ -15,6 +16,7 @@ import { configValidationSchema } from 'env.validation';
       validationSchema: configValidationSchema,
       envFilePath: '.env',
     }),
+    ConfigModule.forFeature(appConfig),
     DatabaseModule,
     ProjectModule,
     ThrottlerModule.forRoot({
