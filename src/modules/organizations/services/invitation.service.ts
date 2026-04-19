@@ -16,6 +16,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateMembershipCommand } from '@memberships/commands/create-membership.command';
 import { InvitationStatus } from '@organizations/enums/invitation-status.enum';
 import { AcceptInvitationDto } from '@organizations/dto/accept-invitation.dto';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class InvitationService {
@@ -61,6 +62,7 @@ export class InvitationService {
     };
   }
 
+  @Transactional()
   async acceptInvitation(
     token: string,
     user: User,
