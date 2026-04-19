@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { InvitationStatus } from '@organizations/enums/invitation-status.enum';
 import { Entity, Column, Index, ManyToOne, JoinColumn } from 'typeorm';
 import { Organization } from './organization.entity';
+import { Roles } from '@memberships/enums/roles.enum';
 
 @Entity('invitations')
 export class Invitation extends BaseEntity {
@@ -19,8 +20,8 @@ export class Invitation extends BaseEntity {
   organizationId: string;
 
   @ApiProperty()
-  @Column()
-  role: string;
+  @Column({ type: 'enum', enum: Roles })
+  role: Roles;
 
   @ApiProperty()
   @Index('idx_invitations_invitation_token', { unique: true })

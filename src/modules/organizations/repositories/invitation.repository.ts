@@ -1,9 +1,11 @@
 import { CatchUniqueConstraint } from '@common/decorators/catch-unique-constraint.decorator';
+import { EnsureAffected } from '@common/decorators/ensure-affected.decorator';
 import { EnsureFound } from '@common/decorators/ensure-found.decorator';
 import { ErrorMessage } from '@common/errors/error-messages';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Invitation } from '@organizations/entities/invitation.entity';
+import { InvitationStatus } from '@organizations/enums/invitation-status.enum';
 import { InvitationParams } from '@organizations/interfaces/invitation-params.interface';
 import { Repository } from 'typeorm';
 
@@ -20,10 +22,21 @@ export class InvitationRepository {
   }
 
   @EnsureFound()
-  async findByInvitationToken(invitationToken: string): Promise<Invitation> {
+  async findByInvitationToken(
+    invitationToken: string,
+    relations: string[] = [],
+  ): Promise<Invitation> {
     return this.repo.findOne({
       where: { invitationToken },
-      relations: ['organization'],
+      relations,
     });
+  }
+
+  @EnsureAffected()
+  async markAsAccepted(id: string) {
+    return this.repo.update(
+      { id, status: InvitationStatus.PENDING },
+      { status: InvitationStatus.ACCEPTED },
+    );
   }
 }
