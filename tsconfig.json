@@ -29,6 +29,7 @@
       "@cache/*": ["modules/cache/*"],
       "@redis/*": ["modules/redis/*"],
       "@email/*": ["modules/email/*"],
+      "@projects/*": ["modules/projects/*"],
     }
   },
   "exclude": ["node_modules"]

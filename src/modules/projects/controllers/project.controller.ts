@@ -1,0 +1,36 @@
+import { ApiCreate } from '@common/decorators/api-crud.decorator';
+import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
+import { Roles } from '@memberships/enums/roles.enum';
+import { Body, Controller, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { OrganizationId } from '@organizations/decorators/organization-id.decorator';
+import { PROJECT_ERRORS } from '@projects/constants/errors.constant';
+import { CreateProjectDto } from '@projects/dto/create-project.dto';
+import { Project } from '@projects/entities/project.entity';
+import { ProjectService } from '@projects/services/project.service';
+import { OrganizationProtected } from '@users/decorators/organization-roles.decorator';
+import { CurrentUser } from '@users/decorators/user.decorator';
+
+const resourceName = 'Project';
+
+@Controller('projects')
+@UseInterceptors(ApiSuccessResponseInterceptor)
+@ApiTags(resourceName)
+@ApiBearerAuth()
+export class ProjectController {
+  constructor(private readonly projectService: ProjectService) {}
+
+  @ApiCreate({
+    entity: Project,
+    resourceName,
+    duplicateErrorMsg: PROJECT_ERRORS.PROJECT_EXISTS,
+  })
+  @OrganizationProtected(Roles.Owner, Roles.Admin)
+  create(
+    @Body() dto: CreateProjectDto,
+    @CurrentUser('id') userId: string,
+    @OrganizationId() organizationId: string,
+  ): Promise<Project> {
+    return this.projectService.create(dto, userId, organizationId);
+  }
+}
