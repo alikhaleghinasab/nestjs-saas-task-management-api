@@ -1,18 +1,18 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Logger } from '@nestjs/common';
-import { CreateOwnerMembershipCommand } from '../commands/create-owner-membership.command';
 import { MembershipService } from '@memberships/services/membership.service';
 import { Roles } from '@memberships/enums/roles.enum';
+import { CreateMembershipCommand } from '@memberships/commands/create-membership.command';
 
-@CommandHandler(CreateOwnerMembershipCommand)
-export class CreateOwnerMembershipHandler implements ICommandHandler<CreateOwnerMembershipCommand> {
-  private readonly logger = new Logger(CreateOwnerMembershipHandler.name);
+@CommandHandler(CreateMembershipCommand)
+export class CreateMembershipHandler implements ICommandHandler<CreateMembershipCommand> {
+  private readonly logger = new Logger(CreateMembershipHandler.name);
 
   constructor(private readonly membershipService: MembershipService) {}
 
-  async execute(command: CreateOwnerMembershipCommand): Promise<void> {
+  async execute(command: CreateMembershipCommand): Promise<void> {
     this.logger.log(
-      `Executing CreateOwnerMembershipCommand for org: ${command.organizationId}`,
+      `Executing CreateMembershipCommand for org: ${command.organizationId}`,
     );
 
     await this.membershipService.create({

@@ -1,5 +1,3 @@
-import { EnsureAffected } from '@common/decorators/ensure-affected.decorator';
-import { EnsureFound } from '@common/decorators/ensure-found.decorator';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { Injectable } from '@nestjs/common';
@@ -8,9 +6,10 @@ import { UpdateOrganizationDto } from '@organizations/dto/update-organization.dt
 import { Organization } from '@organizations/entities/organization.entity';
 import { OrganizationRepository } from '@organizations/repositories/organization.repository';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateOwnerMembershipCommand } from '@memberships/commands/create-owner-membership.command';
 import { DeleteMembershipCommand } from '@memberships/commands/delete-membership.command';
 import { Transactional } from 'typeorm-transactional';
+import { Roles } from '@memberships/enums/roles.enum';
+import { CreateMembershipCommand } from '@memberships/commands/create-membership.command';
 
 @Injectable()
 export class OrganizationService {
@@ -37,7 +36,7 @@ export class OrganizationService {
   ): Promise<Organization> {
     const organization = await this.organizationRepository.create(dto);
     await this.commandBus.execute(
-      new CreateOwnerMembershipCommand(organization.id, userId),
+      new CreateMembershipCommand(organization.id, userId, Roles.Owner),
     );
     return organization;
   }
