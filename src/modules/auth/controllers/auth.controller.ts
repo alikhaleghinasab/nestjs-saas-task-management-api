@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   ForbiddenException,
@@ -32,6 +33,7 @@ import {
   InvalidRefreshTokenException,
 } from '@auth/exceptions/auth.exception';
 import { USER_ERRORS } from '@users/constants/errors.constant';
+import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -56,10 +58,20 @@ export class AuthController {
     description:
       'User created. Access token returned, refresh token set in httpOnly cookie.',
   })
-  @ApiErrorResponsesDocs({
-    exception: UniqueConstraintException,
-    message: USER_ERRORS.EMAIL_EXISTS,
-  })
+  @ApiErrorResponsesDocs(
+    {
+      exception: UniqueConstraintException,
+      message: USER_ERRORS.EMAIL_EXISTS,
+    },
+    {
+      exception: ForbiddenException,
+      message: ORGANIZATION_ERRORS.INVITATION_MISMATCH,
+    },
+    {
+      exception: BadRequestException,
+      message: ORGANIZATION_ERRORS.INVITATION_NOT_VALID,
+    },
+  )
   async register(@Body() dto: RegisterDto): Promise<TokensOutputForApi> {
     return this.authService.register(dto);
   }

@@ -1,5 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsString,
+  IsNotEmpty,
+  MaxLength,
+  IsUUID,
+  IsOptional,
+} from 'class-validator';
 import { AuthCredentialsDto } from './base-auth.dto';
 
 export class RegisterDto extends AuthCredentialsDto {
@@ -14,4 +20,13 @@ export class RegisterDto extends AuthCredentialsDto {
   @IsNotEmpty()
   @MaxLength(100)
   readonly lastName: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Invitation token used to join an organization during registration',
+    format: 'uuid',
+  })
+  @IsUUID()
+  @IsOptional()
+  readonly invitationToken?: string;
 }

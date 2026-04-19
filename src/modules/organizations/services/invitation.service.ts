@@ -65,7 +65,7 @@ export class InvitationService {
   @Transactional()
   async acceptInvitation(
     token: string,
-    user: User,
+    user: Pick<User, 'id' | 'email'>,
   ): Promise<AcceptInvitationDto> {
     const invitation = await this.getValidInvitation(token);
     this.ensureInvitationMatchesUser(invitation, user);
@@ -89,7 +89,10 @@ export class InvitationService {
     return invitation;
   }
 
-  private ensureInvitationMatchesUser(invitation: Invitation, user: User) {
+  private ensureInvitationMatchesUser(
+    invitation: Invitation,
+    user: Pick<User, 'id' | 'email'>,
+  ) {
     if (invitation.email !== user.email) {
       throw new ForbiddenException(ORGANIZATION_ERRORS.INVITATION_MISMATCH);
     }

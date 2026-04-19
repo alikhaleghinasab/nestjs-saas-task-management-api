@@ -89,6 +89,9 @@ export class InvitationController {
     @UuidParam('token') token: string,
     @CurrentUser() user: User,
   ): Promise<AcceptInvitationDto> {
-    return this.invitationService.acceptInvitation(token, user);
+    return this.invitationService.acceptInvitation(token, {
+      id: user.id,
+      email: user.email,
+    });
   }
 }

@@ -13,6 +13,7 @@ import { BcryptHasher } from '@common/security/bcrypt-hasher.service';
 import { TokenFactory } from './services/token.factory';
 import { ArgonHasher } from '@common/security/argon-hasher.service';
 import { UserService } from '@users/services/user.service';
+import { CqrsModule } from '@nestjs/cqrs';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UserService } from '@users/services/user.service';
       inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([RefreshToken]),
+    CqrsModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -36,8 +38,7 @@ import { UserService } from '@users/services/user.service';
     BcryptHasher,
     ArgonHasher,
     TokenFactory,
-    UserService,
   ],
-  exports: [TokenFactory, JwtModule, UserService],
+  exports: [TokenFactory, JwtModule],
 })
 export class AuthModule {}

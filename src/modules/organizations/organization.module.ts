@@ -13,17 +13,21 @@ import { Invitation } from './entities/invitation.entity';
 import { InvitationService } from './services/invitation.service';
 import { InvitationRepository } from './repositories/invitation.repository';
 import { EmailModule } from '@email/email.module';
+import { AcceptInvitationHandler } from './handlers/accept-invitation.handler';
+import { UsersModule } from '@users/users.module';
 
 @Module({
   controllers: [OrganizationController, InvitationController],
   imports: [
     CqrsModule,
+    UsersModule,
     TypeOrmModule.forFeature([Organization, Invitation]),
     AuthModule,
     EmailModule,
     MembershipModule,
   ],
   providers: [
+    AcceptInvitationHandler,
     OrganizationService,
     OrganizationRepository,
     InvitationService,
