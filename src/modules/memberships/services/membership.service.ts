@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { MembershipRepository } from '../repositories/membership.repository';
-import { CreateMembershipParams } from '../interfaces/create-membership.interface';
+import {
+  CreateMembershipParams,
+  UpdateMembershipRoleParams,
+} from '../interfaces/membership-params.interface';
 import { Membership } from '../entities/membership.entity';
-import { EnsureAffected } from '@common/decorators/ensure-affected.decorator';
-import { MEMBERSHIP_ERRORS } from '@memberships/constants/errors.constant';
 import { Roles } from '@memberships/enums/roles.enum';
 import { CacheResult } from '@cache/cache-result.decorator';
 import { CacheHelper } from '@cache/cache.helper';
@@ -20,7 +21,10 @@ export class MembershipService {
     return this.membershipRepository.create(data);
   }
 
-  @EnsureAffected(MEMBERSHIP_ERRORS.MEMBERSHIP_DOES_NOT_EXIST)
+  async updateRole(data: UpdateMembershipRoleParams): Promise<boolean> {
+    return this.membershipRepository.updateRole(data);
+  }
+
   async delete(userId: string, organizationId: string): Promise<boolean> {
     return this.membershipRepository.delete(userId, organizationId);
   }
