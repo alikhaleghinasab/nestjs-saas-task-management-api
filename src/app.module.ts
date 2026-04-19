@@ -1,6 +1,8 @@
 import { DomainExceptionFilter } from '@common/filters/domain-exception.filter';
 import { ResponseExceptionFilter } from '@common/filters/response-exception.filter';
 import { DatabaseModule } from '@database/database.module';
+import { UsersModule } from '@users/users.module';
+import { AuthModule } from '@auth/auth.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
@@ -8,6 +10,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ProjectModule } from '@project/project.module';
 import appConfig from 'configs/app.config';
 import { configValidationSchema } from 'env.validation';
+import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -19,6 +22,8 @@ import { configValidationSchema } from 'env.validation';
     ConfigModule.forFeature(appConfig),
     DatabaseModule,
     ProjectModule,
+    UsersModule,
+    AuthModule,
     ThrottlerModule.forRoot({
       throttlers: [
         {
@@ -41,6 +46,10 @@ import { configValidationSchema } from 'env.validation';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
     },
   ],
 })

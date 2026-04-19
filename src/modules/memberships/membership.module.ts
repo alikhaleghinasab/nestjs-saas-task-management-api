@@ -7,16 +7,9 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteMembershipHandler } from './handlers/delete-membership.handler';
 import { CreateMembershipHandler } from './handlers/create-membership.handler';
 import { MembershipController } from './controllers/membership.controller';
-import { AuthModule } from '@auth/auth.module';
-import { UsersModule } from '@users/users.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Membership]),
-    CqrsModule,
-    AuthModule,
-    UsersModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Membership]), CqrsModule],
   controllers: [MembershipController],
   providers: [
     MembershipRepository,

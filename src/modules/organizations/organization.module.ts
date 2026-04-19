@@ -20,9 +20,7 @@ import { UsersModule } from '@users/users.module';
   controllers: [OrganizationController, InvitationController],
   imports: [
     CqrsModule,
-    UsersModule,
     TypeOrmModule.forFeature([Organization, Invitation]),
-    AuthModule,
     EmailModule,
     MembershipModule,
   ],

@@ -1,4 +1,4 @@
-import { JwtAuth } from '@auth/decorators/auth.decorator';
+import { Public } from '@auth/decorators/public.decorator';
 import { ApiGetOne } from '@common/decorators/api-crud.decorator';
 import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs.decorator';
 import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
@@ -16,7 +16,7 @@ import {
   Post,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 import { OrganizationId } from '@organizations/decorators/organization-id.decorator';
 import { AcceptInvitationDto } from '@organizations/dto/accept-invitation.dto';
@@ -37,6 +37,7 @@ export class InvitationController {
   constructor(private readonly invitationService: InvitationService) {}
 
   @Post()
+  @ApiBearerAuth()
   @ApiOperation({ summary: `Invite a user to join an organization` })
   @ApiSuccessResponseDocs({
     status: 201,
@@ -44,7 +45,6 @@ export class InvitationController {
     description: 'Invitation created and sent to the user',
   })
   @OrganizationProtected(Roles.Owner, Roles.Admin)
-  @JwtAuth()
   async inviteUser(
     @Body() dto: InviteUserDto,
     @OrganizationId() organizationId: string,
@@ -57,6 +57,7 @@ export class InvitationController {
     entity: InvitationPreviewDto,
     paramName: 'token',
   })
+  @Public()
   async findOne(
     @UuidParam('token') token: string,
   ): Promise<InvitationPreviewDto> {
@@ -65,6 +66,7 @@ export class InvitationController {
 
   @Post(':token/accept')
   @HttpCode(200)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Accept an organization invitation' })
   @ApiSuccessResponseDocs({
     description: 'Invitation successfully accepted and membership created',
@@ -84,7 +86,6 @@ export class InvitationController {
       message: MEMBERSHIP_ERRORS.MEMBERSHIP_ALREADY_EXISTS,
     },
   )
-  @JwtAuth()
   async acceptInvite(
     @UuidParam('token') token: string,
     @CurrentUser() user: User,

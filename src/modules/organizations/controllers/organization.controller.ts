@@ -1,4 +1,3 @@
-import { JwtAuth } from '@auth/decorators/auth.decorator';
 import {
   ApiDelete,
   ApiCreate,
@@ -12,7 +11,7 @@ import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { Roles } from '@memberships/enums/roles.enum';
 import { Body, Controller, Query, UseInterceptors } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 import { CreateOrganizationDto } from '@organizations/dto/create-organization.dto';
 import { UpdateOrganizationDto } from '@organizations/dto/update-organization.dto';
@@ -26,7 +25,7 @@ const resourceName = 'Organization';
 @Controller('organizations')
 @UseInterceptors(ApiSuccessResponseInterceptor)
 @ApiTags(resourceName)
-@JwtAuth()
+@ApiBearerAuth()
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 

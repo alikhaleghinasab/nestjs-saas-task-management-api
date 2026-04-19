@@ -1,5 +1,3 @@
-import { JwtAuth } from '@auth/decorators/auth.decorator';
-import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs.decorator';
 import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
 import { UuidParam } from '@common/decorators/uuid-param.decorator';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
@@ -13,14 +11,14 @@ import {
   Patch,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrganizationId } from '@organizations/decorators/organization-id.decorator';
 import { OrganizationProtected } from '@users/decorators/organization-roles.decorator';
 
 @Controller('memberships')
 @UseInterceptors(ApiSuccessResponseInterceptor)
+@ApiBearerAuth()
 @ApiTags('Membership')
-@JwtAuth()
 export class MembershipController {
   constructor(private readonly membershipService: MembershipService) {}
 

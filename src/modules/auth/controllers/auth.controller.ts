@@ -17,13 +17,17 @@ import {
 } from '@auth/dto/tokens-output.dto';
 import { Throttle } from '@nestjs/throttler';
 import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
-import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { LoginDto } from '@auth/dto/login.dto';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
 import { RefreshTokenService } from '@auth/services/refresh-token.service';
 import { REFRESH_TOKEN_HEADER } from '@auth/constants/auth.constant';
 import { Cookies } from '@common/decorators/cookie.decorator';
-import { JwtAuth } from '@auth/decorators/auth.decorator';
 import { User } from '@users/entities/user.entity';
 import { CurrentUser } from '@users/decorators/user.decorator';
 import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs.decorator';
@@ -34,6 +38,7 @@ import {
 } from '@auth/exceptions/auth.exception';
 import { USER_ERRORS } from '@users/constants/errors.constant';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
+import { Public } from '@auth/decorators/public.decorator';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -50,6 +55,7 @@ export class AuthController {
     private readonly refreshTokenService: RefreshTokenService,
   ) {}
   @Post('register')
+  @Public()
   @UseInterceptors(SetRefreshTokenCookieInterceptor)
   @ApiOperation({ summary: 'Register new user account' })
   @ApiSuccessResponseDocs({
@@ -77,6 +83,7 @@ export class AuthController {
   }
 
   @Post('/login')
+  @Public()
   @HttpCode(200)
   @UseInterceptors(SetRefreshTokenCookieInterceptor)
   @ApiOperation({ summary: 'Login using credentials' })
@@ -93,6 +100,7 @@ export class AuthController {
   }
 
   @Post('/refresh')
+  @Public()
   @HttpCode(200)
   @UseInterceptors(SetRefreshTokenCookieInterceptor)
   @ApiOperation({
@@ -118,7 +126,7 @@ export class AuthController {
       ttl: 60000,
     },
   })
-  @JwtAuth()
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get current logged in user profile' })
   @ApiSuccessResponseDocs({
     model: User,
