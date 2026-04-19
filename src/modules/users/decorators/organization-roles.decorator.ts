@@ -9,18 +9,24 @@ import { OrganizationRolesGuard } from '@organizations/guards/organization-roles
 
 export const ROLES_KEY = 'organizationRoles';
 
+export const TenantHeader = (required = true) =>
+  ApiHeader({
+    name: TENANT_HEADER_NAME,
+    description:
+      'Tenant/Organization identifier used for multi-tenancy isolation (UUID).',
+    required,
+  });
+
+export const OrganizationPermissionErrorDocs = () =>
+  ApiErrorResponsesDocs({
+    exception: PermissionDeniedException,
+    message: ORGANIZATION_ERRORS.PERMISSION_DENIED,
+  });
+
 export const OrganizationProtected = (...roles: Roles[]) =>
   applyDecorators(
     SetMetadata(ROLES_KEY, roles),
-    ApiHeader({
-      name: TENANT_HEADER_NAME,
-      description:
-        'Tenant/Organization identifier used for multi-tenancy isolation (UUID).',
-      required: true,
-    }),
+    TenantHeader(),
     UseGuards(OrganizationRolesGuard),
-    ApiErrorResponsesDocs({
-      exception: PermissionDeniedException,
-      message: ORGANIZATION_ERRORS.PERMISSION_DENIED,
-    }),
+    OrganizationPermissionErrorDocs,
   );
