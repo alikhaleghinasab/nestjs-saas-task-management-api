@@ -28,6 +28,7 @@
       "@memberships/*": ["modules/memberships/*"],
       "@cache/*": ["modules/cache/*"],
       "@redis/*": ["modules/redis/*"],
+      "@email/*": ["modules/email/*"],
     }
   },
   "exclude": ["node_modules"]
