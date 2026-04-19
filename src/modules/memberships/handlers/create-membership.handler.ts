@@ -18,7 +18,7 @@ export class CreateMembershipHandler implements ICommandHandler<CreateMembership
     await this.membershipService.create({
       organizationId: command.organizationId,
       userId: command.userId,
-      role: Roles.Owner,
+      role: command.role,
     });
   }
 }
