@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateUsersTable1776002682357 implements MigrationInterface {
   private readonly tableName = 'users';
