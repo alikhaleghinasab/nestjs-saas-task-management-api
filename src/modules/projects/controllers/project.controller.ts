@@ -1,7 +1,9 @@
-import { ApiCreate } from '@common/decorators/api-crud.decorator';
+import { ApiCreate, ApiGetMany } from '@common/decorators/api-crud.decorator';
+import { PaginationDto } from '@common/dto/pagination.dto';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
+import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { Roles } from '@memberships/enums/roles.enum';
-import { Body, Controller, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Query, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { OrganizationId } from '@organizations/decorators/organization-id.decorator';
 import { PROJECT_ERRORS } from '@projects/constants/errors.constant';
@@ -19,6 +21,18 @@ const resourceName = 'Project';
 @ApiBearerAuth()
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
+
+  @ApiGetMany({
+    entity: Project,
+    resourceName,
+  })
+  @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
+  async findMany(
+    @Query() dto: PaginationDto,
+    @OrganizationId() organizationId: string,
+  ): Promise<PaginatedResponse<Project>> {
+    return this.projectService.findMany(dto, organizationId);
+  }
 
   @ApiCreate({
     entity: Project,
