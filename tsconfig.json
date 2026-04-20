@@ -30,6 +30,7 @@
       "@redis/*": ["modules/redis/*"],
       "@email/*": ["modules/email/*"],
       "@projects/*": ["modules/projects/*"],
+      "@tasks/*": ["modules/tasks/*"],
     }
   },
   "exclude": ["node_modules"]
