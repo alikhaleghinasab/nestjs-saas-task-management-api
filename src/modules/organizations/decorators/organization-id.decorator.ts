@@ -1,4 +1,9 @@
-import { Headers } from '@nestjs/common';
-import { TENANT_HEADER_NAME } from '@organizations/constants/tenant.constant';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-export const OrganizationId = () => Headers(TENANT_HEADER_NAME);
+export const OrganizationId = createParamDecorator(
+  (_, ctx: ExecutionContext): string => {
+    const req = ctx.switchToHttp().getRequest();
+    const orgId = req['organizationId'];
+    return orgId;
+  },
+);

@@ -4,13 +4,13 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   BadRequestException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
-import { TENANT_HEADER_NAME } from '@organizations/constants/tenant.constant';
+import { PermissionDeniedException } from '@organizations/exceptions/permission-denied.exception';
+import { resolveOrganizationId } from '@organizations/utils/organization-id.resolver';
 import { ROLES_KEY } from '@users/decorators/organization-roles.decorator';
 import { User } from '@users/entities/user.entity';
 import { isUUID } from 'class-validator';
@@ -23,10 +23,10 @@ export class OrganizationRolesGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Roles[]>(
-      ROLES_KEY,
-      [context.getHandler(), context.getClass()],
-    );
+    const requiredRoles = this.reflector.getAllAndOverride<Roles[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
 
     if (!requiredRoles || requiredRoles.length === 0) {
       return true;
@@ -35,16 +35,20 @@ export class OrganizationRolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user: User = request.user;
 
-    const organizationId: string = request.headers[TENANT_HEADER_NAME];
+    let organizationId: string;
+
+    try {
+      organizationId = resolveOrganizationId(request);
+    } catch (e) {
+      throw new BadRequestException(ORGANIZATION_ERRORS.CONTEXT_MISMATCH);
+    }
 
     if (!user || !user.id) {
       throw new UnauthorizedException();
     }
 
     if (!organizationId || !isUUID(organizationId, 7)) {
-      throw new BadRequestException(
-        ORGANIZATION_ERRORS.CONTEXT_MISSING,
-      );
+      throw new BadRequestException(ORGANIZATION_ERRORS.CONTEXT_MISSING);
     }
 
     const userRole = await this.membershipsService.getUserRoleInOrganization(
@@ -53,17 +57,17 @@ export class OrganizationRolesGuard implements CanActivate {
     );
 
     if (!userRole) {
-      throw new ForbiddenException(
-        ORGANIZATION_ERRORS.NOT_A_MEMBER,
-      );
+      throw new PermissionDeniedException(ORGANIZATION_ERRORS.NOT_A_MEMBER);
     }
 
     const hasRole = requiredRoles.includes(userRole);
     if (!hasRole) {
-      throw new ForbiddenException(
+      throw new PermissionDeniedException(
         ORGANIZATION_ERRORS.PERMISSION_DENIED,
       );
     }
+
+    request['organizationId'] = organizationId;
 
     return true;
   }

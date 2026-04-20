@@ -10,7 +10,10 @@ import { PROJECT_ERRORS } from '@projects/constants/errors.constant';
 import { CreateProjectDto } from '@projects/dto/create-project.dto';
 import { Project } from '@projects/entities/project.entity';
 import { ProjectService } from '@projects/services/project.service';
-import { OrganizationProtected } from '@users/decorators/organization-roles.decorator';
+import {
+  OrganizationProtected,
+  TenantHeader,
+} from '@users/decorators/organization-roles.decorator';
 import { CurrentUser } from '@users/decorators/user.decorator';
 
 const resourceName = 'Project';
@@ -19,6 +22,7 @@ const resourceName = 'Project';
 @UseInterceptors(ApiSuccessResponseInterceptor)
 @ApiTags(resourceName)
 @ApiBearerAuth()
+@TenantHeader()
 export class ProjectController {
   constructor(private readonly projectService: ProjectService) {}
 
