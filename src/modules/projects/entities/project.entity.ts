@@ -1,4 +1,5 @@
 import { BaseIdEntity } from '@common/database/entities/base-id.entity';
+import { ApiProperty } from '@nestjs/swagger';
 import { Organization } from '@organizations/entities/organization.entity';
 import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
 
@@ -7,12 +8,15 @@ import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
   unique: true,
 })
 export class Project extends BaseIdEntity {
+  @ApiProperty()
   @Column({ length: 100 })
   name: string;
 
+  @ApiProperty()
   @Column({ type: 'text', nullable: true })
   description?: string;
 
+  @ApiProperty()
   @Column({ type: 'uuid', name: 'organization_id', nullable: false })
   organizationId: string;
 
