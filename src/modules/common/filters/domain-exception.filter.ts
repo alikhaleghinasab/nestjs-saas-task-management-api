@@ -6,7 +6,7 @@ import { GLOBAL_DOMAIN_ERROR_MAP } from '@common/errors/maps/global-domain-error
 import { mergeDomainErrorMaps } from '@common/errors/maps/merge-domain-error-maps';
 import { CORE_DOMAIN_ERROR_MAP } from '@core/errors/errors/core-domain-error-map';
 
-@Catch()
+@Catch(DomainError)
 export class DomainExceptionFilter implements ExceptionFilter {
   constructor(private readonly adapterHost: HttpAdapterHost) {}
 
