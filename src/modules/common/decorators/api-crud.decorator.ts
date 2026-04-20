@@ -92,10 +92,11 @@ export function ApiUpdate(options: ApiUpdateOptions) {
     description = `${resourceName} updated`,
     duplicateErrorMsg,
     extraErrors = [],
+    paramName = 'id',
   } = options;
 
   const decorators: MethodDecorator[] = [
-    Put(':id'),
+    Put(`:${paramName}`),
     HttpCode(200),
     ApiOperation({ summary: `Update ${resourceName}` }),
     ApiSuccessResponseDocs({ description }),
@@ -120,10 +121,11 @@ export function ApiDelete(options: ApiDeleteOptions) {
     description = `${resourceName} deleted`,
     notFoundException = RecordNotFoundException,
     extraErrors = [],
+    paramName = 'id',
   } = options;
 
   return applyDecorators(
-    Delete(':id'),
+    Delete(`:${paramName}`),
     HttpCode(200),
     ApiOperation({ summary: `Delete ${resourceName}` }),
     ApiSuccessResponseDocs({ description }),

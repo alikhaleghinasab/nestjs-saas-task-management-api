@@ -1,39 +1,37 @@
 import { Type } from '@nestjs/common';
 
-interface ApiErrorDoc {
+export interface ApiErrorDoc {
   exception: Type<any>;
   message?: string;
 }
 
-interface ApiBaseOptions {
+export interface ApiBaseOptions {
   resourceName: string;
   description?: string;
   extraErrors?: ApiErrorDoc[];
 }
 
-interface ApiWithEntity {
+export interface ApiGetManyOptions extends ApiBaseOptions {
   entity: Type<any>;
 }
 
-interface ApiWithNotFound {
+export interface ApiGetOneOptions extends ApiBaseOptions {
+  entity: Type<any>;
+  paramName?: string;
   notFoundException?: Type<any>;
 }
 
-interface ApiWithDuplicateMessage {
+export interface ApiCreateOptions extends ApiBaseOptions {
+  entity: Type<any>;
   duplicateErrorMsg?: string;
 }
 
-export interface ApiGetManyOptions extends ApiBaseOptions, ApiWithEntity {}
-
-export interface ApiGetOneOptions
-  extends ApiBaseOptions, ApiWithEntity, ApiWithNotFound {
+export interface ApiUpdateOptions extends ApiBaseOptions {
   paramName?: string;
+  duplicateErrorMsg?: string;
 }
 
-export interface ApiCreateOptions
-  extends ApiBaseOptions, ApiWithEntity, ApiWithDuplicateMessage {}
-
-export interface ApiUpdateOptions
-  extends ApiBaseOptions, ApiWithDuplicateMessage {}
-
-export interface ApiDeleteOptions extends ApiBaseOptions, ApiWithNotFound {}
+export interface ApiDeleteOptions extends ApiBaseOptions {
+  paramName?: string;
+  notFoundException?: Type<any>;
+}
