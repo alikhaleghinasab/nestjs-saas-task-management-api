@@ -1,7 +1,14 @@
 import { BaseIdEntity } from '@common/database/entities/base-id.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Organization } from '@organizations/entities/organization.entity';
-import { Entity, Column, ManyToOne, JoinColumn, Index } from 'typeorm';
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  Index,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity('projects')
 @Index('UQ_projects_organization_id_name', ['organizationId', 'name'], {
@@ -23,4 +30,8 @@ export class Project extends BaseIdEntity {
   @ManyToOne(() => Organization, { nullable: false })
   @JoinColumn({ name: 'organization_id' })
   organization: Organization;
+
+  @ApiProperty({ default: null })
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deleted_at: Date;
 }
