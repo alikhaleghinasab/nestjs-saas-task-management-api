@@ -1,7 +1,7 @@
 import { BaseEntity } from '@common/database/entities/base.entity';
 import { Membership } from '@memberships/entities/membership.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, Index, OneToMany } from 'typeorm';
+import { Column, DeleteDateColumn, Entity, Index, OneToMany } from 'typeorm';
 
 @Entity('organizations')
 export class Organization extends BaseEntity {
@@ -16,4 +16,8 @@ export class Organization extends BaseEntity {
 
   @OneToMany(() => Membership, (membership) => membership.organization)
   memberships: Membership[];
+
+  @ApiProperty({ default: null })
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deleteAt: Date;
 }

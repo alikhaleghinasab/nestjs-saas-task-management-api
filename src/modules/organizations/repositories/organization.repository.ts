@@ -53,6 +53,6 @@ export class OrganizationRepository {
 
   @EnsureAffected()
   async delete(id: string): Promise<boolean> {
-    return await wasAffected(this.repo.delete({ id }));
+    return await wasAffected(this.repo.softDelete({ id }));
   }
 }
