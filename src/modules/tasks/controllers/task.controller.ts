@@ -1,4 +1,8 @@
-import { ApiCreate, ApiGetMany } from '@common/decorators/api-crud.decorator';
+import {
+  ApiCreate,
+  ApiGetMany,
+  ApiGetOne,
+} from '@common/decorators/api-crud.decorator';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
 import { Roles } from '@memberships/enums/roles.enum';
 import { Body, Controller, Query, UseInterceptors } from '@nestjs/common';
@@ -14,7 +18,7 @@ import { Task } from '../entities/task.entity';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
-import { Project } from '@projects/entities/project.entity';
+import { UuidParam } from '@common/decorators/uuid-param.decorator';
 
 const resourceName = 'Task';
 
@@ -36,6 +40,18 @@ export class TaskController {
     @OrganizationId() organizationId: string,
   ): Promise<PaginatedResponse<Task>> {
     return this.taskService.findMany(dto, organizationId);
+  }
+
+  @ApiGetOne({
+    entity: Task,
+    resourceName,
+  })
+  @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
+  async findOne(
+    @UuidParam() id: string,
+    @OrganizationId() organizationId: string,
+  ): Promise<Task> {
+    return this.taskService.findOne(id, organizationId);
   }
 
   @ApiCreate({

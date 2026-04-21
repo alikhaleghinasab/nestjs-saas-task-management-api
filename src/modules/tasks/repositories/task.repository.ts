@@ -7,6 +7,7 @@ import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { withOrg } from '@organizations/utils/with-org.util';
 import { paginate } from '@common/utils/database/paginate.util';
+import { EnsureFound } from '@common/decorators/ensure-found.decorator';
 
 @Injectable()
 export class TaskRepository {
@@ -20,6 +21,11 @@ export class TaskRepository {
     organizationId: string,
   ): Promise<PaginatedResponse<Task>> {
     return paginate(this.repo, dto, withOrg({}, organizationId));
+  }
+
+  @EnsureFound()
+  async findOne(id: string, organizationId: string): Promise<Task> {
+    return this.repo.findOneBy(withOrg({ id }, organizationId));
   }
 
   async create(data: CreateTaskInterface): Promise<Task> {

@@ -17,6 +17,10 @@ export class TaskService {
     return this.taskRepository.findMany(dto, organizationId);
   }
 
+  async findOne(id: string, organizationId): Promise<Task> {
+    return this.taskRepository.findOne(id, organizationId);
+  }
+
   async create(
     dto: CreateTaskDto,
     userId: string,
