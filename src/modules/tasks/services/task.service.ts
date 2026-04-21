@@ -5,6 +5,7 @@ import { Task } from '../entities/task.entity';
 import { TaskStatus } from '../enums/task.enum';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
+import { UpdateTaskDto } from '@tasks/dto/update-task.dto';
 
 @Injectable()
 export class TaskService {
@@ -32,5 +33,13 @@ export class TaskService {
       createdBy: userId,
       organizationId,
     });
+  }
+
+  async update(
+    id: string,
+    organizationId: string,
+    dto: UpdateTaskDto,
+  ): Promise<boolean> {
+    return await this.taskRepository.update(id, organizationId, dto);
   }
 }

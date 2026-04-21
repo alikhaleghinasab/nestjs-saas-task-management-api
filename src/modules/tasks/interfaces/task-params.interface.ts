@@ -1,6 +1,6 @@
 import { TaskPriority, TaskStatus } from '../enums/task.enum';
 
-export interface CreateTaskInterface {
+export interface CreateTaskParams {
   title: string;
   description?: string;
   status: TaskStatus;
@@ -11,3 +11,5 @@ export interface CreateTaskInterface {
   assigneeId?: string;
   createdBy: string;
 }
+
+export type UpdateTaskParams = Partial<CreateTaskParams>;

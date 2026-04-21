@@ -2,6 +2,7 @@ import {
   ApiCreate,
   ApiGetMany,
   ApiGetOne,
+  ApiUpdate,
 } from '@common/decorators/api-crud.decorator';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
 import { Roles } from '@memberships/enums/roles.enum';
@@ -11,6 +12,7 @@ import { OrganizationId } from '@organizations/decorators/organization-id.decora
 import {
   OrganizationProtected,
   TenantHeader,
+  TenantParam,
 } from '@users/decorators/organization-roles.decorator';
 import { CurrentUser } from '@users/decorators/user.decorator';
 import { TaskService } from '../services/task.service';
@@ -19,6 +21,7 @@ import { CreateTaskDto } from '../dto/create-task.dto';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { UuidParam } from '@common/decorators/uuid-param.decorator';
+import { UpdateTaskDto } from '@tasks/dto/update-task.dto';
 
 const resourceName = 'Task';
 
@@ -65,5 +68,17 @@ export class TaskController {
     @OrganizationId() organizationId: string,
   ): Promise<Task> {
     return this.taskService.create(dto, userId, organizationId);
+  }
+
+  @ApiUpdate({
+    resourceName,
+  })
+  @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
+  async update(
+    @UuidParam() id: string,
+    @OrganizationId() organizationId: string,
+    @Body() dto: UpdateTaskDto,
+  ): Promise<void> {
+    await this.taskService.update(id, organizationId, dto);
   }
 }
