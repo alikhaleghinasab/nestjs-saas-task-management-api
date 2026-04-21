@@ -13,6 +13,8 @@ import { paginate } from '@common/utils/database/paginate.util';
 import { EnsureFound } from '@common/decorators/ensure-found.decorator';
 import { EnsureAffected } from '@common/decorators/ensure-affected.decorator';
 import { wasAffected } from '@common/utils/database/ensure-affected.util';
+import { CatchUniqueConstraint } from '@common/decorators/catch-unique-constraint.decorator';
+import { TASK_ERRORS } from '@tasks/constants/errors.constant';
 
 @Injectable()
 export class TaskRepository {
@@ -33,11 +35,13 @@ export class TaskRepository {
     return this.repo.findOneBy(withOrg({ id }, organizationId));
   }
 
+  @CatchUniqueConstraint(TASK_ERRORS.TASK_EXISTS)
   async create(data: CreateTaskParams): Promise<Task> {
     const task = this.repo.create(data);
     return this.repo.save(task);
   }
 
+  @CatchUniqueConstraint(TASK_ERRORS.TASK_EXISTS)
   @EnsureAffected()
   async update(
     id: string,
