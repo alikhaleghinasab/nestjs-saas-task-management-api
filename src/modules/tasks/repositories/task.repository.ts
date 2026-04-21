@@ -52,6 +52,6 @@ export class TaskRepository {
 
   @EnsureAffected()
   async delete(id: string, organizationId: string): Promise<boolean> {
-    return wasAffected(this.repo.delete(withOrg({ id }, organizationId)));
+    return wasAffected(this.repo.softDelete(withOrg({ id }, organizationId)));
   }
 }

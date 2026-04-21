@@ -1,4 +1,4 @@
-import { Entity, Column, Index } from 'typeorm';
+import { Entity, Column, Index, DeleteDateColumn } from 'typeorm';
 import { TaskPriority, TaskStatus } from '../enums/task.enum';
 import { BaseEntity } from '@common/database/entities/base.entity';
 import { ApiProperty } from '@nestjs/swagger';
@@ -53,4 +53,8 @@ export class Task extends BaseEntity {
   @ApiProperty()
   @Column({ name: 'created_by', type: 'uuid', nullable: true })
   createdBy?: string;
+
+  @ApiProperty({ default: null })
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deleted_at: Date;
 }
