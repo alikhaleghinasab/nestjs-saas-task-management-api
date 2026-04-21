@@ -13,6 +13,7 @@ import {
 @Entity('projects')
 @Index('UQ_projects_organization_id_name', ['organizationId', 'name'], {
   unique: true,
+  where: 'deleted_at IS NULL',
 })
 export class Project extends BaseIdEntity {
   @ApiProperty()
