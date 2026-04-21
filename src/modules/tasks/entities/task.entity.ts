@@ -3,6 +3,16 @@ import { TaskPriority, TaskStatus } from '../enums/task.enum';
 import { BaseEntity } from '@common/database/entities/base.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
+@Index('idx_tasks_org_project', ['organizationId', 'projectId'], {
+  where: 'deleted_at IS NULL',
+})
+@Index('idx_tasks_org_assignee', ['organizationId', 'assigneeId'], {
+  where: 'deleted_at IS NULL',
+})
+@Index('idx_tasks_org_title', ['organizationId', 'title'], {
+  unique: true,
+  where: 'deleted_at IS NULL',
+})
 @Entity('tasks')
 export class Task extends BaseEntity {
   @ApiProperty()
@@ -14,7 +24,9 @@ export class Task extends BaseEntity {
   description?: string;
 
   @ApiProperty()
-  @Index()
+  @Index({
+    where: 'deleted_at IS NULL',
+  })
   @Column({
     type: 'enum',
     enum: TaskStatus,
@@ -36,17 +48,14 @@ export class Task extends BaseEntity {
   dueDate?: Date;
 
   @ApiProperty()
-  @Index()
   @Column({ name: 'assignee_id', type: 'uuid', nullable: true })
   assigneeId?: string;
 
   @ApiProperty()
-  @Index()
   @Column({ name: 'organization_id', type: 'uuid' })
   organizationId: string;
 
   @ApiProperty()
-  @Index()
   @Column({ name: 'project_id', type: 'uuid' })
   projectId: string;
 
