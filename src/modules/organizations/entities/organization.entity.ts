@@ -10,7 +10,10 @@ export class Organization extends BaseEntity {
   name: string;
 
   @ApiProperty()
-  @Index('idx_organizations_slug', { unique: true })
+  @Index('idx_organizations_slug', {
+    unique: true,
+    where: 'deleted_at IS NULL',
+  })
   @Column({ type: 'varchar', length: 80 })
   slug: string;
 
