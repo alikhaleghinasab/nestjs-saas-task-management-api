@@ -1,6 +1,6 @@
 import { BaseEntity } from '@common/database/entities/base.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, Index } from 'typeorm';
+import { Entity, Column, Index, DeleteDateColumn } from 'typeorm';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -38,4 +38,8 @@ export class User extends BaseEntity {
   @ApiProperty()
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive: boolean;
+
+  @ApiProperty({ default: null })
+  @DeleteDateColumn({ name: 'deleted_at' })
+  deletedAt?: Date;
 }
