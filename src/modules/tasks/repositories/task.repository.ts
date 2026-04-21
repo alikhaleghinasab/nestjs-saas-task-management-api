@@ -15,6 +15,7 @@ import { EnsureAffected } from '@common/decorators/ensure-affected.decorator';
 import { wasAffected } from '@common/utils/database/ensure-affected.util';
 import { CatchUniqueConstraint } from '@common/decorators/catch-unique-constraint.decorator';
 import { TASK_ERRORS } from '@tasks/constants/errors.constant';
+import { CatchForeignKeyConstraint } from '@common/decorators/catch-foreign-key.decorator';
 
 @Injectable()
 export class TaskRepository {
@@ -35,12 +36,20 @@ export class TaskRepository {
     return this.repo.findOneBy(withOrg({ id }, organizationId));
   }
 
+  @CatchForeignKeyConstraint({
+    project_id: 'project',
+    assignee_id: 'assigned user',
+  })
   @CatchUniqueConstraint(TASK_ERRORS.TASK_EXISTS)
   async create(data: CreateTaskParams): Promise<Task> {
     const task = this.repo.create(data);
     return this.repo.save(task);
   }
 
+  @CatchForeignKeyConstraint({
+    project_id: 'project',
+    assignee_id: 'assigned user',
+  })
   @CatchUniqueConstraint(TASK_ERRORS.TASK_EXISTS)
   @EnsureAffected()
   async update(
