@@ -42,4 +42,8 @@ export class TaskService {
   ): Promise<boolean> {
     return await this.taskRepository.update(id, organizationId, dto);
   }
+
+  async delete(id: string, organizationId: string): Promise<boolean> {
+    return this.taskRepository.delete(id, organizationId);
+  }
 }

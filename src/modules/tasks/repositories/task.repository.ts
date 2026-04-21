@@ -49,4 +49,9 @@ export class TaskRepository {
       this.repo.update(withOrg({ id }, organizationId), task),
     );
   }
+
+  @EnsureAffected()
+  async delete(id: string, organizationId: string): Promise<boolean> {
+    return wasAffected(this.repo.delete(withOrg({ id }, organizationId)));
+  }
 }

@@ -1,5 +1,6 @@
 import {
   ApiCreate,
+  ApiDelete,
   ApiGetMany,
   ApiGetOne,
   ApiUpdate,
@@ -12,7 +13,6 @@ import { OrganizationId } from '@organizations/decorators/organization-id.decora
 import {
   OrganizationProtected,
   TenantHeader,
-  TenantParam,
 } from '@users/decorators/organization-roles.decorator';
 import { CurrentUser } from '@users/decorators/user.decorator';
 import { TaskService } from '../services/task.service';
@@ -80,5 +80,16 @@ export class TaskController {
     @Body() dto: UpdateTaskDto,
   ): Promise<void> {
     await this.taskService.update(id, organizationId, dto);
+  }
+
+  @ApiDelete({
+    resourceName,
+  })
+  @OrganizationProtected(Roles.Owner, Roles.Admin)
+  async delete(
+    @UuidParam('id') id: string,
+    @OrganizationId() organizationId: string,
+  ): Promise<void> {
+    await this.taskService.delete(id, organizationId);
   }
 }
