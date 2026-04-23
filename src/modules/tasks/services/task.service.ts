@@ -3,16 +3,16 @@ import { TaskRepository } from '../repositories/task.repository';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { Task } from '../entities/task.entity';
 import { TaskStatus } from '../enums/task.enum';
-import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { UpdateTaskDto } from '@tasks/dto/update-task.dto';
+import { DynamicFilterDto } from '@common/dto/dynamic-filter.dto';
 
 @Injectable()
 export class TaskService {
   constructor(private readonly taskRepository: TaskRepository) {}
 
   async findMany(
-    dto: PaginationDto,
+    dto: DynamicFilterDto,
     organizationId: string,
   ): Promise<PaginatedResponse<Task>> {
     return this.taskRepository.findMany(dto, organizationId);

@@ -18,18 +18,20 @@ import { CurrentUser } from '@users/decorators/user.decorator';
 import { TaskService } from '../services/task.service';
 import { Task } from '../entities/task.entity';
 import { CreateTaskDto } from '../dto/create-task.dto';
-import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { UuidParam } from '@common/decorators/uuid-param.decorator';
 import { UpdateTaskDto } from '@tasks/dto/update-task.dto';
+import { DynamicFilterDto } from '@common/dto/dynamic-filter.dto';
+import { ApiDynamicFilters } from '@common/decorators/api-dynamic-filters.decorator';
 
 const resourceName = 'Task';
 
 @Controller('tasks')
-@UseInterceptors(ApiSuccessResponseInterceptor)
 @ApiTags(resourceName)
 @ApiBearerAuth()
 @TenantHeader()
+@ApiDynamicFilters()
+@UseInterceptors(ApiSuccessResponseInterceptor)
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
@@ -39,7 +41,7 @@ export class TaskController {
   })
   @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   async findMany(
-    @Query() dto: PaginationDto,
+    @Query() dto: DynamicFilterDto,
     @OrganizationId() organizationId: string,
   ): Promise<PaginatedResponse<Task>> {
     return this.taskService.findMany(dto, organizationId);
