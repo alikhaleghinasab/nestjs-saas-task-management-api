@@ -12,7 +12,7 @@ import { TasksModule } from '@tasks/tasks.module';
     MembershipModule,
     ProjectsModule,
     TasksModule,
-    CacheModule.forRoot({ driver: CacheDriver.REDIS }),
+    CacheModule.forRoot({ driver: CacheDriver.IN_MEMORY }),
   ],
   controllers: [],
   providers: [],
