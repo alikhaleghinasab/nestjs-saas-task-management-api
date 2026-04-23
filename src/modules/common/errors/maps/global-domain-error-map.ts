@@ -7,6 +7,8 @@ import { RecordNotFoundException } from '../../exceptions/record-not-found.excep
 import { UniqueConstraintException } from '../../exceptions/unique-constraint.exception';
 import { ForeignKeyConstraintError } from '../domain/foreign-key-constraint.error';
 import { ForeignKeyConstraintException } from '../../exceptions/foreign-key-constraint.exception';
+import { DynamicFilterInvalidDataError } from '../domain/dynamic-filter-invalid-data.error';
+import { DynamicFilterInvalidDataException } from '@common/exceptions/dynamic-filter-invalid-data.exception';
 
 export const GLOBAL_DOMAIN_ERROR_MAP: DomainErrorMap = [
   {
@@ -20,5 +22,9 @@ export const GLOBAL_DOMAIN_ERROR_MAP: DomainErrorMap = [
   {
     domain: ForeignKeyConstraintError,
     toHttp: (e) => new ForeignKeyConstraintException(e.message),
+  },
+  {
+    domain: DynamicFilterInvalidDataError,
+    toHttp: (e) => new DynamicFilterInvalidDataException(e.message),
   },
 ];
