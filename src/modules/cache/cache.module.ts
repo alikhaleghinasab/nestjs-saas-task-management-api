@@ -3,6 +3,7 @@ import { resolveCacheImports, resolveCacheProviders } from './cache.resolver';
 import { CacheModuleOptions } from './cache.interface';
 import { createDynamicModule } from '@common/utils/dynamic-module.factory';
 import { CacheHelper } from './cache.helper';
+import { CacheVersionService } from './cache-version.service';
 
 const { BaseModule, MODULE_OPTIONS_TOKEN } =
   createDynamicModule<CacheModuleOptions>({
@@ -11,7 +12,7 @@ const { BaseModule, MODULE_OPTIONS_TOKEN } =
   });
 
 @Module({
-  providers: [CacheHelper],
-  exports: [CacheHelper],
+  providers: [CacheHelper, CacheVersionService],
+  exports: [CacheHelper, CacheVersionService],
 })
 export class CacheModule extends BaseModule {}
