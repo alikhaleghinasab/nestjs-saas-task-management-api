@@ -1,1 +1,2 @@
 export const MESSAGE_PUBLISHER = Symbol('MESSAGE_PUBLISHER');
+export const MESSAGE_CONSUMER = Symbol('MESSAGE_CONSUMER');
