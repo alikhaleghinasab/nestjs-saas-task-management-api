@@ -27,7 +27,6 @@ import { OrganizationPublisher } from './messaging/pulishers/organization.publis
     EmailModule,
     MembershipModule,
     MessagingModule,
-    RabbitMQModule,
   ],
   providers: [
     AcceptInvitationHandler,

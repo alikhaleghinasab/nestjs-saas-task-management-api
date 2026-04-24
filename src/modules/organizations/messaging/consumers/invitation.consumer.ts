@@ -1,34 +1,21 @@
-import { RabbitMQService } from '@rabbitmq/channel/rabbitmq.service';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { OrganizationEvents } from '../events/organization.events';
 import { UserInvitedHandler } from '../handlers/user-invited.handler';
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import { userInvitedEmailQueue } from '../rabbitmq.topology';
+import { MessageConsumer } from '@messaging/messaging-consumer.interface';
+import { MESSAGE_CONSUMER } from '@messaging/messaging.constant';
 
 @Injectable()
 export class InvitationConsumer implements OnModuleInit {
-  private readonly QUEUE = userInvitedEmailQueue;
-
   constructor(
-    private readonly rabbit: RabbitMQService,
+    @Inject(MESSAGE_CONSUMER)
+    private readonly consumer: MessageConsumer,
     private readonly handler: UserInvitedHandler,
   ) {}
 
   async onModuleInit() {
-    await this.rabbit.waitForConnection();
-    const channel = this.rabbit.getChannel();
-
-    await channel.prefetch(10);
-
-    await channel.consume(this.QUEUE, async (msg) => {
-      if (!msg) return;
-
-      const payload = JSON.parse(msg.content.toString());
-
-      try {
-        await this.handler.handle(payload);
-        channel.ack(msg);
-      } catch (err) {
-        channel.nack(msg, false, true);
-      }
-    });
+    await this.consumer.subscribe(
+      OrganizationEvents.USER_INVITED,
+      this.handler.handle.bind(this.handler),
+    );
   }
 }
