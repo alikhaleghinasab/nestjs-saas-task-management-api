@@ -4,7 +4,7 @@ import { HttpAdapterHost } from '@nestjs/core';
 
 import { GLOBAL_DOMAIN_ERROR_MAP } from '@common/errors/maps/global-domain-error-map';
 import { mergeDomainErrorMaps } from '@common/errors/maps/merge-domain-error-maps';
-import { CORE_DOMAIN_ERROR_MAP } from '@core/errors/errors/core-domain-error-map';
+import { CORE_DOMAIN_ERROR_MAP } from '@core/errors/core-domain-error-map';
 
 @Catch(DomainError)
 export class DomainExceptionFilter implements ExceptionFilter {
