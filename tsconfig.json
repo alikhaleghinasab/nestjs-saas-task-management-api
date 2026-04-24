@@ -30,7 +30,9 @@
       "@redis/*": ["modules/redis/*"],
       "@email/*": ["modules/email/*"],
       "@projects/*": ["modules/projects/*"],
-      "@tasks/*": ["modules/tasks/*"],
+      "@rabbitmq/*": ["modules/rabbitmq/*"],
+      "@messaging/*": ["modules/messaging/*"],
+      "@tasks/*": ["modules/tasks/*"]
     }
   },
   "exclude": ["node_modules"]

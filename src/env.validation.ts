@@ -2,6 +2,7 @@ import * as Joi from 'joi';
 import { typeormConfigValidationSchema } from '@database/typeorm-config.validation';
 import { authConfigValidationSchema } from '@auth/configs/auth-config.validation';
 import { redisConfigValidationSchema } from '@redis/redis-config.validation';
+import { rabbitmqConfigValidationSchema } from '@rabbitmq/config/rabbitmq-config.validation';
 
 export const configValidationSchema = Joi.object({
   APP_PORT: Joi.number(),
@@ -14,4 +15,5 @@ export const configValidationSchema = Joi.object({
   ...typeormConfigValidationSchema,
   ...authConfigValidationSchema,
   ...redisConfigValidationSchema,
+  ...rabbitmqConfigValidationSchema,
 });
