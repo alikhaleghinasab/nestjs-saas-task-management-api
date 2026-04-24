@@ -21,6 +21,7 @@ export const organizationRabbitMQTopology: RabbitMQTopology = {
     {
       name: userInvitedEmailQueue,
       durable: true,
+      deadLetter: true,
     },
   ],
 } as const;

@@ -7,6 +7,7 @@ interface RabbitMQExchange {
 interface RabbitMQQueue {
   name: string;
   durable?: boolean;
+  deadLetter?: boolean;
 }
 
 interface RabbitMQBinding {

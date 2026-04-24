@@ -1,5 +1,8 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { RABBITMQ_TOPOLOGY } from '../constants/rabbitmq.constant';
+import {
+  RABBITMQ_GLOBAL_DLX,
+  RABBITMQ_TOPOLOGY,
+} from '../constants/rabbitmq.constant';
 import { RabbitMQTopology } from './rabbitmq-topology.interface';
 import { RabbitMQService } from '../channel/rabbitmq.service';
 
@@ -22,8 +25,28 @@ export class RabbitMQTopologyInitializer implements OnModuleInit {
     }
 
     for (const queue of this.topology.queues) {
+      const args: Record<string, any> = {};
+
+      if (queue.deadLetter) {
+        const dlx = RABBITMQ_GLOBAL_DLX;
+
+        await channel.assertExchange(dlx, 'topic', { durable: true });
+
+        const dlqName = `${queue.name}.dlq`;
+
+        await channel.assertQueue(dlqName, {
+          durable: true,
+        });
+
+        await channel.bindQueue(dlqName, dlx, queue.name);
+
+        args['x-dead-letter-exchange'] = dlx;
+        args['x-dead-letter-routing-key'] = queue.name;
+      }
+
       await channel.assertQueue(queue.name, {
         durable: queue.durable,
+        arguments: args,
       });
     }
 

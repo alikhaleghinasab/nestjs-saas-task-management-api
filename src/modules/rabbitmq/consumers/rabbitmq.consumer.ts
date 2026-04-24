@@ -35,7 +35,7 @@ export class RabbitMQConsumer implements MessageConsumer {
         await handler(payload);
         channel.ack(msg);
       } catch (err) {
-        channel.nack(msg, false, true);
+        channel.nack(msg, false, false);
       }
     });
   }
