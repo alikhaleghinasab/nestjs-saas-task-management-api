@@ -11,11 +11,8 @@ import { rabbitMQTopology } from '@core/messaging/rabbitmq.topology';
 import { RabbitMQTopologyInitializer } from './topology/rabbitmq-topology.initializer';
 import { rabbitMQRegistry } from '@core/messaging/rabbitmq.registry';
 import { RabbitMQConnectionManager } from './connection/rabbitmq-connection.manager';
+import { RabbitMQConsumer } from './consumers/rabbitmq.consumer';
 
-const RabbitMQRegistry = {
-  provide: RABBITMQ_REGISTRY,
-  useValue: rabbitMQRegistry,
-};
 @Module({
   imports: [ConfigModule.forFeature(rabbitMQConfig)],
   providers: [
@@ -23,12 +20,21 @@ const RabbitMQRegistry = {
     RabbitMQTopologyInitializer,
     RabbitMQConnectionManager,
     RabbitMQPublisher,
+    RabbitMQConsumer,
     {
       provide: RABBITMQ_TOPOLOGY,
       useValue: rabbitMQTopology,
     },
-    RabbitMQRegistry,
+    {
+      provide: RABBITMQ_REGISTRY,
+      useValue: rabbitMQRegistry,
+    },
   ],
-  exports: [RabbitMQService, RabbitMQPublisher, RabbitMQRegistry],
+  exports: [
+    RabbitMQService,
+    RabbitMQPublisher,
+    RabbitMQConsumer,
+    RABBITMQ_REGISTRY,
+  ],
 })
 export class RabbitMQModule {}
