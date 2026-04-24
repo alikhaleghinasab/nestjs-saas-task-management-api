@@ -6,8 +6,6 @@ import {
 import { InvitationRepository } from '@organizations/repositories/invitation.repository';
 import { InviteUserDto } from '@organizations/dto/invite-user.dto';
 import { Invitation } from '@organizations/entities/invitation.entity';
-import { EmailService } from '@email/services/email.service';
-import { ConfigService } from '@nestjs/config';
 import { InvitationPreviewDto } from '@organizations/dto/invitation-perview.dto';
 import { User } from '@users/entities/user.entity';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
@@ -17,14 +15,14 @@ import { CreateMembershipCommand } from '@memberships/commands/create-membership
 import { InvitationStatus } from '@organizations/enums/invitation-status.enum';
 import { AcceptInvitationDto } from '@organizations/dto/accept-invitation.dto';
 import { Transactional } from 'typeorm-transactional';
+import { OrganizationPublisher } from '@organizations/messaging/pulishers/organization.publisher';
 
 @Injectable()
 export class InvitationService {
   constructor(
     private readonly invitationRepository: InvitationRepository,
-    private readonly emailService: EmailService,
-    private readonly configService: ConfigService,
     private readonly commandBus: CommandBus,
+    private readonly organizationPublisher: OrganizationPublisher,
   ) {}
 
   async inviteUser(
@@ -38,11 +36,9 @@ export class InvitationService {
       organizationId,
     });
 
-    const baseUrl = this.configService.get<string>('app.url');
-    const url = `${baseUrl}/invitation?token=${token}`;
-    this.emailService.send(invitation.email, {
-      subject: 'Invitation',
-      content: `You have been invited. Accept here: ${url}`,
+    await this.organizationPublisher.userInvited({
+      email: invitation.email,
+      invitationToken: invitation.invitationToken,
     });
 
     return invitation;

@@ -24,7 +24,10 @@ import { InvitationPreviewDto } from '@organizations/dto/invitation-perview.dto'
 import { InviteUserDto } from '@organizations/dto/invite-user.dto';
 import { Invitation } from '@organizations/entities/invitation.entity';
 import { InvitationService } from '@organizations/services/invitation.service';
-import { OrganizationProtected } from '@users/decorators/organization-roles.decorator';
+import {
+  OrganizationProtected,
+  TenantHeader,
+} from '@users/decorators/organization-roles.decorator';
 import { CurrentUser } from '@users/decorators/user.decorator';
 import { User } from '@users/entities/user.entity';
 
@@ -44,6 +47,7 @@ export class InvitationController {
     model: Invitation,
     description: 'Invitation created and sent to the user',
   })
+  @TenantHeader()
   @OrganizationProtected(Roles.Owner, Roles.Admin)
   async inviteUser(
     @Body() dto: InviteUserDto,
