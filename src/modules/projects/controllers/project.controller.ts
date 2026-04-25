@@ -13,7 +13,7 @@ import { ProjectService } from '@projects/services/project.service';
 import {
   OrganizationProtected,
   TenantHeader,
-} from '@users/decorators/organization-roles.decorator';
+} from '@organizations/decorators/organization-roles.decorator';
 import { CurrentUser } from '@users/decorators/user.decorator';
 
 const resourceName = 'Project';

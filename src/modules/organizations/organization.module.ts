@@ -16,7 +16,6 @@ import { AcceptInvitationHandler } from './handlers/accept-invitation.handler';
 import { MessagingModule } from '@messaging/messaging.module';
 import { InvitationConsumer } from './messaging/consumers/invitation.consumer';
 import { UserInvitedHandler } from './messaging/handlers/user-invited.handler';
-import { RabbitMQModule } from '@rabbitmq/rabbitmq.module';
 import { OrganizationPublisher } from './messaging/pulishers/organization.publisher';
 
 @Module({

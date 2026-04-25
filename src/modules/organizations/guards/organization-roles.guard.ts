@@ -11,7 +11,7 @@ import { Reflector } from '@nestjs/core';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 import { PermissionDeniedException } from '@organizations/exceptions/permission-denied.exception';
 import { resolveOrganizationId } from '@organizations/utils/organization-id.resolver';
-import { ROLES_KEY } from '@users/decorators/organization-roles.decorator';
+import { ROLES_KEY } from '@organizations/decorators/organization-roles.decorator';
 import { User } from '@users/entities/user.entity';
 import { isUUID } from 'class-validator';
 

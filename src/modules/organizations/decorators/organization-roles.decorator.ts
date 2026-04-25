@@ -1,11 +1,6 @@
 import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs.decorator';
 import { Roles } from '@memberships/enums/roles.enum';
-import {
-  applyDecorators,
-  ForbiddenException,
-  SetMetadata,
-  UseGuards,
-} from '@nestjs/common';
+import { applyDecorators, SetMetadata } from '@nestjs/common';
 import { ApiHeader, ApiParam } from '@nestjs/swagger';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 import {
@@ -13,7 +8,6 @@ import {
   TENANT_PARAM_NAME,
 } from '@organizations/constants/tenant.constant';
 import { PermissionDeniedException } from '@organizations/exceptions/permission-denied.exception';
-import { OrganizationRolesGuard } from '@organizations/guards/organization-roles.guard';
 
 export const ROLES_KEY = 'organizationRoles';
 
@@ -42,6 +36,5 @@ export const OrganizationPermissionErrorDocs = () =>
 export const OrganizationProtected = (...roles: Roles[]) =>
   applyDecorators(
     SetMetadata(ROLES_KEY, roles),
-    UseGuards(OrganizationRolesGuard),
     OrganizationPermissionErrorDocs(),
   );

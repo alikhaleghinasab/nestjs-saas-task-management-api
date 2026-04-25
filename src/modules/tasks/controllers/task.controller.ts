@@ -13,7 +13,7 @@ import { OrganizationId } from '@organizations/decorators/organization-id.decora
 import {
   OrganizationProtected,
   TenantHeader,
-} from '@users/decorators/organization-roles.decorator';
+} from '@organizations/decorators/organization-roles.decorator';
 import { CurrentUser } from '@users/decorators/user.decorator';
 import { TaskService } from '../services/task.service';
 import { Task } from '../entities/task.entity';

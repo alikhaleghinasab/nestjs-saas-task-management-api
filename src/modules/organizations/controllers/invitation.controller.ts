@@ -27,7 +27,7 @@ import { InvitationService } from '@organizations/services/invitation.service';
 import {
   OrganizationProtected,
   TenantHeader,
-} from '@users/decorators/organization-roles.decorator';
+} from '@organizations/decorators/organization-roles.decorator';
 import { CurrentUser } from '@users/decorators/user.decorator';
 import { User } from '@users/entities/user.entity';
 

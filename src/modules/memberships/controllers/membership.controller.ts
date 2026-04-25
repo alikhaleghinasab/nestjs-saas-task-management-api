@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OrganizationId } from '@organizations/decorators/organization-id.decorator';
-import { OrganizationProtected } from '@users/decorators/organization-roles.decorator';
+import { OrganizationProtected } from '@organizations/decorators/organization-roles.decorator';
 
 @Controller('memberships')
 @UseInterceptors(ApiSuccessResponseInterceptor)

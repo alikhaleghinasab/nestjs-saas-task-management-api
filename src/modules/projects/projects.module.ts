@@ -4,10 +4,9 @@ import { Project } from './entities/project.entity';
 import { ProjectController } from './controllers/project.controller';
 import { ProjectService } from './services/project.service';
 import { ProjectRepository } from './repositories/project.repository';
-import { MembershipModule } from '@memberships/membership.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Project]), MembershipModule],
+  imports: [TypeOrmModule.forFeature([Project])],
   controllers: [ProjectController],
   providers: [ProjectService, ProjectRepository],
 })
