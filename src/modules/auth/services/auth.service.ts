@@ -23,30 +23,48 @@ export class AuthService {
   @Transactional()
   async register(dto: RegisterDto): Promise<TokensOutputDto> {
     const user = await this.createUserWithHashedPassword(dto);
+    return this.generateUserTokens(user.id);
+  }
+
+  async login(dto: LoginDto): Promise<TokensOutputDto> {
+    const user = await this.getActiveUserByEmail(dto.email);
+
+    await this.validatePassword(dto.password, user.password);
 
     return this.generateUserTokens(user.id);
   }
 
-  async login(dto: LoginDto) {
-    const invalid = new InvalidCredentialsException();
+  private async getActiveUserByEmail(email: string) {
+    const user = await this.userService.findUserForAuth({ email });
 
-    const user = await this.userService.findUserForAuth({
-      email: dto.email,
-    });
-    if (!user) throw invalid;
-    if (!user.isActive) throw new ForbiddenException(USER_ERRORS.USER_BANNED);
+    if (!user) {
+      throw new InvalidCredentialsException();
+    }
 
+    if (!user.isActive) {
+      throw new ForbiddenException(USER_ERRORS.USER_BANNED);
+    }
+
+    return user;
+  }
+
+  private async validatePassword(
+    plainPassword: string,
+    hashedPassword: string,
+  ): Promise<void> {
     const passwordMatch = await this.bcryptHasher.compare(
-      dto.password,
-      user.password,
+      plainPassword,
+      hashedPassword,
     );
-    if (!passwordMatch) throw invalid;
 
-    return this.refreshTokenService.generateTokens(user.id);
+    if (!passwordMatch) {
+      throw new InvalidCredentialsException();
+    }
   }
 
   private async createUserWithHashedPassword(dto: RegisterDto) {
     const { saltRounds }: AuthConfigType = this.configService.get('auth');
+
     const hashedPassword = await this.bcryptHasher.hash(
       dto.password,
       saltRounds,
@@ -58,7 +76,7 @@ export class AuthService {
     });
   }
 
-  private async generateUserTokens(userId: string) {
+  private async generateUserTokens(userId: string): Promise<TokensOutputDto> {
     return this.refreshTokenService.generateTokens(userId);
   }
 }
