@@ -20,13 +20,4 @@ export class RegisterDto extends AuthCredentialsDto {
   @IsNotEmpty()
   @MaxLength(100)
   readonly lastName: string;
-
-  @ApiPropertyOptional({
-    description:
-      'Invitation token used to join an organization during registration',
-    format: 'uuid',
-  })
-  @IsUUID()
-  @IsOptional()
-  readonly invitationToken?: string;
 }
