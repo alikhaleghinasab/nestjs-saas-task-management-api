@@ -14,8 +14,8 @@ export class RabbitMQConnectionManager
 {
   private readonly logger = new Logger(RabbitMQConnectionManager.name);
 
-  private static readonly MAX_RECONNECT_ATTEMPTS = 3;
-  private static readonly BASE_DELAY_MS = 1000;
+  private static readonly MAX_RECONNECT_ATTEMPTS = 5;
+  private static readonly BASE_DELAY_MS = 5000;
 
   private connection?: amqp.Connection;
   private channel?: amqp.Channel;
@@ -119,10 +119,12 @@ export class RabbitMQConnectionManager
   }
 
   private calculateBackoffDelay(): number {
-    return (
-      RabbitMQConnectionManager.BASE_DELAY_MS *
-      2 ** (this.reconnectAttempts - 1)
-    );
+    const base = RabbitMQConnectionManager.BASE_DELAY_MS;
+    const attempt = this.reconnectAttempts;
+    const exponential = base * 2 ** (attempt - 1);
+    const maxDelay = 60000;
+    const jitter = exponential * (Math.random() * 0.2 - 0.1); // ±10%
+    return Math.min(exponential + jitter, maxDelay);
   }
 
   private attachListeners(): void {
