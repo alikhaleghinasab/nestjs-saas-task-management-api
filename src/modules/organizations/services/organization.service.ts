@@ -5,17 +5,15 @@ import { CreateOrganizationDto } from '@organizations/dto/create-organization.dt
 import { UpdateOrganizationDto } from '@organizations/dto/update-organization.dto';
 import { Organization } from '@organizations/entities/organization.entity';
 import { OrganizationRepository } from '@organizations/repositories/organization.repository';
-import { CommandBus } from '@nestjs/cqrs';
-import { DeleteMembershipCommand } from '@memberships/commands/delete-membership.command';
 import { Transactional } from 'typeorm-transactional';
 import { Roles } from '@memberships/enums/roles.enum';
-import { CreateMembershipCommand } from '@memberships/commands/create-membership.command';
+import { MembershipService } from '@memberships/services/membership.service';
 
 @Injectable()
 export class OrganizationService {
   constructor(
     private readonly organizationRepository: OrganizationRepository,
-    private readonly commandBus: CommandBus,
+    private readonly membershipService: MembershipService,
   ) {}
 
   async findMany(
@@ -35,9 +33,11 @@ export class OrganizationService {
     userId: string,
   ): Promise<Organization> {
     const organization = await this.organizationRepository.create(dto);
-    await this.commandBus.execute(
-      new CreateMembershipCommand(organization.id, userId, Roles.Owner),
-    );
+    await this.membershipService.create({
+      organizationId: organization.id,
+      userId: userId,
+      role: Roles.Owner,
+    });
     return organization;
   }
 
@@ -48,7 +48,7 @@ export class OrganizationService {
   @Transactional()
   async delete(id: string, userId: string): Promise<boolean> {
     const organization = await this.organizationRepository.delete(id);
-    await this.commandBus.execute(new DeleteMembershipCommand(id, userId));
+    await this.membershipService.delete(userId, id);
     return organization;
   }
 }

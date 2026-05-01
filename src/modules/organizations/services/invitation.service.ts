@@ -10,19 +10,18 @@ import { InvitationPreviewDto } from '@organizations/dto/invitation-perview.dto'
 import { User } from '@users/entities/user.entity';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 import { uuidv7 } from 'uuidv7';
-import { CommandBus } from '@nestjs/cqrs';
-import { CreateMembershipCommand } from '@memberships/commands/create-membership.command';
 import { InvitationStatus } from '@organizations/enums/invitation-status.enum';
 import { AcceptInvitationDto } from '@organizations/dto/accept-invitation.dto';
 import { Transactional } from 'typeorm-transactional';
 import { OrganizationPublisher } from '@organizations/messaging/pulishers/organization.publisher';
+import { MembershipService } from '@memberships/services/membership.service';
 
 @Injectable()
 export class InvitationService {
   constructor(
     private readonly invitationRepository: InvitationRepository,
-    private readonly commandBus: CommandBus,
     private readonly organizationPublisher: OrganizationPublisher,
+    private readonly membershipService: MembershipService,
   ) {}
 
   async inviteUser(
@@ -67,9 +66,11 @@ export class InvitationService {
     this.ensureInvitationMatchesUser(invitation, user);
 
     const { role, organizationId } = invitation;
-    await this.commandBus.execute(
-      new CreateMembershipCommand(organizationId, user.id, role),
-    );
+    await this.membershipService.create({
+      organizationId,
+      userId: user.id,
+      role,
+    });
     await this.invitationRepository.markAsAccepted(invitation.id);
     return { organizationId, role };
   }

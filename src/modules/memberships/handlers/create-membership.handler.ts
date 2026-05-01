@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Logger } from '@nestjs/common';
 import { MembershipService } from '@memberships/services/membership.service';
-import { Roles } from '@memberships/enums/roles.enum';
 import { CreateMembershipCommand } from '@memberships/commands/create-membership.command';
 
 @CommandHandler(CreateMembershipCommand)

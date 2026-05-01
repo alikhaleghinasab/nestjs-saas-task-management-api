@@ -12,7 +12,6 @@ import { Invitation } from './entities/invitation.entity';
 import { InvitationService } from './services/invitation.service';
 import { InvitationRepository } from './repositories/invitation.repository';
 import { EmailModule } from '@email/email.module';
-import { AcceptInvitationHandler } from './handlers/accept-invitation.handler';
 import { MessagingModule } from '@messaging/messaging.module';
 import { InvitationConsumer } from './messaging/consumers/invitation.consumer';
 import { UserInvitedHandler } from './messaging/handlers/user-invited.handler';
@@ -28,7 +27,6 @@ import { OrganizationPublisher } from './messaging/pulishers/organization.publis
     MessagingModule,
   ],
   providers: [
-    AcceptInvitationHandler,
     OrganizationService,
     OrganizationRepository,
     OrganizationPublisher,
