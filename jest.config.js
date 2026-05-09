@@ -1,0 +1,27 @@
+module.exports = {
+  moduleFileExtensions: ['js', 'json', 'ts'],
+  rootDir: './src',
+  testRegex: '.*\\.spec\\.ts$',
+  transform: {
+    '^.+\\.(t|j)s$': 'ts-jest',
+  },
+  collectCoverageFrom: ['**/*.(t|j)s'],
+  coverageDirectory: '../coverage',
+  testEnvironment: 'node',
+  moduleNameMapper: {
+    '^@core/(.*)$': '<rootDir>/modules/core/$1',
+    '^@database/(.*)$': '<rootDir>/modules/database/$1',
+    '^@common/(.*)$': '<rootDir>/modules/common/$1',
+    '^@users/(.*)$': '<rootDir>/modules/users/$1',
+    '^@auth/(.*)$': '<rootDir>/modules/auth/$1',
+    '^@organizations/(.*)$': '<rootDir>/modules/organizations/$1',
+    '^@memberships/(.*)$': '<rootDir>/modules/memberships/$1',
+    '^@cache/(.*)$': '<rootDir>/modules/cache/$1',
+    '^@redis/(.*)$': '<rootDir>/modules/redis/$1',
+    '^@email/(.*)$': '<rootDir>/modules/email/$1',
+    '^@projects/(.*)$': '<rootDir>/modules/projects/$1',
+    '^@rabbitmq/(.*)$': '<rootDir>/modules/rabbitmq/$1',
+    '^@messaging/(.*)$': '<rootDir>/modules/messaging/$1',
+    '^@tasks/(.*)$': '<rootDir>/modules/tasks/$1',
+  },
+};
