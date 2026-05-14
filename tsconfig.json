@@ -28,7 +28,7 @@
       "@organizations/*": ["modules/organizations/*"],
       "@memberships/*": ["modules/memberships/*"],
       "@cache/*": ["modules/cache/*"],
-      "@redis/*": ["modules/redis/*"],
+      "@rediscore/*": ["modules/redis/*"],
       "@email/*": ["modules/email/*"],
       "@projects/*": ["modules/projects/*"],
       "@rabbitmq/*": ["modules/rabbitmq/*"],

@@ -1,5 +1,5 @@
-import { RedisService } from '@redis/redis.service';
-import { RedisModule } from '@redis/redis.module';
+import { RedisService } from '@rediscore/redis.service';
+import { RedisModule } from '@rediscore/redis.module';
 import { CacheDriver } from './cache-driver.enum';
 import { InMemoryCacheProvider } from './in-memory-cache.provider';
 
