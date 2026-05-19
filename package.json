@@ -21,12 +21,12 @@
     "test:integration": "jest -c jest.integration.config.js",
     "test:e2e": "jest -c jest.e2e.config.js",
     "typeorm": "ts-node ./node_modules/typeorm/cli",
-    "migration:run": "npm run build && npm run typeorm migration:run -- -d ./src/modules/database/typeorm.config.ts",
-    "migration:generate": "npm run typeorm -- -d ./src/modules/database/typeorm.config.ts migration:generate ./src/$npm_config_module/migrations/$npm_config_name",
+    "migration:run": "npm run build && npm run typeorm migration:run -- -d ./src/modules/database/typeorm.datasource.ts",
+    "migration:generate": "npm run typeorm -- -d ./src/modules/database/typeorm.datasource.ts migration:generate ./src/$npm_config_module/migrations/$npm_config_name",
     "migration:create": "npm run typeorm -- migration:create ./src/modules/$npm_config_module/database/migrations/$npm_config_name",
     "migration:create-win": "npm run typeorm -- migration:create ./src/modules/%npm_config_module%/database/migrations/%npm_config_name%",
-    "migration:revert": "npm run typeorm -- -d ./src/modules/database/typeorm.config.ts migration:revert",
-    "migration:drop": "npm run typeorm schema:drop -- -d ./src/modules/database/typeorm.config.ts"
+    "migration:revert": "npm run typeorm -- -d ./src/modules/database/typeorm.datasource.ts migration:revert",
+    "migration:drop": "npm run typeorm schema:drop -- -d ./src/modules/database/typeorm.datasource.ts"
   },
   "dependencies": {
     "@fastify/cookie": "^9.4.0",
