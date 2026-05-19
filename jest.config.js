@@ -5,9 +5,10 @@ module.exports = {
   transform: {
     '^.+\\.(t|j)s$': 'ts-jest',
   },
-  collectCoverageFrom: ['**/*.(t|j)s'],
+  collectCoverageFrom: ['**/*.{ts,js}'],
   coverageDirectory: '../coverage',
   testEnvironment: 'node',
+  clearMocks: true,
   moduleNameMapper: {
     '^@core/(.*)$': '<rootDir>/modules/core/$1',
     '^@database/(.*)$': '<rootDir>/modules/database/$1',
@@ -17,11 +18,13 @@ module.exports = {
     '^@organizations/(.*)$': '<rootDir>/modules/organizations/$1',
     '^@memberships/(.*)$': '<rootDir>/modules/memberships/$1',
     '^@cache/(.*)$': '<rootDir>/modules/cache/$1',
-    '^@redis/(.*)$': '<rootDir>/modules/redis/$1',
+    '^@rediscore/(.*)$': '<rootDir>/modules/redis/$1',
     '^@email/(.*)$': '<rootDir>/modules/email/$1',
     '^@projects/(.*)$': '<rootDir>/modules/projects/$1',
     '^@rabbitmq/(.*)$': '<rootDir>/modules/rabbitmq/$1',
     '^@messaging/(.*)$': '<rootDir>/modules/messaging/$1',
     '^@tasks/(.*)$': '<rootDir>/modules/tasks/$1',
   },
+  moduleDirectories: ['node_modules', '<rootDir>'],
+  transformIgnorePatterns: ['/node_modules/(?!.*@faker-js/faker.*)'],
 };
