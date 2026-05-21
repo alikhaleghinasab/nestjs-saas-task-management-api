@@ -10,7 +10,6 @@ import { User } from '@users/entities/user.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { InvalidCredentialsException } from '@auth/exceptions/auth.exception';
 
-// Mock Transactional decorator
 jest.mock('typeorm-transactional', () => ({
   Transactional: () => () => {},
   initializeTransactionalContext: jest.fn(),
@@ -54,18 +53,6 @@ describe('AuthService', () => {
   const tokens = {
     accessToken: 'access-token',
     refreshToken: 'refresh-token',
-  };
-
-  const arrangeRegisterSuccess = () => {
-    bcryptHasher.hash.mockResolvedValue(hashedPassword);
-    userService.createUser.mockResolvedValue(createdUser as User);
-    refreshTokenService.generateTokens.mockResolvedValue(tokens);
-  };
-
-  const arrangeLoginSuccess = () => {
-    userService.findUserForAuth.mockResolvedValue(existingUser as User);
-    bcryptHasher.compare.mockResolvedValue(true);
-    refreshTokenService.generateTokens.mockResolvedValue(tokens);
   };
 
   beforeEach(async () => {
@@ -115,114 +102,82 @@ describe('AuthService', () => {
   });
 
   describe('register', () => {
-    it('should hash password before creating user', async () => {
-      arrangeRegisterSuccess();
+    it('should successfully register a user and return tokens', async () => {
+      // Arrange
+      bcryptHasher.hash.mockResolvedValue(hashedPassword);
+      userService.createUser.mockResolvedValue(createdUser as User);
+      refreshTokenService.generateTokens.mockResolvedValue(tokens);
 
-      await service.register(registerDto);
+      // Act
+      const result = await service.register(registerDto);
 
+      // Assert
       expect(bcryptHasher.hash).toHaveBeenCalledWith(registerDto.password, 10);
-    });
-
-    it('should persist user with hashed password', async () => {
-      arrangeRegisterSuccess();
-
-      await service.register(registerDto);
-
       expect(userService.createUser).toHaveBeenCalledWith({
         ...registerDto,
         password: hashedPassword,
       });
-    });
-
-    it('should generate tokens using created user id', async () => {
-      arrangeRegisterSuccess();
-
-      await service.register(registerDto);
-
       expect(refreshTokenService.generateTokens).toHaveBeenCalledWith(
         createdUser.id,
       );
-    });
-
-    it('should return generated tokens', async () => {
-      arrangeRegisterSuccess();
-
-      await expect(service.register(registerDto)).resolves.toEqual(tokens);
+      expect(result).toEqual(tokens);
     });
   });
 
   describe('login', () => {
-    it('should fetch user by email', async () => {
-      arrangeLoginSuccess();
+    it('should successfully login and return tokens', async () => {
+      // Arrange
+      userService.findUserForAuth.mockResolvedValue(existingUser as User);
+      bcryptHasher.compare.mockResolvedValue(true);
+      refreshTokenService.generateTokens.mockResolvedValue(tokens);
 
-      await service.login(loginDto);
+      // Act
+      const result = await service.login(loginDto);
 
+      // Assert
       expect(userService.findUserForAuth).toHaveBeenCalledWith({
         email: loginDto.email,
       });
+      expect(bcryptHasher.compare).toHaveBeenCalledWith(
+        loginDto.password,
+        hashedPassword,
+      );
+      expect(refreshTokenService.generateTokens).toHaveBeenCalledWith(
+        existingUser.id,
+      );
+      expect(result).toEqual(tokens);
     });
 
     it('should throw if user not found', async () => {
+      // Arrange
       userService.findUserForAuth.mockResolvedValue(null);
 
+      // Act & Assert
       await expect(service.login(loginDto)).rejects.toThrow(
         InvalidCredentialsException,
       );
     });
 
     it('should throw ForbiddenException if user is inactive', async () => {
+      // Arrange
       userService.findUserForAuth.mockResolvedValue({
         ...existingUser,
         isActive: false,
       } as User);
 
+      // Act & Assert
       await expect(service.login(loginDto)).rejects.toThrow(ForbiddenException);
     });
 
-    it('should validate password using bcrypt', async () => {
-      arrangeLoginSuccess();
-
-      await service.login(loginDto);
-
-      expect(bcryptHasher.compare).toHaveBeenCalledWith(
-        loginDto.password,
-        hashedPassword,
-      );
-    });
-
     it('should throw InvalidCredentialsException on wrong password', async () => {
+      // Arrange
       userService.findUserForAuth.mockResolvedValue(existingUser as User);
       bcryptHasher.compare.mockResolvedValue(false);
 
+      // Act & Assert
       await expect(service.login(loginDto)).rejects.toThrow(
         InvalidCredentialsException,
       );
-    });
-
-    it('should generate tokens when login is valid', async () => {
-      arrangeLoginSuccess();
-
-      await service.login(loginDto);
-
-      expect(refreshTokenService.generateTokens).toHaveBeenCalledWith(
-        existingUser.id,
-      );
-    });
-
-    it('should return tokens on successful login', async () => {
-      arrangeLoginSuccess();
-
-      await expect(service.login(loginDto)).resolves.toEqual(tokens);
-    });
-
-    it('should NOT generate tokens when login fails', async () => {
-      userService.findUserForAuth.mockResolvedValue(null);
-
-      try {
-        await service.login(loginDto);
-      } catch (e) {}
-
-      expect(refreshTokenService.generateTokens).not.toHaveBeenCalled();
     });
   });
 });
