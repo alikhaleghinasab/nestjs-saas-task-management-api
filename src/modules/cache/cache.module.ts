@@ -9,6 +9,7 @@ const { BaseModule, MODULE_OPTIONS_TOKEN } =
   createDynamicModule<CacheModuleOptions>({
     importsFactory: resolveCacheImports,
     providersFactory: resolveCacheProviders,
+    exportProviders: true,
   });
 
 @Module({

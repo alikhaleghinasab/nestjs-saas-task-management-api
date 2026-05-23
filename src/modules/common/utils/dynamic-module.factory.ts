@@ -4,6 +4,7 @@ import { ConfigurableModuleBuilder } from '@nestjs/common';
 export interface DynamicModuleConfig<TOptions> {
   importsFactory?: (options: TOptions) => DynamicModule[] | undefined;
   providersFactory?: (options: TOptions) => Provider[] | undefined;
+  exportProviders?: boolean;
 }
 
 interface DynamicModuleFactoryResult<TOptions> {
@@ -33,13 +34,14 @@ export function createDynamicModule<TOptions>(
 
       const dynamicImports = config.importsFactory?.(options) ?? [];
       const dynamicProviders = config.providersFactory?.(options) ?? [];
+      const dynamicExports = config.exportProviders ? dynamicProviders : [];
 
       return {
         ...definition,
         global: definition.global ?? true,
         imports: [...(definition.imports || []), ...dynamicImports],
         providers: [...(definition.providers || []), ...dynamicProviders],
-        exports: [...(definition.exports || [])],
+        exports: [...(definition.exports || []), ...dynamicExports],
       };
     }
   }
