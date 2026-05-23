@@ -11,6 +11,7 @@ import { SwaggerHelper } from '@common/swagger/swagger.helper';
 import { config as dotenvConfig } from 'dotenv';
 import fastifyCookie from '@fastify/cookie';
 import { initializeTransactionalContext } from 'typeorm-transactional';
+import { API_GLOBAL_PREFIX } from '@common/constants/api.constants';
 
 dotenvConfig({ path: '.env' });
 async function bootstrap() {
@@ -31,7 +32,7 @@ async function bootstrap() {
   });
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
-  app.setGlobalPrefix('/api');
+  app.setGlobalPrefix(API_GLOBAL_PREFIX);
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
