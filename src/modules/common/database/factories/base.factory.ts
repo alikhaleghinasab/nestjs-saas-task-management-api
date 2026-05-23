@@ -9,6 +9,8 @@ import {
 export interface GenericFactory<T extends ObjectLiteral> {
   create(blueprint?: DeepPartial<T>): Promise<T>;
   createMany(count: number, blueprint?: DeepPartial<T>): Promise<T[]>;
+  build(blueprint?: DeepPartial<T>): T;
+  buildPlain(blueprint?: DeepPartial<T>): T;
 }
 
 export function createFactory<T extends ObjectLiteral>(
@@ -24,7 +26,6 @@ export function createFactory<T extends ObjectLiteral>(
           ...defaultPropsGenerator(),
           ...(blueprint ?? {}),
         });
-
         return repository.save(entity);
       },
 
@@ -35,8 +36,21 @@ export function createFactory<T extends ObjectLiteral>(
             ...(blueprint ?? {}),
           }),
         );
-
         return repository.save(entities);
+      },
+
+      build(blueprint): T {
+        return repository.create({
+          ...defaultPropsGenerator(),
+          ...(blueprint ?? {}),
+        });
+      },
+
+      buildPlain(blueprint): T {
+        return {
+          ...defaultPropsGenerator(),
+          ...(blueprint ?? {}),
+        } as T;
       },
     };
   };
