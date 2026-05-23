@@ -10,7 +10,7 @@ import { CORE_DOMAIN_ERROR_MAP } from '@core/errors/core-domain-error-map';
 export class DomainExceptionFilter implements ExceptionFilter {
   constructor(private readonly adapterHost: HttpAdapterHost) {}
 
-  catch(exception: DomainError, host: ArgumentsHost) {
+  catch(exception: DomainError, _host: ArgumentsHost) {
     const map = mergeDomainErrorMaps(
       GLOBAL_DOMAIN_ERROR_MAP,
       CORE_DOMAIN_ERROR_MAP,

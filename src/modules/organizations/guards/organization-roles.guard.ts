@@ -39,7 +39,7 @@ export class OrganizationRolesGuard implements CanActivate {
 
     try {
       organizationId = resolveOrganizationId(request);
-    } catch (e) {
+    } catch {
       throw new BadRequestException(ORGANIZATION_ERRORS.CONTEXT_MISMATCH);
     }
 

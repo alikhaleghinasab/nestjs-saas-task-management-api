@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { DataSource, DeepPartial } from 'typeorm';
+import { DeepPartial } from 'typeorm';
 import { Task } from '../../entities/task.entity';
 import { TaskStatus } from '@tasks/enums/task.enum';
 import { createFactory } from '@common/database/factories/base.factory';

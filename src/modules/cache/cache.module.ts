@@ -5,12 +5,11 @@ import { createDynamicModule } from '@common/utils/dynamic-module.factory';
 import { CacheHelper } from './cache.helper';
 import { CacheVersionService } from './cache-version.service';
 
-const { BaseModule, MODULE_OPTIONS_TOKEN } =
-  createDynamicModule<CacheModuleOptions>({
-    importsFactory: resolveCacheImports,
-    providersFactory: resolveCacheProviders,
-    exportProviders: true,
-  });
+const { BaseModule } = createDynamicModule<CacheModuleOptions>({
+  importsFactory: resolveCacheImports,
+  providersFactory: resolveCacheProviders,
+  exportProviders: true,
+});
 
 @Module({
   providers: [CacheHelper, CacheVersionService],

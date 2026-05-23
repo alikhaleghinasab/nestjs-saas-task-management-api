@@ -83,7 +83,9 @@ describe('OrganizationRolesGuard', () => {
     request.user = null;
 
     // Act & Assert
-    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(UnauthorizedException);
+    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
+      UnauthorizedException,
+    );
   });
 
   it('should throw BadRequestException when organizationId is missing', async () => {
@@ -93,7 +95,9 @@ describe('OrganizationRolesGuard', () => {
     request.params = {};
 
     // Act & Assert
-    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(BadRequestException);
+    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
   });
 
   it('should throw PermissionDeniedException when user is not a member', async () => {
@@ -102,22 +106,30 @@ describe('OrganizationRolesGuard', () => {
     membershipsService.getUserRoleInOrganization.mockResolvedValue(null);
 
     // Act & Assert
-    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(PermissionDeniedException);
+    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
+      PermissionDeniedException,
+    );
   });
 
   it('should throw PermissionDeniedException when role is insufficient', async () => {
     // Arrange
     reflector.getAllAndOverride.mockReturnValue([Roles.Owner]);
-    membershipsService.getUserRoleInOrganization.mockResolvedValue(Roles.Member);
+    membershipsService.getUserRoleInOrganization.mockResolvedValue(
+      Roles.Member,
+    );
 
     // Act & Assert
-    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(PermissionDeniedException);
+    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
+      PermissionDeniedException,
+    );
   });
 
   it('should allow access when user has required role', async () => {
     // Arrange
     reflector.getAllAndOverride.mockReturnValue([Roles.Owner, Roles.Member]);
-    membershipsService.getUserRoleInOrganization.mockResolvedValue(Roles.Member);
+    membershipsService.getUserRoleInOrganization.mockResolvedValue(
+      Roles.Member,
+    );
 
     // Act & Assert
     await expect(guard.canActivate(context)).resolves.toBe(true);
@@ -126,7 +138,9 @@ describe('OrganizationRolesGuard', () => {
   it('should attach organizationId to request', async () => {
     // Arrange
     reflector.getAllAndOverride.mockReturnValue([Roles.Member]);
-    membershipsService.getUserRoleInOrganization.mockResolvedValue(Roles.Member);
+    membershipsService.getUserRoleInOrganization.mockResolvedValue(
+      Roles.Member,
+    );
 
     // Act
     await guard.canActivate(context);
@@ -142,20 +156,27 @@ describe('OrganizationRolesGuard', () => {
     request.params[TENANT_PARAM_NAME] = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
 
     // Act & Assert
-    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(BadRequestException);
+    await expect(guard.canActivate(context)).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
   });
 
   it('should resolve organizationId from header when param is absent', async () => {
     // Arrange
     reflector.getAllAndOverride.mockReturnValue([Roles.Member]);
     request.params = {};
-    membershipsService.getUserRoleInOrganization.mockResolvedValue(Roles.Member);
+    membershipsService.getUserRoleInOrganization.mockResolvedValue(
+      Roles.Member,
+    );
 
     // Act
     await guard.canActivate(context);
 
     // Assert
-    expect(membershipsService.getUserRoleInOrganization).toHaveBeenCalledWith(userId, organizationId);
+    expect(membershipsService.getUserRoleInOrganization).toHaveBeenCalledWith(
+      userId,
+      organizationId,
+    );
     expect(request.organizationId).toBe(organizationId);
   });
 });
