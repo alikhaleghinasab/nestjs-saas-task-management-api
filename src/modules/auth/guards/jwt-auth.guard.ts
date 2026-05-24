@@ -6,13 +6,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { UserService } from '@users/services/user.service';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly tokenFactory: TokenFactory,
-    private readonly usersService: UserService,
     private readonly reflector: Reflector,
   ) {}
 
@@ -26,7 +24,7 @@ export class JwtAuthGuard implements CanActivate {
     const payload = this.tokenFactory.verifyAccessToken(token);
 
     const userId = payload.sub;
-    req.user = userId;
+    req.userId = userId;
     return true;
   }
 

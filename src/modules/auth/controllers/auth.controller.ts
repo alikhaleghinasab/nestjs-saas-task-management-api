@@ -3,7 +3,6 @@ import {
   Body,
   Controller,
   ForbiddenException,
-  Get,
   HttpCode,
   Post,
   UseInterceptors,
@@ -17,19 +16,12 @@ import {
 } from '@auth/dto/tokens-output.dto';
 import { Throttle } from '@nestjs/throttler';
 import { ApiSuccessResponseDocs } from '@common/decorators/api-success-response-docs.decorator';
-import {
-  ApiBearerAuth,
-  ApiCookieAuth,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiCookieAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LoginDto } from '@auth/dto/login.dto';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
 import { RefreshTokenService } from '@auth/services/refresh-token.service';
 import { REFRESH_TOKEN_HEADER } from '@auth/constants/auth.constant';
 import { Cookies } from '@common/decorators/cookie.decorator';
-import { User } from '@users/entities/user.entity';
-import { CurrentUser } from '@users/decorators/user.decorator';
 import { ApiErrorResponsesDocs } from '@common/decorators/api-error-response-docs.decorator';
 import { UniqueConstraintException } from '@common/exceptions/unique-constraint.exception';
 import {
@@ -116,23 +108,5 @@ export class AuthController {
     @Cookies(REFRESH_TOKEN_HEADER) refreshToken: string,
   ): Promise<TokensOutputForApi> {
     return await this.refreshTokenService.refresh(refreshToken);
-  }
-
-  @Get('/me')
-  @HttpCode(200)
-  @Throttle({
-    default: {
-      limit: 10,
-      ttl: 60000,
-    },
-  })
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get current logged in user profile' })
-  @ApiSuccessResponseDocs({
-    model: User,
-    description: 'User profile returned successfully',
-  })
-  async me(@CurrentUser() user: User) {
-    return user;
   }
 }
