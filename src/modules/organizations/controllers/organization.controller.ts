@@ -21,7 +21,7 @@ import {
   OrganizationProtected,
   TenantParam,
 } from '@organizations/decorators/organization-roles.decorator';
-import { CurrentUser } from '@users/decorators/user.decorator';
+import { CurrentUserId } from '@users/decorators/user.decorator';
 
 const resourceName = 'Organization';
 
@@ -38,7 +38,7 @@ export class OrganizationController {
   })
   async findMany(
     @Query() dto: PaginationDto,
-    @CurrentUser('id') userId: string,
+    @CurrentUserId() userId: string,
   ): Promise<PaginatedResponse<Organization>> {
     return this.organizationService.findMany(dto, userId);
   }
@@ -61,7 +61,7 @@ export class OrganizationController {
   })
   create(
     @Body() dto: CreateOrganizationDto,
-    @CurrentUser('id') userId: string,
+    @CurrentUserId() userId: string,
   ): Promise<Organization> {
     return this.organizationService.create(dto, userId);
   }
@@ -88,7 +88,7 @@ export class OrganizationController {
   @TenantParam()
   async delete(
     @OrganizationId() id: string,
-    @CurrentUser('id') userId: string,
+    @CurrentUserId() userId: string,
   ): Promise<void> {
     await this.organizationService.delete(id, userId);
   }

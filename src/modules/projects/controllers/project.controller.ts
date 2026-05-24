@@ -14,7 +14,7 @@ import {
   OrganizationProtected,
   TenantHeader,
 } from '@organizations/decorators/organization-roles.decorator';
-import { CurrentUser } from '@users/decorators/user.decorator';
+import { CurrentUserId } from '@users/decorators/user.decorator';
 
 const resourceName = 'Project';
 
@@ -46,7 +46,7 @@ export class ProjectController {
   @OrganizationProtected(Roles.Owner, Roles.Admin)
   create(
     @Body() dto: CreateProjectDto,
-    @CurrentUser('id') userId: string,
+    @CurrentUserId() userId: string,
     @OrganizationId() organizationId: string,
   ): Promise<Project> {
     return this.projectService.create(dto, userId, organizationId);

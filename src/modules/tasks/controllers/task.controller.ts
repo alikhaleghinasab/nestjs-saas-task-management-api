@@ -14,7 +14,7 @@ import {
   OrganizationProtected,
   TenantHeader,
 } from '@organizations/decorators/organization-roles.decorator';
-import { CurrentUser } from '@users/decorators/user.decorator';
+import { CurrentUserId } from '@users/decorators/user.decorator';
 import { TaskService } from '../services/task.service';
 import { Task } from '../entities/task.entity';
 import { CreateTaskDto } from '../dto/create-task.dto';
@@ -66,7 +66,7 @@ export class TaskController {
   @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   create(
     @Body() dto: CreateTaskDto,
-    @CurrentUser('id') userId: string,
+    @CurrentUserId() userId: string,
     @OrganizationId() organizationId: string,
   ): Promise<Task> {
     return this.taskService.create(dto, userId, organizationId);
