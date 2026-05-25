@@ -1,58 +1,50 @@
-import { Roles } from '@memberships/enums/roles.enum';
-import { MembershipService } from '@memberships/services/membership.service';
 import {
-  Injectable,
+  BadRequestException,
   CanActivate,
   ExecutionContext,
-  BadRequestException,
+  Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ClsService } from 'nestjs-cls';
+
+import { MembershipService } from '@memberships/services/membership.service';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
-import { PermissionDeniedException } from '@organizations/exceptions/permission-denied.exception';
-import { resolveOrganizationId } from '@organizations/utils/organization-id.resolver';
 import { ROLES_KEY } from '@organizations/decorators/organization-roles.decorator';
-import { User } from '@users/entities/user.entity';
-import { isUUID } from 'class-validator';
+import { PermissionDeniedException } from '@organizations/exceptions/permission-denied.exception';
 
 @Injectable()
 export class OrganizationRolesGuard implements CanActivate {
   constructor(
-    private reflector: Reflector,
-    private membershipsService: MembershipService,
+    private readonly reflector: Reflector,
+    private readonly membershipsService: MembershipService,
+    private readonly cls: ClsService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requiredRoles = this.reflector.getAllAndOverride<Roles[]>(ROLES_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(
+      ROLES_KEY,
+      [context.getHandler(), context.getClass()],
+    );
 
-    if (!requiredRoles || requiredRoles.length === 0) {
+    if (!requiredRoles?.length) {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
-    const user: User = request.user;
+    const userId = this.cls.get<string>('userId');
 
-    let organizationId: string;
+    const organizationId = this.cls.get<string>('organizationId');
 
-    try {
-      organizationId = resolveOrganizationId(request);
-    } catch {
-      throw new BadRequestException(ORGANIZATION_ERRORS.CONTEXT_MISMATCH);
-    }
-
-    if (!user || !user.id) {
+    if (!userId) {
       throw new UnauthorizedException();
     }
 
-    if (!organizationId || !isUUID(organizationId, 7)) {
+    if (!organizationId) {
       throw new BadRequestException(ORGANIZATION_ERRORS.CONTEXT_MISSING);
     }
 
     const userRole = await this.membershipsService.getUserRoleInOrganization(
-      user.id,
+      userId,
       organizationId,
     );
 
@@ -66,8 +58,6 @@ export class OrganizationRolesGuard implements CanActivate {
         ORGANIZATION_ERRORS.PERMISSION_DENIED,
       );
     }
-
-    request['organizationId'] = organizationId;
 
     return true;
   }
