@@ -28,8 +28,8 @@ import {
   OrganizationProtected,
   TenantHeader,
 } from '@organizations/decorators/organization-roles.decorator';
-import { CurrentUser } from '@users/decorators/user.decorator';
-import { User } from '@users/entities/user.entity';
+import { CurrentUserId } from '@users/decorators/user.decorator';
+import { AuthContext } from '@auth/decorators/auth-context.decorator';
 
 const resourceName = 'Invitation';
 
@@ -92,11 +92,12 @@ export class InvitationController {
   )
   async acceptInvite(
     @UuidParam('token') token: string,
-    @CurrentUser() user: User,
+    @CurrentUserId() userId: string,
+    @AuthContext('email') userEmail: string,
   ): Promise<AcceptInvitationDto> {
     return this.invitationService.acceptInvitation(token, {
-      id: user.id,
-      email: user.email,
+      id: userId,
+      email: userEmail,
     });
   }
 }
