@@ -6,12 +6,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ClsService } from 'nestjs-cls';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly tokenFactory: TokenFactory,
     private readonly reflector: Reflector,
+    private readonly cls: ClsService,
   ) {}
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
@@ -24,6 +26,7 @@ export class JwtAuthGuard implements CanActivate {
     const payload = this.tokenFactory.verifyAccessToken(token);
 
     const userId = payload.sub;
+    this.cls.set('userId', userId);
     req.userId = userId;
     req.authContext = payload;
     return true;

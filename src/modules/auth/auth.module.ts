@@ -13,9 +13,11 @@ import { BcryptHasher } from '@common/security/bcrypt-hasher.service';
 import { TokenFactory } from './services/token.factory';
 import { ArgonHasher } from '@common/security/argon-hasher.service';
 import { CqrsModule } from '@nestjs/cqrs';
+import { ClsModule } from 'nestjs-cls';
 
 @Module({
   imports: [
+    ClsModule,
     UsersModule,
     ConfigModule.forFeature(authConfig),
     JwtModule.registerAsync({
