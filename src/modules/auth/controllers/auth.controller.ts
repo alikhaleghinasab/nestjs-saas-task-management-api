@@ -4,6 +4,7 @@ import {
   Controller,
   ForbiddenException,
   HttpCode,
+  NotFoundException,
   Post,
   UseInterceptors,
 } from '@nestjs/common';
@@ -102,7 +103,17 @@ export class AuthController {
     model: TokensOutputDto,
     description: 'Tokens refreshed successfully',
   })
-  @ApiErrorResponsesDocs(InvalidRefreshTokenException)
+  @ApiErrorResponsesDocs(
+    InvalidRefreshTokenException,
+    {
+      exception: ForbiddenException,
+      message: USER_ERRORS.USER_BANNED,
+    },
+    {
+      exception: NotFoundException,
+      message: USER_ERRORS.USER_NOT_FOUND,
+    },
+  )
   @ApiCookieAuth(REFRESH_TOKEN_HEADER)
   async refresh(
     @Cookies(REFRESH_TOKEN_HEADER) refreshToken: string,

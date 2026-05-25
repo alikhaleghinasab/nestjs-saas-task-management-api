@@ -25,6 +25,7 @@ export class JwtAuthGuard implements CanActivate {
 
     const userId = payload.sub;
     req.userId = userId;
+    req.authContext = payload;
     return true;
   }
 

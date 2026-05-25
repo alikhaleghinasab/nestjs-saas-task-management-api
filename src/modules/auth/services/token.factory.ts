@@ -30,8 +30,12 @@ export class TokenFactory {
     return refreshToken && REFRESH_TOKEN_REGEX.test(refreshToken);
   }
 
-  async generateAccessToken(userId: string, jti: string): Promise<string> {
-    const payload: AuthPayload = { sub: userId, jti };
+  async generateAccessToken(
+    userId: string,
+    jti: string,
+    email: string,
+  ): Promise<string> {
+    const payload: AuthPayload = { sub: userId, jti, email };
     return await this.jwtService.signAsync(payload, {
       expiresIn: this.authConfig.accessTokenExpiresIn,
     });

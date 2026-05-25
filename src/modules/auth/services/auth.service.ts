@@ -10,6 +10,7 @@ import { InvalidCredentialsException } from '@auth/exceptions/auth.exception';
 import { USER_ERRORS } from '@users/constants/errors.constant';
 import { Transactional } from 'typeorm-transactional';
 import { UserService } from '@users/services/user.service';
+import { AuthUser } from '@users/types/auth-user.type';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,7 @@ export class AuthService {
   @Transactional()
   async register(dto: RegisterDto): Promise<TokensOutputDto> {
     const user = await this.createUserWithHashedPassword(dto);
-    return this.generateUserTokens(user.id);
+    return this.generateUserTokens(user);
   }
 
   async login(dto: LoginDto): Promise<TokensOutputDto> {
@@ -31,7 +32,7 @@ export class AuthService {
 
     await this.validatePassword(dto.password, user.password);
 
-    return this.generateUserTokens(user.id);
+    return this.generateUserTokens(user);
   }
 
   private async getActiveUserByEmail(email: string) {
@@ -76,7 +77,7 @@ export class AuthService {
     });
   }
 
-  private async generateUserTokens(userId: string): Promise<TokensOutputDto> {
-    return this.refreshTokenService.generateTokens(userId);
+  private async generateUserTokens(user: AuthUser): Promise<TokensOutputDto> {
+    return this.refreshTokenService.generateTokens(user);
   }
 }

@@ -6,6 +6,7 @@ import { CreateUserParams } from '@users/interfaces/create-user.interface';
 import { CheckUserExistsInterface } from '@users/interfaces/check-user-exists.interface';
 import { USER_ERRORS } from '@users/constants/errors.constant';
 import { CatchUniqueConstraint } from '@common/decorators/catch-unique-constraint.decorator';
+import { AuthUser } from '@users/types/auth-user.type';
 
 @Injectable()
 export class UserRepository {
@@ -21,7 +22,7 @@ export class UserRepository {
 
   async findOneForAuth(
     data: CheckUserExistsInterface,
-  ): Promise<Pick<User, 'id' | 'email' | 'password' | 'isActive'> | null> {
+  ): Promise<AuthUser | null> {
     return this.repo.findOne({
       where: data,
       select: ['id', 'email', 'password', 'isActive'],
