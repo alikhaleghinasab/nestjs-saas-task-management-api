@@ -7,6 +7,8 @@ import {
   TENANT_HEADER_NAME,
   TENANT_PARAM_NAME,
 } from '@organizations/constants/tenant.constant';
+import { ContextMismatchException } from '@organizations/exceptions/context-mismatch.exception';
+import { ContextMissingException } from '@organizations/exceptions/context-missing.exception';
 import { PermissionDeniedException } from '@organizations/exceptions/permission-denied.exception';
 
 export const ROLES_KEY = 'organizationRoles';
@@ -23,14 +25,18 @@ export const TenantParam = () => ApiParam({ name: TENANT_PARAM_NAME });
 
 export const OrganizationPermissionErrorDocs = () =>
   applyDecorators(
-    ApiErrorResponsesDocs({
-      exception: PermissionDeniedException,
-      message: ORGANIZATION_ERRORS.NOT_A_MEMBER,
-    }),
-    ApiErrorResponsesDocs({
-      exception: PermissionDeniedException,
-      message: ORGANIZATION_ERRORS.PERMISSION_DENIED,
-    }),
+    ApiErrorResponsesDocs(
+      {
+        exception: PermissionDeniedException,
+        message: ORGANIZATION_ERRORS.NOT_A_MEMBER,
+      },
+      {
+        exception: PermissionDeniedException,
+        message: ORGANIZATION_ERRORS.PERMISSION_DENIED,
+      },
+      ContextMismatchException,
+      ContextMissingException,
+    ),
   );
 
 export const OrganizationProtected = (...roles: Roles[]) =>

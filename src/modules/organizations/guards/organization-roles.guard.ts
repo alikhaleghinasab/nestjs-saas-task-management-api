@@ -13,6 +13,7 @@ import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 import { ROLES_KEY } from '@organizations/decorators/organization-roles.decorator';
 import { PermissionDeniedException } from '@organizations/exceptions/permission-denied.exception';
 import { AppClsStore } from '@core/interfaces/cls-store.interface';
+import { ContextMissingException } from '@organizations/exceptions/context-missing.exception';
 
 @Injectable()
 export class OrganizationRolesGuard implements CanActivate {
@@ -41,7 +42,7 @@ export class OrganizationRolesGuard implements CanActivate {
     }
 
     if (!organizationId) {
-      throw new BadRequestException(ORGANIZATION_ERRORS.CONTEXT_MISSING);
+      throw new ContextMissingException();
     }
 
     const userRole = await this.membershipsService.getUserRoleInOrganization(

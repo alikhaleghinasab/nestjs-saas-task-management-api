@@ -1,13 +1,8 @@
 import { IS_PUBLIC_KEY } from '@auth/decorators/public.decorator';
 import { AppClsStore } from '@core/interfaces/cls-store.interface';
-import {
-  BadRequestException,
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
+import { ContextMissingException } from '@organizations/exceptions/context-missing.exception';
 import { resolveOrganizationId } from '@organizations/utils/organization-id.resolver';
 import { isUUID } from 'class-validator';
 import { FastifyRequest } from 'fastify';
@@ -38,7 +33,7 @@ export class OrganizationContextGuard implements CanActivate {
 
     if (organizationId) {
       if (!isUUID(organizationId, 7)) {
-        throw new BadRequestException(ORGANIZATION_ERRORS.CONTEXT_MISSING);
+        throw new ContextMissingException();
       }
       this.cls.set('organizationId', organizationId);
       req.organizationId = organizationId;
