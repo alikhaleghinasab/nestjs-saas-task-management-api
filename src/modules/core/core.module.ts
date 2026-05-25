@@ -6,10 +6,13 @@ import { CacheDriver } from '@cache/cache-driver.enum';
 import { ProjectsModule } from '@projects/projects.module';
 import { TasksModule } from '@tasks/tasks.module';
 import { APP_GUARD } from '@nestjs/core';
+import { OrganizationContextGuard } from '@organizations/guards/organization-context.guard';
 import { OrganizationRolesGuard } from '@organizations/guards/organization-roles.guard';
+import { ClsModule } from 'nestjs-cls';
 
 @Module({
   imports: [
+    ClsModule,
     OrganizationModule,
     MembershipModule,
     ProjectsModule,
@@ -18,6 +21,10 @@ import { OrganizationRolesGuard } from '@organizations/guards/organization-roles
   ],
   controllers: [],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: OrganizationContextGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: OrganizationRolesGuard,

@@ -2,8 +2,9 @@ import {
   TENANT_HEADER_NAME,
   TENANT_PARAM_NAME,
 } from '@organizations/constants/tenant.constant';
+import { FastifyRequest } from 'fastify';
 
-export function resolveOrganizationId(req): string | undefined {
+export function resolveOrganizationId(req: FastifyRequest): string | undefined {
   const header = req.headers[TENANT_HEADER_NAME] as string;
   const param = req.params[TENANT_PARAM_NAME];
 
