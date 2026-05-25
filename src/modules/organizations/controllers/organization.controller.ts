@@ -22,6 +22,7 @@ import {
   TenantParam,
 } from '@organizations/decorators/organization-roles.decorator';
 import { CurrentUserId } from '@users/decorators/user.decorator';
+import { TENANT_PARAM_NAME } from '@organizations/constants/tenant.constant';
 
 const resourceName = 'Organization';
 
@@ -44,7 +45,7 @@ export class OrganizationController {
   }
 
   @ApiGetOne({
-    paramName: 'organizationId',
+    paramName: TENANT_PARAM_NAME,
     entity: Organization,
     resourceName,
   })
@@ -67,7 +68,7 @@ export class OrganizationController {
   }
 
   @ApiUpdate({
-    paramName: 'organizationId',
+    paramName: TENANT_PARAM_NAME,
     resourceName,
     duplicateErrorMsg: ORGANIZATION_ERRORS.SLUG_EXISTS,
   })
@@ -81,7 +82,7 @@ export class OrganizationController {
   }
 
   @ApiDelete({
-    paramName: 'organizationId',
+    paramName: TENANT_PARAM_NAME,
     resourceName,
   })
   @OrganizationProtected(Roles.Owner)
