@@ -1,4 +1,5 @@
 import { IS_PUBLIC_KEY } from '@auth/decorators/public.decorator';
+import { AppClsStore } from '@core/interfaces/cls-store.interface';
 import {
   BadRequestException,
   CanActivate,
@@ -15,7 +16,7 @@ import { ClsService } from 'nestjs-cls';
 @Injectable()
 export class OrganizationContextGuard implements CanActivate {
   constructor(
-    private readonly cls: ClsService,
+    private readonly cls: ClsService<AppClsStore>,
     private readonly reflector: Reflector,
   ) {}
 

@@ -1,4 +1,5 @@
 import { TokenFactory } from '@auth/services/token.factory';
+import { AppClsStore } from '@core/interfaces/cls-store.interface';
 import {
   CanActivate,
   ExecutionContext,
@@ -13,7 +14,7 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly tokenFactory: TokenFactory,
     private readonly reflector: Reflector,
-    private readonly cls: ClsService,
+    private readonly cls: ClsService<AppClsStore>,
   ) {}
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {

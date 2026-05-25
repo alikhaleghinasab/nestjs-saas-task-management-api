@@ -12,13 +12,14 @@ import { MembershipService } from '@memberships/services/membership.service';
 import { ORGANIZATION_ERRORS } from '@organizations/constants/errors.constant';
 import { ROLES_KEY } from '@organizations/decorators/organization-roles.decorator';
 import { PermissionDeniedException } from '@organizations/exceptions/permission-denied.exception';
+import { AppClsStore } from '@core/interfaces/cls-store.interface';
 
 @Injectable()
 export class OrganizationRolesGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly membershipsService: MembershipService,
-    private readonly cls: ClsService,
+    private readonly cls: ClsService<AppClsStore>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
