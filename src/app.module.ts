@@ -11,7 +11,6 @@ import appConfig from 'configs/app.config';
 import { configValidationSchema } from 'env.validation';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { CoreModule } from '@core/core.module';
-import { OrganizationRolesGuard } from '@organizations/guards/organization-roles.guard';
 import { MembershipModule } from '@memberships/membership.module';
 
 @Module({
@@ -53,10 +52,6 @@ import { MembershipModule } from '@memberships/membership.module';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
-    },
-    {
-      provide: APP_GUARD,
-      useClass: OrganizationRolesGuard,
     },
   ],
 })

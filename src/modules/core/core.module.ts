@@ -5,6 +5,8 @@ import { CacheModule } from '@cache/cache.module';
 import { CacheDriver } from '@cache/cache-driver.enum';
 import { ProjectsModule } from '@projects/projects.module';
 import { TasksModule } from '@tasks/tasks.module';
+import { APP_GUARD } from '@nestjs/core';
+import { OrganizationRolesGuard } from '@organizations/guards/organization-roles.guard';
 
 @Module({
   imports: [
@@ -15,6 +17,11 @@ import { TasksModule } from '@tasks/tasks.module';
     CacheModule.forRoot({ driver: CacheDriver.IN_MEMORY }),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: OrganizationRolesGuard,
+    },
+  ],
 })
 export class CoreModule {}
