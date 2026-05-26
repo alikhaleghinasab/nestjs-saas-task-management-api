@@ -6,7 +6,6 @@ const authConfig = registerAs('auth', () => ({
   refreshTokenExpiresIn: Number(
     process.env.REFRESH_TOKEN_EXPIRES_IN ?? '604800',
   ),
-  saltRounds: Number(process.env.PASSWORD_SALT_ROUNDS ?? '10'),
 }));
 
 export default authConfig;

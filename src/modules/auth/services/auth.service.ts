@@ -1,8 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { RegisterDto } from '../dto/register.dto';
-import { ConfigService } from '@nestjs/config';
-import { AuthConfigType } from '../configs/auth.config';
-import { BcryptHasher } from '@common/security/bcrypt-hasher.service';
 import { RefreshTokenService } from './refresh-token.service';
 import { TokensOutputDto } from '@auth/dto/tokens-output.dto';
 import { LoginDto } from '@auth/dto/login.dto';
@@ -11,13 +8,13 @@ import { USER_ERRORS } from '@users/constants/errors.constant';
 import { Transactional } from 'typeorm-transactional';
 import { UserService } from '@users/services/user.service';
 import { AuthUser } from '@users/types/auth-user.type';
+import { ArgonHasher } from '@common/security/argon-hasher.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
-    private readonly configService: ConfigService,
-    private readonly bcryptHasher: BcryptHasher,
+    private readonly argonHasher: ArgonHasher,
     private readonly refreshTokenService: RefreshTokenService,
   ) {}
 
@@ -53,7 +50,7 @@ export class AuthService {
     plainPassword: string,
     hashedPassword: string,
   ): Promise<void> {
-    const passwordMatch = await this.bcryptHasher.compare(
+    const passwordMatch = await this.argonHasher.compare(
       plainPassword,
       hashedPassword,
     );
@@ -64,12 +61,7 @@ export class AuthService {
   }
 
   private async createUserWithHashedPassword(dto: RegisterDto) {
-    const { saltRounds }: AuthConfigType = this.configService.get('auth');
-
-    const hashedPassword = await this.bcryptHasher.hash(
-      dto.password,
-      saltRounds,
-    );
+    const hashedPassword = await this.argonHasher.hash(dto.password);
 
     return this.userService.createUser({
       ...dto,

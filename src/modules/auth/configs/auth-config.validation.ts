@@ -12,6 +12,4 @@ export const authConfigValidationSchema = {
     .positive()
     .default(604800)
     .description('Refresh token lifetime in seconds'),
-
-  PASSWORD_SALT_ROUNDS: Joi.number().integer().min(10).default(10),
 };

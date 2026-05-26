@@ -9,7 +9,6 @@ import { RefreshTokenService } from './services/refresh-token.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import authConfig from './configs/auth.config';
-import { BcryptHasher } from '@common/security/bcrypt-hasher.service';
 import { TokenFactory } from './services/token.factory';
 import { ArgonHasher } from '@common/security/argon-hasher.service';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -36,7 +35,6 @@ import { ClsModule } from 'nestjs-cls';
     RefreshTokenRepository,
     AuthService,
     RefreshTokenService,
-    BcryptHasher,
     ArgonHasher,
     TokenFactory,
   ],
