@@ -91,10 +91,7 @@ export class RefreshTokenService {
     refreshToken: string,
     jti: string,
   ): Promise<void> {
-    const tokenHash = await this.argonHasher.hash(refreshToken, {
-      timeCost: 1,
-      memoryCost: 2 ** 15,
-    });
+    const tokenHash = await this.argonHasher.hash(refreshToken);
     const expiresAt = this.tokenFactory.refreshTokenExpiresAt();
 
     await this.refreshTokenRepository.upsertRefreshTokenByUser({
