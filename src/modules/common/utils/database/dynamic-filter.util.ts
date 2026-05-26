@@ -24,7 +24,7 @@ function resolveOperator(
 export function dynamicFilterBuildWhere<T>(
   filterDto: DynamicFilterDto,
   allowedFilterFields: Array<keyof T & string>,
-): FindManyOptions<T> {
+): FindOptionsWhere<T> {
   const filters = filterDto.filters ?? [];
 
   const where: FindOptionsWhere<T> = {} as FindOptionsWhere<T>;
