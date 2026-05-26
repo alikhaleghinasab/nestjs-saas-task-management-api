@@ -1,7 +1,7 @@
 import { Entity, Column, Index, DeleteDateColumn } from 'typeorm';
 import { TaskPriority, TaskStatus } from '../enums/task.enum';
-import { BaseEntity } from '@common/database/entities/base.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { TenantBaseEntity } from '@organizations/entities/tenant-base.entity';
 
 @Index('idx_tasks_org_project', ['organizationId', 'projectId'], {
   where: 'deleted_at IS NULL',
@@ -14,7 +14,7 @@ import { ApiProperty } from '@nestjs/swagger';
   where: 'deleted_at IS NULL',
 })
 @Entity('tasks')
-export class Task extends BaseEntity {
+export class Task extends TenantBaseEntity {
   @ApiProperty()
   @Column({ type: 'varchar', length: 125 })
   title: string;
@@ -50,10 +50,6 @@ export class Task extends BaseEntity {
   @ApiProperty()
   @Column({ name: 'assignee_id', type: 'uuid', nullable: true })
   assigneeId?: string;
-
-  @ApiProperty()
-  @Column({ name: 'organization_id', type: 'uuid' })
-  organizationId: string;
 
   @ApiProperty()
   @Column({ name: 'project_id', type: 'uuid' })

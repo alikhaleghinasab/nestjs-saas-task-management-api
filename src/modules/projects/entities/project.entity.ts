@@ -1,21 +1,16 @@
 import { BaseIdEntity } from '@common/database/entities/base-id.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { Organization } from '@organizations/entities/organization.entity';
-import {
-  Entity,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  Index,
-  DeleteDateColumn,
-} from 'typeorm';
+import { TenantBaseEntity } from '@organizations/entities/tenant-base.entity';
+import { ITenantEntity } from '@organizations/interfaces/tenant-entity.interface';
+import { Entity, Column, Index, DeleteDateColumn, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity('projects')
 @Index('UQ_projects_organization_id_name', ['organizationId', 'name'], {
   unique: true,
   where: 'deleted_at IS NULL',
 })
-export class Project extends BaseIdEntity {
+export class Project extends BaseIdEntity implements ITenantEntity {
   @ApiProperty()
   @Column({ length: 100 })
   name: string;
@@ -25,7 +20,7 @@ export class Project extends BaseIdEntity {
   description?: string;
 
   @ApiProperty()
-  @Column({ type: 'uuid', name: 'organization_id', nullable: false })
+  @Column({ name: 'organization_id', type: 'uuid' })
   organizationId: string;
 
   @ManyToOne(() => Organization, { nullable: false })
