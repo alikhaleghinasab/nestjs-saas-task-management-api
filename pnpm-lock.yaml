@@ -135,6 +135,9 @@ importers:
       eslint-config-prettier:
         specifier: ^9.0.0
         version: 9.1.2(eslint@8.57.1)
+      eslint-plugin-multitenancy:
+        specifier: file:./tools/eslint-plugin-multitenancy
+        version: file:tools/eslint-plugin-multitenancy
       eslint-plugin-prettier:
         specifier: ^5.0.0
         version: 5.5.5(@types/eslint@9.6.1)(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.8.2)
@@ -1652,6 +1655,9 @@ packages:
     hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
+
+  eslint-plugin-multitenancy@file:tools/eslint-plugin-multitenancy:
+    resolution: {directory: tools/eslint-plugin-multitenancy, type: directory}
 
   eslint-plugin-prettier@5.5.5:
     resolution: {integrity: sha512-hscXkbqUZ2sPithAuLm5MXL+Wph+U7wHngPBv9OMWwlP8iaflyxpjTYZkmdgB4/vPIhemRlBEoLrH7UC1n7aUw==}
@@ -5346,6 +5352,8 @@ snapshots:
   eslint-config-prettier@9.1.2(eslint@8.57.1):
     dependencies:
       eslint: 8.57.1
+
+  eslint-plugin-multitenancy@file:tools/eslint-plugin-multitenancy: {}
 
   eslint-plugin-prettier@5.5.5(@types/eslint@9.6.1)(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.8.2):
     dependencies:

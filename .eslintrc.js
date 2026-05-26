@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'multitenancy'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
@@ -36,5 +36,6 @@ module.exports = {
         endOfLine: 'auto',
       },
     ],
+    'multitenancy/require-with-org': 'warn',
   },
 };
