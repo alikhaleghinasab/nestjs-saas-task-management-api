@@ -7,8 +7,6 @@ import {
   UpdateTaskParams,
 } from '../interfaces/task-params.interface';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
-import { withOrg } from '@organizations/utils/with-org.util';
-import { paginate } from '@common/utils/database/paginate.util';
 import { EnsureFound } from '@common/decorators/ensure-found.decorator';
 import { EnsureAffected } from '@common/decorators/ensure-affected.decorator';
 import { wasAffected } from '@common/utils/database/ensure-affected.util';
@@ -17,8 +15,10 @@ import { TASK_ERRORS } from '@tasks/constants/errors.constant';
 import { CatchForeignKeyConstraint } from '@common/decorators/catch-foreign-key.decorator';
 import { DynamicFilterDto } from '@common/dto/dynamic-filter.dto';
 import { dynamicFilterBuildWhere } from '@common/utils/database/dynamic-filter.util';
+import { TenantBaseRepository } from '@organizations/repositories/tenant-base.repository';
+import { withOrg } from '@organizations/utils/with-org.util';
 @Injectable()
-export class TaskRepository {
+export class TaskRepository extends TenantBaseRepository<Task> {
   private static readonly allowedFilterFields: Array<keyof Task & string> = [
     'title',
     'status',
@@ -32,8 +32,10 @@ export class TaskRepository {
 
   constructor(
     @InjectRepository(Task)
-    private readonly repo: Repository<Task>,
-  ) {}
+    protected readonly repo: Repository<Task>,
+  ) {
+    super();
+  }
 
   async findMany(
     dto: DynamicFilterDto,
@@ -43,7 +45,11 @@ export class TaskRepository {
       dto,
       TaskRepository.allowedFilterFields,
     );
-    return paginate(this.repo, dto, withOrg(filters, organizationId));
+    return this.paginate({
+      paginationDto: dto,
+      where: filters,
+      organizationId,
+    });
   }
 
   @EnsureFound()
