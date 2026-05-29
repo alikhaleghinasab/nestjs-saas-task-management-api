@@ -9,14 +9,13 @@ import { RefreshTokenService } from './services/refresh-token.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import authConfig from './configs/auth.config';
-import { TokenFactory } from './services/token.factory';
 import { ArgonHasher } from '@common/security/argon-hasher.service';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ClsModule } from 'nestjs-cls';
+import { JwtTokenService } from './services/jwt-token.service';
+import { RefreshTokenFactory } from './services/refresh-token.factory';
 
 @Module({
   imports: [
-    ClsModule,
     UsersModule,
     ConfigModule.forFeature(authConfig),
     JwtModule.registerAsync({
@@ -36,8 +35,9 @@ import { ClsModule } from 'nestjs-cls';
     AuthService,
     RefreshTokenService,
     ArgonHasher,
-    TokenFactory,
+    JwtTokenService,
+    RefreshTokenFactory,
   ],
-  exports: [TokenFactory, JwtModule],
+  exports: [JwtTokenService, JwtModule],
 })
 export class AuthModule {}

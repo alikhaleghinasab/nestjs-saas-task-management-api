@@ -1,55 +1,59 @@
 import {
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ArgonHasher } from '@common/security/argon-hasher.service';
 import { RefreshTokenRepository } from '@auth/repositories/refresh-token.repository';
 import { TokensOutputDto } from '@auth/dto/tokens-output.dto';
-import { TokenFactory } from './token.factory';
 import { InvalidRefreshTokenException } from '@auth/exceptions/auth.exception';
 import { UserService } from '@users/services/user.service';
 import { USER_ERRORS } from '@users/constants/errors.constant';
 import { User } from '@users/entities/user.entity';
 import { AuthUser } from '@users/types/auth-user.type';
+import { RefreshTokenFactory } from './refresh-token.factory';
+import { AuthPayload } from '@auth/interfaces/auth-payload.interface';
+import { JwtTokenService } from './jwt-token.service';
 
 @Injectable()
 export class RefreshTokenService {
   private readonly logger = new Logger(RefreshTokenService.name);
 
   constructor(
-    private readonly tokenFactory: TokenFactory,
+    private readonly refreshTokenFactory: RefreshTokenFactory,
+    private readonly jwtTokenService: JwtTokenService,
     private readonly refreshTokenRepository: RefreshTokenRepository,
     private readonly argonHasher: ArgonHasher,
     private readonly userService: UserService,
   ) {}
 
-  async generateTokens(user: AuthUser): Promise<TokensOutputDto> {
-    const jti = this.tokenFactory.newJti();
-    try {
-      const accessToken = await this.tokenFactory.generateAccessToken(
-        user.id,
-        jti,
-        user.email,
-      );
-      const refreshToken = this.tokenFactory.generateRefreshToken();
+  async issueTokens(user: AuthUser): Promise<TokensOutputDto> {
+    const jti = this.refreshTokenFactory.generateJti();
 
-      await this.storeRefreshToken(user.id, refreshToken, jti);
+    const payload: AuthPayload = {
+      sub: user.id,
+      email: user.email,
+      jti,
+    };
 
-      return { accessToken, refreshToken: `${jti}.${refreshToken}` };
-    } catch (err) {
-      this.logger.error(err);
-      throw new InternalServerErrorException('Token generation failed');
-    }
+    const accessToken = await this.jwtTokenService.generateAccessToken(payload);
+
+    const refreshToken = this.refreshTokenFactory.generateToken();
+
+    await this.storeRefreshToken(user.id, refreshToken, jti);
+
+    return {
+      accessToken,
+      refreshToken: `${jti}.${refreshToken}`,
+    };
   }
 
   async refresh(rawRefreshToken: string): Promise<TokensOutputDto> {
     const userId = await this.validateRefreshToken(rawRefreshToken);
     const user = await this.userService.findUserById(userId);
     this.validateUser(user);
-    return this.generateTokens(user);
+    return this.issueTokens(user);
   }
 
   private validateUser(user: User | null): asserts user is User {
@@ -64,7 +68,7 @@ export class RefreshTokenService {
   private async validateRefreshToken(rawRefreshToken: string): Promise<string> {
     const invalid = new InvalidRefreshTokenException();
 
-    if (!this.tokenFactory.isValidRefreshTokenFormat(rawRefreshToken)) {
+    if (!this.refreshTokenFactory.isValidFormat(rawRefreshToken)) {
       throw invalid;
     }
 
@@ -92,7 +96,7 @@ export class RefreshTokenService {
     jti: string,
   ): Promise<void> {
     const tokenHash = await this.argonHasher.hash(refreshToken);
-    const expiresAt = this.tokenFactory.refreshTokenExpiresAt();
+    const expiresAt = this.refreshTokenFactory.calculateExpiresAt();
 
     await this.refreshTokenRepository.upsertRefreshTokenByUser({
       userId,

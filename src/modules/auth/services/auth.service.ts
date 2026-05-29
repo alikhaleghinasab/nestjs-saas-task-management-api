@@ -70,6 +70,6 @@ export class AuthService {
   }
 
   private async generateUserTokens(user: AuthUser): Promise<TokensOutputDto> {
-    return this.refreshTokenService.generateTokens(user);
+    return this.refreshTokenService.issueTokens(user);
   }
 }

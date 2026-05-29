@@ -1,4 +1,4 @@
-import { TokenFactory } from '@auth/services/token.factory';
+import { JwtTokenService } from '@auth/services/jwt-token.service';
 import { AppClsStore } from '@core/interfaces/cls-store.interface';
 import {
   CanActivate,
@@ -12,7 +12,7 @@ import { ClsService } from 'nestjs-cls';
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
-    private readonly tokenFactory: TokenFactory,
+    private readonly jwtTokenService: JwtTokenService,
     private readonly reflector: Reflector,
     private readonly cls: ClsService<AppClsStore>,
   ) {}
@@ -24,7 +24,7 @@ export class JwtAuthGuard implements CanActivate {
     const req = ctx.switchToHttp().getRequest();
 
     const token = this.getToken(req);
-    const payload = this.tokenFactory.verifyAccessToken(token);
+    const payload = this.jwtTokenService.verifyAccessToken(token);
 
     const userId = payload.sub;
     this.cls.set('userId', userId);
