@@ -41,7 +41,7 @@ export class SetRefreshTokenCookieInterceptor<
         const cookieOptions = {
           httpOnly: true,
           secure: isProd,
-          sameSite: isProd ? 'none' : 'lax',
+          sameSite: 'lax',
           maxAge: refreshTokenExpiresIn,
           path: '/api/auth/refresh',
         };
