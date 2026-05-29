@@ -15,12 +15,10 @@ import { MessagingModule } from '@messaging/messaging.module';
 import { InvitationConsumer } from './messaging/consumers/invitation.consumer';
 import { UserInvitedHandler } from './messaging/handlers/user-invited.handler';
 import { OrganizationPublisher } from './messaging/pulishers/organization.publisher';
-import { ClsModule } from 'nestjs-cls';
 
 @Module({
   controllers: [OrganizationController, InvitationController],
   imports: [
-    ClsModule,
     TypeOrmModule.forFeature([Organization, Invitation]),
     EmailModule,
     MembershipModule,

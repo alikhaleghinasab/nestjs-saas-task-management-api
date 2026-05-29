@@ -12,9 +12,16 @@ import { configValidationSchema } from 'env.validation';
 import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { CoreModule } from '@core/core.module';
 import { MembershipModule } from '@memberships/membership.module';
+import { ClsModule } from 'nestjs-cls';
 
 @Module({
   imports: [
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        mount: true,
+      },
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: configValidationSchema,
