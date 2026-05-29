@@ -74,9 +74,9 @@ describe('AuthService', () => {
         {
           provide: RefreshTokenService,
           useValue: {
-            generateTokens: jest.fn(),
+            issueTokens: jest.fn(),
           },
-        }
+        },
       ],
     }).compile();
 
@@ -95,7 +95,7 @@ describe('AuthService', () => {
       // Arrange
       argonHasher.hash.mockResolvedValue(hashedPassword);
       userService.createUser.mockResolvedValue(createdUser as User);
-      refreshTokenService.generateTokens.mockResolvedValue(tokens);
+      refreshTokenService.issueTokens.mockResolvedValue(tokens);
 
       // Act
       const result = await service.register(registerDto);
@@ -106,9 +106,7 @@ describe('AuthService', () => {
         ...registerDto,
         password: hashedPassword,
       });
-      expect(refreshTokenService.generateTokens).toHaveBeenCalledWith(
-        createdUser.id,
-      );
+      expect(refreshTokenService.issueTokens).toHaveBeenCalledWith(createdUser);
       expect(result).toEqual(tokens);
     });
   });
@@ -118,7 +116,7 @@ describe('AuthService', () => {
       // Arrange
       userService.findUserForAuth.mockResolvedValue(existingUser as User);
       argonHasher.compare.mockResolvedValue(true);
-      refreshTokenService.generateTokens.mockResolvedValue(tokens);
+      refreshTokenService.issueTokens.mockResolvedValue(tokens);
 
       // Act
       const result = await service.login(loginDto);
@@ -131,8 +129,8 @@ describe('AuthService', () => {
         loginDto.password,
         hashedPassword,
       );
-      expect(refreshTokenService.generateTokens).toHaveBeenCalledWith(
-        existingUser.id,
+      expect(refreshTokenService.issueTokens).toHaveBeenCalledWith(
+        existingUser,
       );
       expect(result).toEqual(tokens);
     });
