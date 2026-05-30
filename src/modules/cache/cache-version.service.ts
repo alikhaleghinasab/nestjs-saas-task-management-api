@@ -18,11 +18,7 @@ export class CacheVersionService {
     return value ? Number(value) : 1;
   }
 
-  async bump(scope: string, id: string): Promise<void> {
-    const key = this.getKey(scope, id);
-    const current = await this.cacheProvider.get(key);
-    const next = current ? Number(current) + 1 : 2;
-
-    await this.cacheProvider.set(key, String(next));
+  async bump(scope: string, id: string) {
+    await this.cacheProvider.increment(this.getKey(scope, id));
   }
 }
