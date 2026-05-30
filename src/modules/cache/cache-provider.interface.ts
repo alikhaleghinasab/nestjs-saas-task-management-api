@@ -8,4 +8,6 @@ export interface CacheProviderInterface {
   exists(key: string): Promise<boolean>;
 
   expire(key: string, seconds: number): Promise<number>;
+
+  increment(key: string): Promise<number>;
 }
