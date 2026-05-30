@@ -23,6 +23,7 @@ import { UuidParam } from '@common/decorators/uuid-param.decorator';
 import { UpdateTaskDto } from '@tasks/dto/update-task.dto';
 import { DynamicFilterDto } from '@common/dto/dynamic-filter.dto';
 import { ApiDynamicFilters } from '@common/decorators/api-dynamic-filters.decorator';
+import { TASK_UPSERT_EXCEPTIONS } from '@tasks/constants/api-metadata.constant';
 
 const resourceName = 'Task';
 
@@ -62,6 +63,7 @@ export class TaskController {
   @ApiCreate({
     entity: Task,
     resourceName,
+    extraErrors: TASK_UPSERT_EXCEPTIONS,
   })
   @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   create(
@@ -74,6 +76,7 @@ export class TaskController {
 
   @ApiUpdate({
     resourceName,
+    extraErrors: TASK_UPSERT_EXCEPTIONS,
   })
   @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   async update(

@@ -7,6 +7,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteMembershipHandler } from './handlers/delete-membership.handler';
 import { CreateMembershipHandler } from './handlers/create-membership.handler';
 import { MembershipController } from './controllers/membership.controller';
+import { MembershipAccessService } from './services/membership-access.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Membership]), CqrsModule],
@@ -14,9 +15,10 @@ import { MembershipController } from './controllers/membership.controller';
   providers: [
     MembershipRepository,
     MembershipService,
+    MembershipAccessService,
     CreateMembershipHandler,
     DeleteMembershipHandler,
   ],
-  exports: [MembershipService],
+  exports: [MembershipService, MembershipAccessService],
 })
 export class MembershipModule {}

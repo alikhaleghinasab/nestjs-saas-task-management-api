@@ -53,4 +53,14 @@ export class MembershipRepository extends TenantBaseRepository<Membership> {
 
     return membership?.role || null;
   }
+
+  async existsUserInOrganization(
+    userId: string,
+    organizationId: string,
+  ): Promise<boolean> {
+    return this.repo.existsBy({
+      userId,
+      organizationId,
+    });
+  }
 }

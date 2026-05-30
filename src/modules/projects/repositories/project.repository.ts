@@ -30,4 +30,14 @@ export class ProjectRepository extends TenantBaseRepository<Project> {
     const project = this.repo.create(data);
     return this.repo.save(project);
   }
+
+  async existsInOrganization(
+    id: string,
+    organizationId: string,
+  ): Promise<boolean> {
+    return this.repo.existsBy({
+      id,
+      organizationId,
+    });
+  }
 }
