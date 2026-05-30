@@ -6,18 +6,19 @@ import {
 } from '../interfaces/membership-params.interface';
 import { Membership } from '../entities/membership.entity';
 import { Roles } from '@memberships/enums/roles.enum';
-import { CacheResult } from '@cache/cache-result.decorator';
 import { CacheHelper } from '@cache/cache.helper';
 import { CACHE_PROVIDER } from '@cache/cache.constant';
 import { CacheProviderInterface } from '@cache/cache-provider.interface';
 import { Transactional } from 'typeorm-transactional';
-import { getUserRoleCacheKey } from '@memberships/constants/membership.constant';
+import {
+  getUserRoleCacheKey,
+  USER_ROLE_CACHE_TTL_SECONDS,
+} from '@memberships/constants/membership.constant';
 
 @Injectable()
 export class MembershipService {
   constructor(
     private readonly membershipRepository: MembershipRepository,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     private readonly cacheHelper: CacheHelper,
     @Inject(CACHE_PROVIDER)
     private readonly cacheProvider: CacheProviderInterface,
@@ -44,18 +45,21 @@ export class MembershipService {
     return result;
   }
 
-  @CacheResult({
-    key: getUserRoleCacheKey,
-    ttl: 60 * 60,
-  })
   async getUserRoleInOrganization(
     userId: string,
     organizationId: string,
   ): Promise<Roles | null> {
-    return this.membershipRepository.getUserRoleInOrganization(
-      userId,
-      organizationId,
+    const cacheKey = getUserRoleCacheKey(userId, organizationId);
+    const role = await this.cacheHelper.getOrSetString(
+      cacheKey,
+      () =>
+        this.membershipRepository.getUserRoleInOrganization(
+          userId,
+          organizationId,
+        ),
+      USER_ROLE_CACHE_TTL_SECONDS,
     );
+    return role as Roles;
   }
 
   private async invalidateCache(userId: string, organizationId: string) {
