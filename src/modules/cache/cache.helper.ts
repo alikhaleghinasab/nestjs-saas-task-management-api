@@ -71,9 +71,7 @@ export class CacheHelper {
 
     const value = await resolve();
 
-    if (value !== null) {
-      await this.cacheProvider.set(key, serialize(value), ttl);
-    }
+    await this.cacheProvider.set(key, serialize(value), ttl);
 
     return value;
   }
