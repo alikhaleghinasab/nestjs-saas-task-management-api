@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import redisConfig from '@rediscore/redis.config';
-import { RedisService } from './redis.service';
+import redisConfig from './redis.config';
+import { RedisClient } from './redis.client';
+import { RedisCacheService } from './redis-cache.service';
 
 @Module({
   imports: [ConfigModule.forFeature(redisConfig)],
-  providers: [RedisService],
-  exports: [RedisService],
+  providers: [RedisClient, RedisCacheService],
+  exports: [RedisCacheService],
 })
 export class RedisModule {}
