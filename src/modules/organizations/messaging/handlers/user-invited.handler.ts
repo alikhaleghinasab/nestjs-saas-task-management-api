@@ -14,7 +14,7 @@ export class UserInvitedHandler {
     const { email, invitationToken } = payload;
     const baseUrl = this.configService.get<string>('app.url');
     const url = `${baseUrl}/invitation?token=${invitationToken}`;
-    this.emailService.send(email, {
+    await this.emailService.send(email, {
       subject: 'Invitation',
       content: `You have been invited. Accept here: ${url}`,
     });

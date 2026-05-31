@@ -5,7 +5,7 @@ import { EmailOptions, SentEmail } from './email.types';
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
 
-  send(to: string, options: EmailOptions): SentEmail {
+  async send(to: string, options: EmailOptions): Promise<SentEmail> {
     const email: SentEmail = {
       to,
       subject: options.subject,
@@ -14,12 +14,12 @@ export class EmailService {
       status: 'sent',
     };
 
-    this.logEmail(email);
+    await this.logEmail(email);
 
     return email;
   }
 
-  private logEmail(email: SentEmail): void {
+  private async logEmail(email: SentEmail): Promise<void> {
     this.logger.log(`
 📧 FAKE EMAIL SENT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
