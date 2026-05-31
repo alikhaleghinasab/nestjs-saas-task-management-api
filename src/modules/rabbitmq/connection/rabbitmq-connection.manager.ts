@@ -133,6 +133,8 @@ export class RabbitMQConnectionManager
 
     this.connection.on('close', () => {
       this.logger.warn('RabbitMQ connection closed');
+      // TODO: Reconnected channels currently do not restore active consumers.
+      // Consumer re-registration should be implemented if automatic recovery is required.
       this.scheduleReconnect();
     });
 
