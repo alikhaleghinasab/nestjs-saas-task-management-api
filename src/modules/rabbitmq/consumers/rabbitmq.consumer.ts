@@ -1,5 +1,5 @@
 import { MessageConsumer } from '@messaging/messaging-consumer.interface';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { RabbitMQService } from '@rabbitmq/channel/rabbitmq.service';
 import { RABBITMQ_REGISTRY } from '@rabbitmq/constants/rabbitmq.constant';
 import {
@@ -10,6 +10,7 @@ import {
 @Injectable()
 export class RabbitMQConsumer implements MessageConsumer {
   private readonly routes: Map<string, RabbitMQRegistryItem>;
+  private readonly logger = new Logger(RabbitMQConsumer.name);
 
   constructor(
     private readonly rabbit: RabbitMQService,
@@ -34,7 +35,8 @@ export class RabbitMQConsumer implements MessageConsumer {
       try {
         await handler(payload);
         channel.ack(msg);
-      } catch {
+      } catch (error) {
+        this.logger.error(`Failed to process event ${event}`, error);
         channel.nack(msg, false, false);
       }
     });
