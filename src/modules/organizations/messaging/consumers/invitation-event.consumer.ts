@@ -5,7 +5,7 @@ import { MessageConsumer } from '@messaging/messaging-consumer.interface';
 import { MESSAGE_CONSUMER } from '@messaging/messaging.constant';
 
 @Injectable()
-export class InvitationConsumer implements OnModuleInit {
+export class InvitationEventConsumer implements OnModuleInit {
   constructor(
     @Inject(MESSAGE_CONSUMER)
     private readonly consumer: MessageConsumer,

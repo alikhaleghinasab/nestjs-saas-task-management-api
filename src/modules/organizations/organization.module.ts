@@ -12,7 +12,7 @@ import { InvitationService } from './services/invitation.service';
 import { InvitationRepository } from './repositories/invitation.repository';
 import { EmailModule } from '@email/email.module';
 import { MessagingModule } from '@messaging/messaging.module';
-import { InvitationConsumer } from './messaging/consumers/invitation.consumer';
+import { InvitationEventConsumer } from './messaging/consumers/invitation-event.consumer';
 import { UserInvitedHandler } from './messaging/handlers/user-invited.handler';
 import { OrganizationEventPublisher } from './messaging/pulishers/organization-event.publisher';
 
@@ -31,7 +31,7 @@ import { OrganizationEventPublisher } from './messaging/pulishers/organization-e
     InvitationService,
     InvitationRepository,
     OrganizationRolesGuard,
-    InvitationConsumer,
+    InvitationEventConsumer,
     UserInvitedHandler,
   ],
   exports: [OrganizationRolesGuard],
