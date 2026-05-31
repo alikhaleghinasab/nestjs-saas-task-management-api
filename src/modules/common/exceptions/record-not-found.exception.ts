@@ -3,7 +3,11 @@ import { BaseException } from './base.exception';
 import { ErrorMessage } from '@common/errors/error-messages';
 
 export class RecordNotFoundException extends BaseException {
-  constructor(message: string = ErrorMessage[ErrorCode.RecordNotFound]) {
-    super(ErrorCode.RecordNotFound, 404, message);
+  static readonly statusCode = 404;
+  static readonly errorCode = ErrorCode.RecordNotFound;
+  static readonly message = ErrorMessage[ErrorCode.RecordNotFound];
+
+  constructor(message?: string) {
+    super(RecordNotFoundException, message);
   }
 }
