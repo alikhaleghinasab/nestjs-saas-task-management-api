@@ -5,7 +5,7 @@ import { MessagePublisher } from '@messaging/messaging-publisher.interface';
 import { UserInvitedEvent } from '../events/user-invited.event';
 
 @Injectable()
-export class OrganizationPublisher {
+export class OrganizationEventPublisher {
   constructor(
     @Inject(MESSAGE_PUBLISHER)
     private readonly publisher: MessagePublisher,

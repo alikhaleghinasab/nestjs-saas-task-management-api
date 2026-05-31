@@ -14,7 +14,7 @@ import { EmailModule } from '@email/email.module';
 import { MessagingModule } from '@messaging/messaging.module';
 import { InvitationConsumer } from './messaging/consumers/invitation.consumer';
 import { UserInvitedHandler } from './messaging/handlers/user-invited.handler';
-import { OrganizationPublisher } from './messaging/pulishers/organization.publisher';
+import { OrganizationEventPublisher } from './messaging/pulishers/organization-event.publisher';
 
 @Module({
   controllers: [OrganizationController, InvitationController],
@@ -27,7 +27,7 @@ import { OrganizationPublisher } from './messaging/pulishers/organization.publis
   providers: [
     OrganizationService,
     OrganizationRepository,
-    OrganizationPublisher,
+    OrganizationEventPublisher,
     InvitationService,
     InvitationRepository,
     OrganizationRolesGuard,

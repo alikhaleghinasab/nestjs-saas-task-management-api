@@ -1,6 +1,6 @@
 import { InvitationService } from './invitation.service';
 import { InvitationRepository } from '@organizations/repositories/invitation.repository';
-import { OrganizationPublisher } from '@organizations/messaging/pulishers/organization.publisher';
+import { OrganizationEventPublisher } from '@organizations/messaging/pulishers/organization-event.publisher';
 import { MembershipService } from '@memberships/services/membership.service';
 import { InviteUserDto } from '@organizations/dto/invite-user.dto';
 import { Invitation } from '@organizations/entities/invitation.entity';
@@ -10,7 +10,7 @@ import { Roles } from '@memberships/enums/roles.enum';
 describe('InvitationService', () => {
   let service: InvitationService;
   let invitationRepository: jest.Mocked<InvitationRepository>;
-  let organizationPublisher: jest.Mocked<OrganizationPublisher>;
+  let organizationPublisher: jest.Mocked<OrganizationEventPublisher>;
 
   const ORGANIZATION_ID = '019d968e-f56b-79ab-bf13-9fb5b0c21b55';
   const INVITATION_ID = '019d9868-b04f-7d78-a845-a8d8a1c2bfdc';
@@ -38,7 +38,7 @@ describe('InvitationService', () => {
           useValue: { create: jest.fn() },
         },
         {
-          provide: OrganizationPublisher,
+          provide: OrganizationEventPublisher,
           useValue: { userInvited: jest.fn() },
         },
         {
@@ -50,7 +50,7 @@ describe('InvitationService', () => {
 
     service = module.get<InvitationService>(InvitationService);
     invitationRepository = module.get(InvitationRepository);
-    organizationPublisher = module.get(OrganizationPublisher);
+    organizationPublisher = module.get(OrganizationEventPublisher);
   });
 
   afterEach(() => {

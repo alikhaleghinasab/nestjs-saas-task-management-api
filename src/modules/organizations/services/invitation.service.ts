@@ -13,14 +13,14 @@ import { uuidv7 } from 'uuidv7';
 import { InvitationStatus } from '@organizations/enums/invitation-status.enum';
 import { AcceptInvitationDto } from '@organizations/dto/accept-invitation.dto';
 import { Transactional } from 'typeorm-transactional';
-import { OrganizationPublisher } from '@organizations/messaging/pulishers/organization.publisher';
+import { OrganizationEventPublisher } from '@organizations/messaging/pulishers/organization-event.publisher';
 import { MembershipService } from '@memberships/services/membership.service';
 
 @Injectable()
 export class InvitationService {
   constructor(
     private readonly invitationRepository: InvitationRepository,
-    private readonly organizationPublisher: OrganizationPublisher,
+    private readonly organizationPublisher: OrganizationEventPublisher,
     private readonly membershipService: MembershipService,
   ) {}
 
