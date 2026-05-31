@@ -40,7 +40,7 @@ export class ResponseExceptionFilter implements ExceptionFilter {
       return {
         status: exception.getStatus(),
         errorCode: exception.errorCode,
-        message: exception.errorMessage,
+        message: exception.message,
       };
     }
 
@@ -55,13 +55,22 @@ export class ResponseExceptionFilter implements ExceptionFilter {
       };
     }
 
-    this.logger.error(exception);
+    this.logUnknownException(exception);
 
     return {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       errorCode: ErrorCode.Internal,
       message: ErrorMessage.INTERNAL_SERVER_ERROR,
     };
+  }
+
+  private logUnknownException(exception: unknown): void {
+    if (exception instanceof Error) {
+      this.logger.error(exception.message, exception.stack);
+      return;
+    }
+
+    this.logger.error(String(exception));
   }
 
   private extractMessage(resp: HttpExceptionResponse): string | string[] {
