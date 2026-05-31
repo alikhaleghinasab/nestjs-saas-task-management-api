@@ -70,6 +70,7 @@ export class RabbitMQConnectionManager
     try {
       this.connection = await amqp.connect(this.connectionUrl);
       this.channel = await this.connection.createChannel();
+      await this.channel.prefetch(10);
 
       this.attachListeners();
 

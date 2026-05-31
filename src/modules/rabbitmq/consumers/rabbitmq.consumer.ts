@@ -25,8 +25,6 @@ export class RabbitMQConsumer implements MessageConsumer {
 
     const queue = this.resolveQueue(event);
 
-    await channel.prefetch(10);
-
     await channel.consume(queue, async (msg) => {
       if (!msg) return;
 
