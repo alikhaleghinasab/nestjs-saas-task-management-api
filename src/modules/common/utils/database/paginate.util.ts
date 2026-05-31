@@ -1,6 +1,7 @@
 import { BaseIdEntity } from '@common/database/entities/base-id.entity';
 import { PaginationDto } from '@common/dto/pagination.dto';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
+import { PaginatedResult } from '@common/responses/paginated-result.dto';
 import { PaginationMeta } from '@common/responses/pagination-meta.dto';
 import {
   FindManyOptions,
@@ -30,5 +31,6 @@ export async function paginate<T extends BaseIdEntity>(
     total,
   };
 
-  return { data, meta };
+  return new PaginatedResult(data, meta);
 }
+
