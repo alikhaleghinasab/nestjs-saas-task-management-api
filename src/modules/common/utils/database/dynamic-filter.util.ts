@@ -35,7 +35,7 @@ export function dynamicFilterBuildWhere<T>(
       !allowedFilterFields.includes(filter.field as keyof T & string)
     ) {
       throw new DynamicFilterInvalidDataError(
-        `Filtering by field '${filter.field}' is not allowed`,
+        `Filtering by field '${filter.field}' is not allowed. Allowed fields: ${allowedFilterFields.join(', ')}`,
       );
     }
 
