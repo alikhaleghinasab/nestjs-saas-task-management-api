@@ -7,7 +7,17 @@ import {
 } from '@common/decorators/api-crud.decorator';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
 import { Roles } from '@memberships/enums/roles.enum';
-import { Body, Controller, Query, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Post,
+  Put,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { OrganizationId } from '@organizations/decorators/organization-id.decorator';
 import {
@@ -40,6 +50,7 @@ export class TaskController {
     entity: Task,
     resourceName,
   })
+  @Get()
   @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   async findMany(
     @Query() dto: DynamicFilterDto,
@@ -52,6 +63,7 @@ export class TaskController {
     entity: Task,
     resourceName,
   })
+  @Get(':id')
   @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   async findOne(
     @UuidParam() id: string,
@@ -65,6 +77,7 @@ export class TaskController {
     resourceName,
     extraErrors: TASK_UPSERT_EXCEPTIONS,
   })
+  @Post()
   @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   create(
     @Body() dto: CreateTaskDto,
@@ -78,6 +91,8 @@ export class TaskController {
     resourceName,
     extraErrors: TASK_UPSERT_EXCEPTIONS,
   })
+  @Put(':id')
+  @HttpCode(200)
   @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   async update(
     @UuidParam() id: string,
@@ -90,6 +105,8 @@ export class TaskController {
   @ApiDelete({
     resourceName,
   })
+  @Delete(':id')
+  @HttpCode(200)
   @OrganizationProtected(Roles.Owner, Roles.Admin)
   async delete(
     @UuidParam('id') id: string,

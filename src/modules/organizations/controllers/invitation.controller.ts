@@ -12,6 +12,7 @@ import {
   Body,
   Controller,
   ForbiddenException,
+  Get,
   HttpCode,
   Post,
   UseInterceptors,
@@ -59,9 +60,9 @@ export class InvitationController {
   @ApiGetOne({
     resourceName,
     entity: InvitationPreviewDto,
-    paramName: 'token',
   })
   @Public()
+  @Get(':token')
   async findOne(
     @UuidParam('token') token: string,
   ): Promise<InvitationPreviewDto> {

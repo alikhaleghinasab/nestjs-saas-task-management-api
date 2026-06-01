@@ -3,7 +3,14 @@ import { PaginationDto } from '@common/dto/pagination.dto';
 import { ApiSuccessResponseInterceptor } from '@common/interceptors/api-success-response.interceptor';
 import { PaginatedResponse } from '@common/interfaces/paginated-response.interface';
 import { Roles } from '@memberships/enums/roles.enum';
-import { Body, Controller, Query, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { OrganizationId } from '@organizations/decorators/organization-id.decorator';
 import { PROJECT_ERRORS } from '@projects/constants/errors.constant';
@@ -30,6 +37,7 @@ export class ProjectController {
     entity: Project,
     resourceName,
   })
+  @Get()
   @OrganizationProtected(Roles.Owner, Roles.Admin, Roles.Member)
   async findMany(
     @Query() dto: PaginationDto,
@@ -43,6 +51,7 @@ export class ProjectController {
     resourceName,
     duplicateErrorMsg: PROJECT_ERRORS.PROJECT_EXISTS,
   })
+  @Post()
   @OrganizationProtected(Roles.Owner, Roles.Admin)
   create(
     @Body() dto: CreateProjectDto,
