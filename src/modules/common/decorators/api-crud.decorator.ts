@@ -1,12 +1,4 @@
-import {
-  applyDecorators,
-  Delete,
-  Get,
-  HttpCode,
-  Post,
-  Put,
-  UseInterceptors,
-} from '@nestjs/common';
+import { applyDecorators, UseInterceptors } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { ApiSuccessResponseDocs } from './api-success-response-docs.decorator';
 import { ApiPaginatedResponseDocs } from './api-paginated-response-docs.decorator';
@@ -31,7 +23,6 @@ export function ApiGetMany(options: ApiGetManyOptions) {
   } = options;
 
   return applyDecorators(
-    Get(),
     UseInterceptors(ApiPaginatedResponseInterceptor),
     ApiOperation({ summary: `Get list of ${resourceName}` }),
     ApiPaginatedResponseDocs({ model: entity, description }),
@@ -43,14 +34,12 @@ export function ApiGetOne(options: ApiGetOneOptions) {
   const {
     entity,
     resourceName,
-    paramName = 'id',
     description = `${resourceName} details retrieved`,
     notFoundException = RecordNotFoundException,
     extraErrors = [],
   } = options;
 
   return applyDecorators(
-    Get(`:${paramName}`),
     ApiOperation({ summary: `Get ${resourceName}` }),
     ApiSuccessResponseDocs({ model: entity, description }),
     ApiErrorResponsesDocs(notFoundException),
@@ -68,7 +57,6 @@ export function ApiCreate(options: ApiCreateOptions) {
   } = options;
 
   const decorators: MethodDecorator[] = [
-    Post(),
     ApiOperation({ summary: `Create ${resourceName}` }),
     ApiSuccessResponseDocs({ status: 201, model: entity, description }),
     ApiErrorResponsesDocs(...extraErrors),
@@ -92,12 +80,9 @@ export function ApiUpdate(options: ApiUpdateOptions) {
     description = `${resourceName} updated`,
     duplicateErrorMsg,
     extraErrors = [],
-    paramName = 'id',
   } = options;
 
   const decorators: MethodDecorator[] = [
-    Put(`:${paramName}`),
-    HttpCode(200),
     ApiOperation({ summary: `Update ${resourceName}` }),
     ApiSuccessResponseDocs({ description }),
     ApiErrorResponsesDocs(...extraErrors),
@@ -121,12 +106,9 @@ export function ApiDelete(options: ApiDeleteOptions) {
     description = `${resourceName} deleted`,
     notFoundException = RecordNotFoundException,
     extraErrors = [],
-    paramName = 'id',
   } = options;
 
   return applyDecorators(
-    Delete(`:${paramName}`),
-    HttpCode(200),
     ApiOperation({ summary: `Delete ${resourceName}` }),
     ApiSuccessResponseDocs({ description }),
     ApiErrorResponsesDocs(notFoundException),

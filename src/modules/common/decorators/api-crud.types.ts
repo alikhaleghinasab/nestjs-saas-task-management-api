@@ -17,7 +17,6 @@ export interface ApiGetManyOptions extends ApiBaseOptions {
 
 export interface ApiGetOneOptions extends ApiBaseOptions {
   entity: Type<any>;
-  paramName?: string;
   notFoundException?: Type<any>;
 }
 
@@ -27,11 +26,9 @@ export interface ApiCreateOptions extends ApiBaseOptions {
 }
 
 export interface ApiUpdateOptions extends ApiBaseOptions {
-  paramName?: string;
   duplicateErrorMsg?: string;
 }
 
 export interface ApiDeleteOptions extends ApiBaseOptions {
-  paramName?: string;
   notFoundException?: Type<any>;
 }
