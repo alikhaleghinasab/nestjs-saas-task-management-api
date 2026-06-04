@@ -7,6 +7,6 @@ import { RedisCacheService } from './redis-cache.service';
 @Module({
   imports: [ConfigModule.forFeature(redisConfig)],
   providers: [RedisClient, RedisCacheService],
-  exports: [RedisCacheService],
+  exports: [RedisCacheService, RedisClient],
 })
 export class RedisModule {}
