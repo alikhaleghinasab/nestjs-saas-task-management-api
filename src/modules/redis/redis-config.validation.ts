@@ -8,4 +8,6 @@ export const redisConfigValidationSchema = {
   REDIS_PASSWORD: Joi.string().allow('', null).optional(),
 
   REDIS_DB: Joi.number().integer().min(0).max(15).default(0),
+
+  REDIS_RETRIES_COUNT: Joi.number().integer().min(0).default(0),
 };

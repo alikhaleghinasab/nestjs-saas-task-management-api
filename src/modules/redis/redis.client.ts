@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createClient, RedisClientType } from 'redis';
+import { RedisConfigType } from './redis.config';
 
 @Injectable()
 export class RedisClient implements OnModuleInit, OnModuleDestroy {
@@ -13,13 +14,15 @@ export class RedisClient implements OnModuleInit, OnModuleDestroy {
 
   private client: RedisClientType;
 
-  private readonly MAX_RETRIES = 0;
   private readonly BASE_DELAY = 5000;
+  private retriesCount!: number;
 
   constructor(private readonly config: ConfigService) {}
 
   async onModuleInit() {
-    const cfg = this.config.get('redis');
+    const cfg = this.config.getOrThrow<RedisConfigType>('redis');
+
+    this.retriesCount = cfg.retriesCount;
 
     this.client = createClient({
       url: `redis://${cfg.host}:${cfg.port}`,
@@ -71,9 +74,7 @@ export class RedisClient implements OnModuleInit, OnModuleDestroy {
   }
 
   private shouldStopReconnect(retries: number): boolean {
-    const maxRetries = this.MAX_RETRIES;
-
-    if (maxRetries > 0 && retries > maxRetries) {
+    if (this.retriesCount > 0 && retries > this.retriesCount) {
       this.logger.error(
         `Redis failed after ${retries - 1} retries. Stopping reconnect.`,
       );
