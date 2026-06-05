@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { InvitationRepository } from '@organizations/repositories/invitation.repository';
 import { InviteUserDto } from '@organizations/dto/invite-user.dto';
@@ -15,6 +16,7 @@ import { AcceptInvitationDto } from '@organizations/dto/accept-invitation.dto';
 import { Transactional } from 'typeorm-transactional';
 import { OrganizationEventPublisher } from '@organizations/messaging/pulishers/organization-event.publisher';
 import { MembershipService } from '@memberships/services/membership.service';
+import { MessageBrokerUnavailableError } from '@messaging/errors/message-broker-unavailable.error';
 
 @Injectable()
 export class InvitationService {
@@ -35,11 +37,20 @@ export class InvitationService {
       organizationId,
     });
 
-    await this.organizationPublisher.userInvited({
-      email: invitation.email,
-      invitationToken: invitation.invitationToken,
-    });
+    try {
+      await this.organizationPublisher.userInvited({
+        email: invitation.email,
+        invitationToken: invitation.invitationToken,
+      });
+    } catch (error) {
+      if (error instanceof MessageBrokerUnavailableError) {
+        throw new ServiceUnavailableException(
+          ORGANIZATION_ERRORS.INVITATION_SERVICE_UNAVAILABLE,
+        );
+      }
 
+      throw error;
+    }
     return invitation;
   }
 
