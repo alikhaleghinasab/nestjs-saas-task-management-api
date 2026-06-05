@@ -10,4 +10,6 @@ export const rabbitmqConfigValidationSchema = {
   RABBITMQ_USER: Joi.string().required(),
 
   RABBITMQ_PASSWORD: Joi.string().required(),
+
+  RABBITMQ_RETRIES_COUNT: Joi.number().integer().min(0).default(0),
 };

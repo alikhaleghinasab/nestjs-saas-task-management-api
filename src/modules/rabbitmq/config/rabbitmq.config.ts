@@ -6,6 +6,7 @@ const rabbitMQConfig = registerAs('rabbitMQ', () => ({
   port: Number(process.env.RABBITMQ_PORT ?? '5672'),
   user: process.env.RABBITMQ_USER,
   password: process.env.RABBITMQ_PASSWORD,
+  retriesCount: Number(process.env.RABBITMQ_RETRIES_COUNT ?? '0'),
 }));
 
 export default rabbitMQConfig;

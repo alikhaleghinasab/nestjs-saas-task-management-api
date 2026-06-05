@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import * as amqp from 'amqplib';
 import { RabbitMQConfigType } from '../config/rabbitmq.config';
+import { RabbitMQConnectionHandler } from '@rabbitmq/types/rabbitmq-connection-handler.type';
 
 @Injectable()
 export class RabbitMQConnectionManager
@@ -14,52 +15,67 @@ export class RabbitMQConnectionManager
 {
   private readonly logger = new Logger(RabbitMQConnectionManager.name);
 
-  private static readonly MAX_RECONNECT_ATTEMPTS = 5;
   private static readonly BASE_DELAY_MS = 5000;
 
   private connection?: amqp.Connection;
   private channel?: amqp.Channel;
+  private reconnectTimer?: NodeJS.Timeout;
+  private readonly connectionHandlers = new Set<RabbitMQConnectionHandler>();
 
   private connectionUrl!: string;
 
   private connecting = false;
+  private shuttingDown = false;
   private reconnectAttempts = 0;
+  private retriesCount!: number;
 
-  private connectionReady: Promise<void>;
-  private resolveConnectionReady?: () => void;
-
-  constructor(private readonly configService: ConfigService) {
-    this.connectionReady = new Promise((resolve) => {
-      this.resolveConnectionReady = resolve;
-    });
-  }
+  constructor(private readonly configService: ConfigService) {}
 
   async onModuleInit(): Promise<void> {
     const config = this.configService.get<RabbitMQConfigType>('rabbitMQ');
 
     this.connectionUrl = this.buildConnectionUrl(config);
+    this.retriesCount = config.retriesCount;
 
-    await this.establishConnection();
+    void this.establishConnection();
   }
 
   async onModuleDestroy(): Promise<void> {
     try {
+      this.shuttingDown = true;
+
+      if (this.reconnectTimer) {
+        clearTimeout(this.reconnectTimer);
+        this.reconnectTimer = undefined;
+      }
+
       await this.channel?.close();
       await this.connection?.close();
+      this.channel = undefined;
+      this.connection = undefined;
     } catch (err) {
       this.logger.error('Error closing RabbitMQ connection', err);
     }
   }
 
   async waitUntilReady(): Promise<void> {
-    return this.connectionReady;
+    if (this.isConnected()) {
+      return;
+    }
+
+    this.logger.warn('RabbitMQ is unavailable; continuing in degraded mode');
   }
 
-  getChannel(): amqp.Channel {
-    if (!this.channel) {
-      throw new Error('RabbitMQ channel is not initialized');
-    }
+  getChannel(): amqp.Channel | undefined {
     return this.channel;
+  }
+
+  onConnected(handler: RabbitMQConnectionHandler): void {
+    this.connectionHandlers.add(handler);
+  }
+
+  public isConnected(): boolean {
+    return !!this.connection && !!this.channel && !this.connecting;
   }
 
   private async establishConnection(): Promise<void> {
@@ -77,12 +93,11 @@ export class RabbitMQConnectionManager
       this.reconnectAttempts = 0;
       this.logger.log('RabbitMQ connected');
 
-      if (this.resolveConnectionReady) {
-        this.resolveConnectionReady();
-        this.resolveConnectionReady = undefined;
-      }
+      await this.runConnectionHandlers(this.channel);
     } catch (err) {
       this.logger.error('RabbitMQ connection failed', err);
+      this.connection = undefined;
+      this.channel = undefined;
       this.scheduleReconnect();
     } finally {
       this.connecting = false;
@@ -99,16 +114,15 @@ export class RabbitMQConnectionManager
   }
 
   private scheduleReconnect(): void {
-    if (
-      this.reconnectAttempts >= RabbitMQConnectionManager.MAX_RECONNECT_ATTEMPTS
-    ) {
-      this.logger.error(
-        `RabbitMQ failed to reconnect after ${this.reconnectAttempts} attempts`,
-      );
+    if (this.shuttingDown || this.reconnectTimer) {
       return;
     }
 
     this.reconnectAttempts++;
+
+    if (this.shouldStopReconnect()) {
+      return;
+    }
 
     const delay = this.calculateBackoffDelay();
 
@@ -116,7 +130,29 @@ export class RabbitMQConnectionManager
       `Reconnecting to RabbitMQ (attempt ${this.reconnectAttempts}) in ${delay}ms`,
     );
 
-    setTimeout(() => this.establishConnection(), delay);
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = undefined;
+      void this.establishConnection();
+    }, delay);
+  }
+
+  private async runConnectionHandlers(channel: amqp.Channel): Promise<void> {
+    await Promise.allSettled(
+      [...this.connectionHandlers].map((handler) =>
+        this.runConnectionHandler(handler, channel),
+      ),
+    );
+  }
+
+  private async runConnectionHandler(
+    handler: RabbitMQConnectionHandler,
+    channel: amqp.Channel,
+  ): Promise<void> {
+    try {
+      await handler(channel);
+    } catch (err) {
+      this.logger.error('RabbitMQ connection handler failed', err);
+    }
   }
 
   private calculateBackoffDelay(): number {
@@ -128,6 +164,17 @@ export class RabbitMQConnectionManager
     return Math.min(exponential + jitter, maxDelay);
   }
 
+  private shouldStopReconnect(): boolean {
+    if (this.retriesCount > 0 && this.reconnectAttempts > this.retriesCount) {
+      this.logger.error(
+        `RabbitMQ failed after ${this.reconnectAttempts - 1} retries. Stopping reconnect.`,
+      );
+      return true;
+    }
+
+    return false;
+  }
+
   private attachListeners(): void {
     if (!this.connection) return;
 
@@ -135,6 +182,10 @@ export class RabbitMQConnectionManager
       this.logger.warn('RabbitMQ connection closed');
       // TODO: Reconnected channels currently do not restore active consumers.
       // Consumer re-registration should be implemented if automatic recovery is required.
+
+      this.connection = undefined;
+      this.channel = undefined;
+
       this.scheduleReconnect();
     });
 
