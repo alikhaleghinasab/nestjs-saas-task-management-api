@@ -13,6 +13,7 @@ import { JwtAuthGuard } from '@auth/guards/jwt-auth.guard';
 import { CoreModule } from '@core/core.module';
 import { MembershipModule } from '@memberships/membership.module';
 import { ClsModule } from 'nestjs-cls';
+import { HealthModule } from 'modules/health/health.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ClsModule } from 'nestjs-cls';
     AuthModule,
     CoreModule,
     MembershipModule,
+    HealthModule,
     ThrottlerModule.forRoot({
       throttlers: [
         {
