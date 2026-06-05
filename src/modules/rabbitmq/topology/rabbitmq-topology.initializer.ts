@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import {
   RABBITMQ_GLOBAL_DLX,
   RABBITMQ_TOPOLOGY,
@@ -8,6 +8,8 @@ import { RabbitMQService } from '../channel/rabbitmq.service';
 
 @Injectable()
 export class RabbitMQTopologyInitializer implements OnModuleInit {
+  private readonly logger = new Logger(RabbitMQTopologyInitializer.name);
+
   constructor(
     private readonly rabbit: RabbitMQService,
     @Inject(RABBITMQ_TOPOLOGY)
@@ -15,8 +17,23 @@ export class RabbitMQTopologyInitializer implements OnModuleInit {
   ) {}
 
   async onModuleInit() {
-    await this.rabbit.waitForConnection();
+    this.rabbit.onConnected((channel) => this.initialize(channel));
+
     const channel = this.rabbit.getChannel();
+    if (!channel) {
+      this.logger.warn(
+        'Skipping RabbitMQ topology initialization: broker unavailable',
+      );
+      return;
+    }
+
+    await this.initialize(channel);
+  }
+
+  private async initialize(channel: ReturnType<RabbitMQService['getChannel']>) {
+    if (!channel) {
+      return;
+    }
 
     for (const exchange of this.topology.exchanges) {
       await channel.assertExchange(exchange.name, exchange.type, {

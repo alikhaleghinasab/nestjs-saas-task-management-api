@@ -17,7 +17,7 @@ export class RabbitMQConnectionManager
 
   private static readonly BASE_DELAY_MS = 5000;
 
-  private connection?: amqp.Connection;
+  private connection?: amqp.ChannelModel;
   private channel?: amqp.Channel;
   private reconnectTimer?: NodeJS.Timeout;
   private readonly connectionHandlers = new Set<RabbitMQConnectionHandler>();
@@ -180,8 +180,6 @@ export class RabbitMQConnectionManager
 
     this.connection.on('close', () => {
       this.logger.warn('RabbitMQ connection closed');
-      // TODO: Reconnected channels currently do not restore active consumers.
-      // Consumer re-registration should be implemented if automatic recovery is required.
 
       this.connection = undefined;
       this.channel = undefined;

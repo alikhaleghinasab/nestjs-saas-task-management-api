@@ -6,6 +6,7 @@ import {
   RabbitMQRegistry,
   RabbitMQRegistryItem,
 } from './interfaces/rabbitmq-registry.interface';
+import { MessageBrokerUnavailableError } from '@messaging/errors/message-broker-unavailable.error';
 
 @Injectable()
 export class RabbitMQPublisher implements MessagePublisher {
@@ -21,12 +22,19 @@ export class RabbitMQPublisher implements MessagePublisher {
   }
 
   async publish<T>(event: string, payload: T): Promise<void> {
-    const channel = this.rabbit.getChannel();
-
     const route = this.routes.get(event);
 
     if (!route) {
       throw new Error(`No messaging route found for event: ${event}`);
+    }
+
+    const channel = this.rabbit.getChannel();
+
+    if (!channel) {
+      this.logger.warn(
+        `Skipping RabbitMQ publish for ${event}: broker unavailable`,
+      );
+      throw new MessageBrokerUnavailableError();
     }
 
     const success = channel.publish(

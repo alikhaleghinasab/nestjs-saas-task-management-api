@@ -34,6 +34,7 @@ import { RabbitMQConsumer } from './consumers/rabbitmq.consumer';
     RabbitMQService,
     RabbitMQPublisher,
     RabbitMQConsumer,
+    RabbitMQConnectionManager,
     RABBITMQ_REGISTRY,
   ],
 })
