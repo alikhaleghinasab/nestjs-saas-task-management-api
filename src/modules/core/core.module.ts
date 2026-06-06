@@ -15,7 +15,7 @@ import { OrganizationRolesGuard } from '@organizations/guards/organization-roles
     MembershipModule,
     ProjectsModule,
     TasksModule,
-    CacheModule.forRoot({ driver: CacheDriver.IN_MEMORY }),
+    CacheModule.forRoot({ driver: CacheDriver.REDIS }),
   ],
   controllers: [],
   providers: [
