@@ -5,6 +5,8 @@ import {
 } from '../constants/rabbitmq.constant';
 import { RabbitMQTopology } from './rabbitmq-topology.interface';
 import { RabbitMQService } from '../channel/rabbitmq.service';
+import { RabbitMQLifecycle } from '../lifecycle/rabbitmq-lifecycle.service';
+import * as amqp from 'amqplib';
 
 @Injectable()
 export class RabbitMQTopologyInitializer implements OnModuleInit {
@@ -12,42 +14,45 @@ export class RabbitMQTopologyInitializer implements OnModuleInit {
 
   constructor(
     private readonly rabbit: RabbitMQService,
+    private readonly lifecycle: RabbitMQLifecycle,
     @Inject(RABBITMQ_TOPOLOGY)
     private readonly topology: RabbitMQTopology,
   ) {}
 
-  async onModuleInit() {
-    this.rabbit.onConnected((channel) => this.initialize(channel));
-
-    const channel = this.rabbit.getChannel();
-    if (!channel) {
-      this.logger.warn(
-        'Skipping RabbitMQ topology initialization: broker unavailable',
-      );
-      return;
-    }
-
-    await this.initialize(channel);
+  async onModuleInit(): Promise<void> {
+    await this.rabbit.onConnected((channel) => this.initialize(channel));
   }
 
-  private async initialize(channel: ReturnType<RabbitMQService['getChannel']>) {
-    if (!channel) {
-      return;
-    }
+  private async initialize(channel: amqp.Channel): Promise<void> {
+    this.logger.log('Initializing RabbitMQ topology');
 
+    await this.createExchanges(channel);
+    await this.createQueues(channel);
+    await this.createBindings(channel);
+
+    this.logger.log('RabbitMQ topology initialized');
+
+    await this.lifecycle.notifyTopologyReady(channel);
+  }
+
+  private async createExchanges(channel: amqp.Channel): Promise<void> {
     for (const exchange of this.topology.exchanges) {
       await channel.assertExchange(exchange.name, exchange.type, {
         durable: exchange.durable ?? true,
       });
     }
+  }
 
+  private async createQueues(channel: amqp.Channel): Promise<void> {
     for (const queue of this.topology.queues) {
-      const args: Record<string, any> = {};
+      const args: Record<string, unknown> = {};
 
       if (queue.deadLetter) {
         const dlx = RABBITMQ_GLOBAL_DLX;
 
-        await channel.assertExchange(dlx, 'topic', { durable: true });
+        await channel.assertExchange(dlx, 'topic', {
+          durable: true,
+        });
 
         const dlqName = `${queue.name}.dlq`;
 
@@ -66,7 +71,9 @@ export class RabbitMQTopologyInitializer implements OnModuleInit {
         arguments: args,
       });
     }
+  }
 
+  private async createBindings(channel: amqp.Channel): Promise<void> {
     for (const binding of this.topology.bindings) {
       await channel.bindQueue(
         binding.queue,

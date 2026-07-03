@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import * as amqp from 'amqplib';
 import { RabbitMQConfigType } from '../config/rabbitmq.config';
-import { RabbitMQConnectionHandler } from '@rabbitmq/types/rabbitmq-connection-handler.type';
+import { RabbitMQLifecycle } from '@rabbitmq/lifecycle/rabbitmq-lifecycle.service';
 
 @Injectable()
 export class RabbitMQConnectionManager
@@ -20,7 +20,6 @@ export class RabbitMQConnectionManager
   private connection?: amqp.ChannelModel;
   private channel?: amqp.Channel;
   private reconnectTimer?: NodeJS.Timeout;
-  private readonly connectionHandlers = new Set<RabbitMQConnectionHandler>();
 
   private connectionUrl!: string;
 
@@ -29,7 +28,10 @@ export class RabbitMQConnectionManager
   private reconnectAttempts = 0;
   private retriesCount!: number;
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly lifecycle: RabbitMQLifecycle,
+  ) {}
 
   async onModuleInit(): Promise<void> {
     const config = this.configService.get<RabbitMQConfigType>('rabbitMQ');
@@ -41,63 +43,55 @@ export class RabbitMQConnectionManager
   }
 
   async onModuleDestroy(): Promise<void> {
-    try {
-      this.shuttingDown = true;
+    this.shuttingDown = true;
 
-      if (this.reconnectTimer) {
-        clearTimeout(this.reconnectTimer);
-        this.reconnectTimer = undefined;
-      }
-
-      await this.channel?.close();
-      await this.connection?.close();
-      this.channel = undefined;
-      this.connection = undefined;
-    } catch (err) {
-      this.logger.error('Error closing RabbitMQ connection', err);
-    }
-  }
-
-  async waitUntilReady(): Promise<void> {
-    if (this.isConnected()) {
-      return;
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
     }
 
-    this.logger.warn('RabbitMQ is unavailable; continuing in degraded mode');
+    await this.channel?.close();
+    await this.connection?.close();
+
+    this.lifecycle.reset();
   }
 
   getChannel(): amqp.Channel | undefined {
     return this.channel;
   }
 
-  onConnected(handler: RabbitMQConnectionHandler): void {
-    this.connectionHandlers.add(handler);
-  }
-
-  public isConnected(): boolean {
+  isConnected(): boolean {
     return !!this.connection && !!this.channel && !this.connecting;
   }
 
   private async establishConnection(): Promise<void> {
-    if (this.connecting) return;
+    if (this.connecting) {
+      return;
+    }
 
     this.connecting = true;
 
     try {
       this.connection = await amqp.connect(this.connectionUrl);
+
       this.channel = await this.connection.createChannel();
+
       await this.channel.prefetch(10);
 
       this.attachListeners();
 
       this.reconnectAttempts = 0;
+
       this.logger.log('RabbitMQ connected');
 
-      await this.runConnectionHandlers(this.channel);
-    } catch (err) {
-      this.logger.error('RabbitMQ connection failed', err);
+      await this.lifecycle.notifyConnected(this.channel);
+    } catch (error) {
+      this.logger.error('RabbitMQ connection failed', error);
+
       this.connection = undefined;
       this.channel = undefined;
+
+      this.lifecycle.reset();
+
       this.scheduleReconnect();
     } finally {
       this.connecting = false;
@@ -111,6 +105,27 @@ export class RabbitMQConnectionManager
         : '';
 
     return `${config.protocol}://${auth}${config.host}:${config.port}`;
+  }
+
+  private attachListeners(): void {
+    if (!this.connection) {
+      return;
+    }
+
+    this.connection.on('close', () => {
+      this.logger.warn('RabbitMQ connection closed');
+
+      this.connection = undefined;
+      this.channel = undefined;
+
+      this.lifecycle.reset();
+
+      this.scheduleReconnect();
+    });
+
+    this.connection.on('error', (error) => {
+      this.logger.error('RabbitMQ connection error', error);
+    });
   }
 
   private scheduleReconnect(): void {
@@ -136,25 +151,6 @@ export class RabbitMQConnectionManager
     }, delay);
   }
 
-  private async runConnectionHandlers(channel: amqp.Channel): Promise<void> {
-    await Promise.allSettled(
-      [...this.connectionHandlers].map((handler) =>
-        this.runConnectionHandler(handler, channel),
-      ),
-    );
-  }
-
-  private async runConnectionHandler(
-    handler: RabbitMQConnectionHandler,
-    channel: amqp.Channel,
-  ): Promise<void> {
-    try {
-      await handler(channel);
-    } catch (err) {
-      this.logger.error('RabbitMQ connection handler failed', err);
-    }
-  }
-
   private calculateBackoffDelay(): number {
     const base = RabbitMQConnectionManager.BASE_DELAY_MS;
     const attempt = this.reconnectAttempts;
@@ -173,22 +169,5 @@ export class RabbitMQConnectionManager
     }
 
     return false;
-  }
-
-  private attachListeners(): void {
-    if (!this.connection) return;
-
-    this.connection.on('close', () => {
-      this.logger.warn('RabbitMQ connection closed');
-
-      this.connection = undefined;
-      this.channel = undefined;
-
-      this.scheduleReconnect();
-    });
-
-    this.connection.on('error', (err) => {
-      this.logger.error('RabbitMQ connection error', err);
-    });
   }
 }

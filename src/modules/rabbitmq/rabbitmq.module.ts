@@ -12,6 +12,7 @@ import { RabbitMQTopologyInitializer } from './topology/rabbitmq-topology.initia
 import { rabbitMQRegistry } from '@core/messaging/rabbitmq.registry';
 import { RabbitMQConnectionManager } from './connection/rabbitmq-connection.manager';
 import { RabbitMQConsumer } from './consumers/rabbitmq.consumer';
+import { RabbitMQLifecycle } from './lifecycle/rabbitmq-lifecycle.service';
 
 @Module({
   imports: [ConfigModule.forFeature(rabbitMQConfig)],
@@ -21,6 +22,7 @@ import { RabbitMQConsumer } from './consumers/rabbitmq.consumer';
     RabbitMQConnectionManager,
     RabbitMQPublisher,
     RabbitMQConsumer,
+    RabbitMQLifecycle,
     {
       provide: RABBITMQ_TOPOLOGY,
       useValue: rabbitMQTopology,

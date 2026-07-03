@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { RabbitMQConnectionManager } from '../connection/rabbitmq-connection.manager';
 import * as amqp from 'amqplib';
-import { RabbitMQConnectionHandler } from '@rabbitmq/types/rabbitmq-connection-handler.type';
-
+import { RabbitMQLifecycle } from '@rabbitmq/lifecycle/rabbitmq-lifecycle.service';
 @Injectable()
 export class RabbitMQService {
-  constructor(private readonly manager: RabbitMQConnectionManager) {}
+  constructor(
+    private readonly manager: RabbitMQConnectionManager,
+    private readonly lifecycle: RabbitMQLifecycle,
+  ) {}
 
   getChannel(): amqp.Channel | undefined {
     return this.manager.getChannel();
@@ -15,7 +17,15 @@ export class RabbitMQService {
     return this.manager.isConnected();
   }
 
-  onConnected(handler: RabbitMQConnectionHandler): void {
-    this.manager.onConnected(handler);
+  async onConnected(
+    handler: (channel: amqp.Channel) => Promise<void>,
+  ): Promise<void> {
+    await this.lifecycle.onConnected(handler);
+  }
+
+  async onTopologyReady(
+    handler: (channel: amqp.Channel) => Promise<void>,
+  ): Promise<void> {
+    await this.lifecycle.onTopologyReady(handler);
   }
 }

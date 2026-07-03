@@ -1,5 +1,5 @@
 import { MessageConsumer } from '@messaging/messaging-consumer.interface';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { RabbitMQService } from '@rabbitmq/channel/rabbitmq.service';
 import { RABBITMQ_REGISTRY } from '@rabbitmq/constants/rabbitmq.constant';
 import {
@@ -15,7 +15,7 @@ interface Subscription {
 }
 
 @Injectable()
-export class RabbitMQConsumer implements MessageConsumer {
+export class RabbitMQConsumer implements MessageConsumer, OnModuleInit {
   private readonly logger = new Logger(RabbitMQConsumer.name);
 
   private readonly routes: Map<string, RabbitMQRegistryItem>;
@@ -28,8 +28,12 @@ export class RabbitMQConsumer implements MessageConsumer {
     registry: RabbitMQRegistry,
   ) {
     this.routes = new Map(registry.map((route) => [route.event, route]));
+  }
 
-    this.rabbit.onConnected((channel) => this.restoreSubscriptions(channel));
+  async onModuleInit(): Promise<void> {
+    await this.rabbit.onTopologyReady(async (channel) => {
+      await this.restoreSubscriptions(channel);
+    });
   }
 
   async subscribe(
@@ -47,9 +51,6 @@ export class RabbitMQConsumer implements MessageConsumer {
     const channel = this.rabbit.getChannel();
 
     if (!channel) {
-      this.logger.warn(
-        `Skipping RabbitMQ subscription for ${event}: broker unavailable`,
-      );
       return;
     }
 
@@ -74,7 +75,7 @@ export class RabbitMQConsumer implements MessageConsumer {
 
         channel.ack(msg);
       } catch (error) {
-        this.logger.error(`Failed to process event ${event}`, error);
+        this.logger.error(`Failed to process event "${event}"`, error);
 
         channel.nack(msg, false, false);
       }
@@ -96,24 +97,15 @@ export class RabbitMQConsumer implements MessageConsumer {
       `Restoring ${this.subscriptions.length} RabbitMQ subscriptions`,
     );
 
-    const results = await Promise.allSettled(
-      this.subscriptions.map((subscription) =>
-        this.consume(
-          subscription.event,
-          subscription.queue,
-          subscription.handler,
-          channel,
-        ),
-      ),
-    );
+    for (const subscription of this.subscriptions) {
+      await this.consume(
+        subscription.event,
+        subscription.queue,
+        subscription.handler,
+        channel,
+      );
+    }
 
-    results.forEach((result) => {
-      if (result.status === 'rejected') {
-        this.logger.error(
-          'Failed restoring RabbitMQ subscription',
-          result.reason,
-        );
-      }
-    });
+    this.logger.log('RabbitMQ subscriptions restored');
   }
 }
