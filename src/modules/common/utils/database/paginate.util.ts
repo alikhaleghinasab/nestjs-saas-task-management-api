@@ -33,4 +33,3 @@ export async function paginate<T extends BaseIdEntity>(
 
   return new PaginatedResult(data, meta);
 }
-

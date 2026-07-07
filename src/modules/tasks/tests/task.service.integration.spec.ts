@@ -28,16 +28,16 @@ describe('TaskService - Multi-Tenancy Data Isolation', () => {
     const orgB = await orgFactory.create();
     const projectA = await projectFactory.create({ organizationId: orgA.id });
     const projectB = await projectFactory.create({ organizationId: orgB.id });
-    const orgATasks = await taskFactory.createMany(2, {
+    await taskFactory.createMany(2, {
       organizationId: orgA.id,
       projectId: projectA.id,
     });
-    const orgBTasks = await taskFactory.createMany(3, {
+    await taskFactory.createMany(3, {
       organizationId: orgB.id,
       projectId: projectB.id,
     });
 
-    return { orgA, orgB, orgATasks, orgBTasks };
+    return { orgA, orgB };
   }
 
   beforeAll(async () => {
@@ -64,8 +64,7 @@ describe('TaskService - Multi-Tenancy Data Isolation', () => {
   describe('findMany()', () => {
     it('should isolate tenant data between organizations', async () => {
       // Arrange
-      const { orgA, orgB, orgATasks, orgBTasks } =
-        await seedMultiTenantScenario();
+      const { orgA, orgB } = await seedMultiTenantScenario();
 
       // Act
       const result = await taskService.findMany(defaultDto, orgA.id);

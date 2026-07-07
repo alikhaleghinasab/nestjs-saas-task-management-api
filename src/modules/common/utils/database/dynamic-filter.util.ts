@@ -1,5 +1,5 @@
 import { DynamicFilterDto } from '@common/dto/dynamic-filter.dto';
-import { FindManyOptions, FindOperator, FindOptionsWhere } from 'typeorm';
+import { FindOperator, FindOptionsWhere } from 'typeorm';
 import { DynamicFilterInvalidDataError } from '@common/errors/domain/dynamic-filter-invalid-data.error';
 import {
   DYNAMIC_FILTER_OPERATOR_MAP,

@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { RabbitMQConnectionManager } from '@rabbitmq/connection/rabbitmq-connection.manager';
 import {
-  HealthCheckError,
-  HealthIndicator,
   HealthIndicatorResult,
   HealthIndicatorService,
 } from '@nestjs/terminus';
