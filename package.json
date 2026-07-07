@@ -1,10 +1,11 @@
 {
-  "name": "Jira",
+  "name": "nestjs-saas-task-management-api",
   "version": "1.0.0",
-  "description": "",
-  "author": "",
-  "private": true,
-  "license": "UNLICENSED",
+  "description": "Production-inspired multi-tenant SaaS backend built with NestJS, focusing on explicit architecture, maintainable design, and thoughtful engineering trade-offs.",
+  "author": "Ali Khaleghi Nasab",
+  "private": false,
+  "license": "MIT",
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
