@@ -150,10 +150,13 @@ Further architectural details are documented in [docs/architecture.md](docs/arch
 
 Before running the project, ensure the following tools are installed:
 
-- Node.js 22 or later
-- pnpm
 - Docker
 - Docker Compose
+
+If you plan to run the application outside Docker, you'll also need:
+
+- Node.js 22+
+- pnpm
 
 ---
 
@@ -163,8 +166,50 @@ Clone the repository:
 
 ```bash
 git clone <repository-url>
-cd github_jira
+cd nestjs-saas-task-management-api
 ```
+
+Create the environment file:
+
+```bash
+cp .env.example .env
+```
+
+The provided `.env.example` contains a complete development configuration, so no additional changes are required to get started.
+
+---
+
+## Running with Docker (Recommended)
+
+Start the complete development environment:
+
+```bash
+docker compose up --build
+```
+
+This starts:
+
+- NestJS API
+- PostgreSQL
+- Redis
+- RabbitMQ
+
+Once all services are healthy, the application will be available at:
+
+- **API:** `http://localhost:3000`
+- **Swagger:** `http://localhost:3000/docs`
+- **Health Check:** `http://localhost:3000/api/health`
+- **RabbitMQ Management:** `http://localhost:15672`
+
+To stop all services:
+
+```bash
+docker compose down
+```
+
+---
+
+## Running Without Docker
 
 Install dependencies:
 
@@ -172,84 +217,25 @@ Install dependencies:
 pnpm install
 ```
 
----
+Start the required infrastructure (PostgreSQL, Redis, and RabbitMQ), then run the application:
 
-## Environment Variables
-
-Copy the example environment file:
-
-```bash
-cp .env.example .env
-```
-
-The application can be configured through environment variables for:
-
-- PostgreSQL
-- Redis
-- RabbitMQ
-- JWT authentication
-- Swagger
-- Application settings
-
-See `.env.example` for the complete list of available configuration options.
-
----
-
-## Running with Docker
-
-The recommended way to start the project is with Docker Compose.
-
-```bash
-docker compose up --build
-```
-
-This starts the complete development environment, including:
-
-- API
-- PostgreSQL
-- Redis
-- RabbitMQ
-
----
-
-## Running the Application
-
-Development mode:
+Development:
 
 ```bash
 pnpm start:dev
 ```
 
-Build the application:
+Build:
 
 ```bash
 pnpm build
 ```
 
-Run the production build:
+Production:
 
 ```bash
 pnpm start:prod
 ```
-
----
-
-## API Documentation
-
-Swagger documentation is available after the application starts.
-
-Default URL:
-
-```text
-http://localhost:3000/docs
-```
-
-Swagger includes:
-
-- endpoint documentation
-- request and response schemas
-- authentication support
-- interactive API testing
 
 ---
 
@@ -276,6 +262,23 @@ pnpm test:e2e
 ```
 
 ---
+
+## API Documentation
+
+Swagger documentation is available after the application starts.
+
+Default URL:
+
+```text
+http://localhost:3000/docs
+```
+
+Swagger includes:
+
+- endpoint documentation
+- request and response schemas
+- authentication support
+- interactive API testing
 
 # Documentation
 
