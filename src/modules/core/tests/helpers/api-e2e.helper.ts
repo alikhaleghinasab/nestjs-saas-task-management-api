@@ -27,7 +27,6 @@ export class ApiClient {
 
   private buildRequest(method: HttpMethod, path: string): Test {
     const req = request(this.server)[method](`${API_GLOBAL_PREFIX}${path}`);
-    console.log(`${API_GLOBAL_PREFIX}${path}`);
 
     if (this.accessToken) {
       req.set('Authorization', `Bearer ${this.accessToken}`);
