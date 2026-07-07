@@ -1,4 +1,3 @@
-import 'tsconfig-paths/register';
 import { DataSource } from 'typeorm';
 import { createTypeOrmOptions } from './typeorm.config';
 
