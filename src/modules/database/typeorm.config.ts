@@ -18,7 +18,7 @@ export const createTypeOrmOptions = (): DataSourceOptions => ({
 
   migrationsTableName: 'custom_migration_table',
   synchronize: false,
-  logging: process.env.NODE_ENV !== 'production',
+  logging: process.env.NODE_ENV === 'development',
 });
 
 export const typeormConfig = registerAs('typeorm', createTypeOrmOptions);
