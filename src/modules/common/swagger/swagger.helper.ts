@@ -7,16 +7,16 @@ import { UnauthorizedException, Logger } from '@nestjs/common';
 export class SwaggerHelper {
   private readonly logger = new Logger(SwaggerHelper.name);
   private readonly basePath = process.env.SWAGGER_PATH || '';
-  private readonly username = process.env.SWAGGER_USERNAME || '';
-  private readonly password = process.env.SWAGGER_PASSWORD || '';
+  private readonly username = process.env.SWAGGER_USERNAME;
+  private readonly password = process.env.SWAGGER_PASSWORD;
   private readonly title = process.env.SWAGGER_TITLE || 'API Docs';
   private readonly description = process.env.SWAGGER_DESCRIPTION || '';
 
   private readonly credentialRegex = /^([^:]*):(.*)$/;
 
   setup(app: NestFastifyApplication) {
-    if (!this.basePath || !this.username || !this.password) {
-      this.logger.warn('Swagger disabled: configuration missing.');
+    if (!this.basePath) {
+      this.logger.warn('Swagger disabled: SWAGGER_PATH is not configured.');
       return;
     }
 
@@ -29,13 +29,21 @@ export class SwaggerHelper {
 
     const fastify = app.getHttpAdapter().getInstance();
 
-    fastify.register(
-      (instance, _, next) => {
-        instance.addHook('onRequest', this.basicAuthInterceptor.bind(this));
-        next();
-      },
-      { prefix: this.getBasePath() },
-    );
+    if (this.username && this.password) {
+      fastify.register(
+        (instance, _, next) => {
+          instance.addHook('onRequest', this.basicAuthInterceptor.bind(this));
+          next();
+        },
+        { prefix: this.getBasePath() },
+      );
+
+      this.logger.log('Swagger Basic Authentication enabled.');
+    } else {
+      this.logger.warn(
+        'Swagger Basic Authentication is disabled (username/password not configured).',
+      );
+    }
 
     const document = SwaggerModule.createDocument(app, config);
 
@@ -68,11 +76,13 @@ export class SwaggerHelper {
       return this.sendUnauthorized(reply, next);
     }
 
-    const credentials = authHeader.replace('Basic ', '');
-    let decoded = '';
+    let decoded: string;
 
     try {
-      decoded = Buffer.from(credentials, 'base64').toString('utf-8');
+      decoded = Buffer.from(
+        authHeader.replace('Basic ', ''),
+        'base64',
+      ).toString('utf-8');
     } catch {
       return this.sendUnauthorized(reply, next);
     }
@@ -82,7 +92,7 @@ export class SwaggerHelper {
       return this.sendUnauthorized(reply, next);
     }
 
-    const [_, user, pass] = parsed;
+    const [, user, pass] = parsed;
 
     if (user === this.username && pass === this.password) {
       return next();
